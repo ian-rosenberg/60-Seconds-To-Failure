@@ -72,12 +72,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2-2.0.14\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_image-2.0.5\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_ttf-2.0.15\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_mixer-2.0.4\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2-2.0.14\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_image-2.0.5\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_ttf-2.0.15\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_mixer-2.0.4\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2-2.0.14\lib\x86;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_image-2.0.5\lib\x86;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_ttf-2.0.15\lib\x86;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_mixer-2.0.4\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2-2.0.14\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_image-2.0.5\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_ttf-2.0.15\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_mixer-2.0.4\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2-2.0.14\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_image-2.0.5\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_ttf-2.0.15\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_mixer-2.0.4\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2-2.0.14\lib\x86;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_image-2.0.5\lib\x86;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_ttf-2.0.15\lib\x86;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_mixer-2.0.4\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -93,6 +93,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -109,6 +110,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,10 +152,12 @@
     <ClCompile Include="source\game.cpp" />
     <ClCompile Include="source\graphics.cpp" />
     <ClCompile Include="source\sprite.cpp" />
+    <ClCompile Include="vectortypes.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\graphics.h" />
-    <ClInclude Include="source\sprite.h" />
+    <ClInclude Include="include\graphics.h" />
+    <ClInclude Include="include\sprite.h" />
+    <ClInclude Include="include\vectortypes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

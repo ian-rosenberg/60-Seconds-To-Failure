@@ -7,12 +7,12 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 		std::cout << "SDL failed to initialize!" << SDL_GetError() << std::endl;
 		return -1;
 	}
-
+	
 	if (!IMG_Init(IMG_INIT_PNG)) {
 		std::cout << "SDL_Image failed to initialize!" << std::endl;
 		return -1;
 	}
-
+	
 	window = SDL_CreateWindow("60 Seconds To Failure",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
@@ -24,7 +24,11 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 		return -1;
 	}
 
-	SDL_UpdateWindowSurface(window);
+	surface = SDL_GetWindowSurface(window);
+
+	if (SDL_UpdateWindowSurface(window) < 0) {
+		std::cout << "Failed to update window surface!" << std::endl;
+	}
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -41,6 +45,7 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 Graphics::Graphics() {
 	renderer = NULL;
 	window = NULL;
+	surface = NULL;
 
 	lastUpdateTime = 0;
 	deltaTime = 0;
@@ -66,7 +71,6 @@ Graphics::~Graphics() {
 void Graphics::NextFrame(){
 	FrameDelay();
 
-	SDL_RenderClear(renderer);     
 	SDL_RenderPresent(renderer);
 
 	lastUpdateTime = SDL_GetTicks();
@@ -81,7 +85,7 @@ void Graphics::FrameDelay(){
 	}
 	
 	framerate = 1000.0 / std::max((float)SDL_GetTicks() - lastUpdateTime, 0.001f);
-	std::cout << framerate << " FPS" << std::endl;
+	//std::cout << framerate << " FPS" << std::endl;
 }
 
 void Graphics::SetCurrentUpdateTime()

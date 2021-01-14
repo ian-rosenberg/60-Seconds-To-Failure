@@ -1,8 +1,2 @@
 ﻿  game.cpp
-  graphics.cpp
-D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\source\graphics.cpp(48,5): warning C4305: 'argument': truncation from 'unsigned int' to 'Uint8'
-D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\source\graphics.cpp(48,17): warning C4309: 'argument': truncation of constant value
-D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\source\graphics.cpp(83,21): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  sprite.cpp
-  Generating Code...
   60 Seconds To Failure.vcxproj -> D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\Debug\60 Seconds To Failure.exe

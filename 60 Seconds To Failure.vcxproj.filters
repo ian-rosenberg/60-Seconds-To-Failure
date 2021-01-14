@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{3eb32b44-bf4e-4f7c-a06f-457e4422700a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\game.cpp">
@@ -24,13 +27,19 @@
     <ClCompile Include="source\sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vectortypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\graphics.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\graphics.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="source\sprite.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\sprite.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vectortypes.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
