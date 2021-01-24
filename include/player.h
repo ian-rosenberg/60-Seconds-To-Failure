@@ -23,6 +23,8 @@ private:
 	int32_t					axisRightXLock;
 	int32_t					axisRightYLock;
 
+	Bool					punching;
+
 public:
 	Player(SDL_Renderer* renderer);
 

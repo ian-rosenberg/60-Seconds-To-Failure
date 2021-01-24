@@ -21,6 +21,7 @@ Player::Player(SDL_Renderer* ren)
 	energy = maxEnergy;
 	scale = { 1,1 };
 	position = { 10,10 };
+	punching = false;
 	renderer = ren;
 	LoadActor(actorFilePath.c_str());
 	currentAnimation = GetAnimationByName("idle");
@@ -48,7 +49,7 @@ void Player::Think()
 
 		//Right Trigger Pressed
 		if (RightTrigger > 1000) {
-
+			punching = true;
 		}
 		//Left Trigger Pressed
 		if (LeftTrigger > 1000) {
@@ -119,6 +120,9 @@ void Player::Think()
 		{
 			SetVelocity(0, maxSpeed);
 		}
+		else if (keys[SDL_SCANCODE_E]) {
+			punching = true;
+		}
 
 		//If keys are untouched, player stops moving
 		if (!keys[SDL_SCANCODE_A] && !keys[SDL_SCANCODE_D])
@@ -130,7 +134,11 @@ void Player::Think()
 
 
 	//Set logical state
-	if (velocity.x != 0.0f ||
+	if (punching) {
+		SetLogicalState(State::State_Attacking);
+		SetAnimationByName("attacking");
+	}
+	else if (velocity.x != 0.0f ||
 		velocity.y != 0.0f)
 	{
 		SetLogicalState(State::State_Walking);
@@ -185,7 +193,11 @@ void Player::Draw()
 		currentAnimation->GetCellHeight());
 
 
-	currentAnimation->AnimationNextFrame(currentAnimation);
+	if (currentAnimation->AnimationNextFrame(currentAnimation) == AnimationReturnType::ART_END 
+		&& strcmp(currentAnimation->GetName().c_str(), "attacking")==0) 
+	{
+		punching = false;
+	}
 }
 
 void Player::Update()
@@ -236,22 +248,29 @@ void Player::Update()
 	{
 		switch (logicalState)
 		{
-		case State::State_Walking:
-			logicalState = animState;
-			currentAnimation = GetAnimationByName("walk");
-			currentSprite = currentAnimation->GetSprite();
-			scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);
-			break;
+			case State::State_Walking:
+				logicalState = animState;
+				currentAnimation = GetAnimationByName("walk");
+				currentSprite = currentAnimation->GetSprite();
+				scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);
+				break;
 
-		case State::State_Idle:
-			logicalState = animState;
-			currentAnimation = GetAnimationByName("idle");
-			currentSprite = currentAnimation->GetSprite();
-			scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);
-			break;
+			case State::State_Idle:
+				logicalState = animState;
+				currentAnimation = GetAnimationByName("idle");
+				currentSprite = currentAnimation->GetSprite();
+				scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);
+				break;
 
-		default:
-			break;
+			case State::State_Attacking:
+				logicalState = animState;
+				currentAnimation = GetAnimationByName("attacking");
+				currentSprite = currentAnimation->GetSprite();
+				scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);
+				break;
+
+			default:
+				break;
 		}
 	}
 }
