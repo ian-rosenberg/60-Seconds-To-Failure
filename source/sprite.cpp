@@ -1,10 +1,8 @@
 #include "sprite.h"
-#include "vectortypes.h"
 
-SpriteManager::Sprite::Sprite(int ID)
+Sprite::Sprite()
 {
 	texture = NULL;
-	id = ID;
 	frame = 0;
 	offset = 0;
 	frameWidth = 0;
@@ -15,14 +13,31 @@ SpriteManager::Sprite::Sprite(int ID)
 	position = { 0,0 };
 	rotation = { 0,0,0 };
 	color = { 0,0,0,255 };
+	renderer = NULL;
 }
 
-SpriteManager::Sprite::~Sprite()
+Sprite::Sprite(const char* filepath, Vector2 drawPosition, Vector2* scle, Vector2* scleCen, Vector3* rot, Vector2 flp, Vector4* colorShift, Uint32 frm, Uint32 off, Uint32 width, Uint32 height, SDL_Renderer* ren)
+{
+	frame = frm;
+	offset = off;
+	frameWidth = width;
+	frameHeight = height;
+	flip = flp;
+	scale = *scle;
+	scaleCenter = *scleCen;
+	position = drawPosition;
+	rotation = *rot;
+	color = *colorShift;
+	renderer = ren;
+	LoadPNGImage(filepath);
+}
+
+Sprite::~Sprite()
 {
 	SDL_DestroyTexture(texture);
 }
 
-Uint8 SpriteManager::Sprite::LoadPNGImage(char* filepath, SDL_Renderer* renderer)
+Uint8 Sprite::LoadPNGImage(const char* filepath)
 {
 	SDL_Surface* tempSurface = nullptr;
 	
@@ -41,23 +56,17 @@ Uint8 SpriteManager::Sprite::LoadPNGImage(char* filepath, SDL_Renderer* renderer
 	return 1;
 }
 
-SDL_Texture* SpriteManager::Sprite::GetTexture()
+SDL_Texture* Sprite::GetTexture()
 {
 	return texture;
 }
 
-Uint16 SpriteManager::Sprite::GetId()
-{
-	return id;
-}
-
-Vector2 SpriteManager::Sprite::GetPosition()
+Vector2 Sprite::GetPosition()
 {
 	return position;
 }
 
-void SpriteManager::DrawSprite(SDL_Renderer* renderer,
-	Sprite* sprite,
+void Sprite::Draw(Sprite* sprite,
 	Vector2 drawPosition,
 	Vector2* scale,
 	Vector2* scaleCenter,
@@ -161,10 +170,9 @@ void SpriteManager::DrawSprite(SDL_Renderer* renderer,
 	}
 }
 
-void SpriteManager::DrawSpriteImage(SDL_Renderer* renderer, Sprite* image, Vector2 position, Uint32 width, Uint32 height)
+void Sprite::DrawSpriteImage(Sprite* image, Vector2 position, Uint32 width, Uint32 height)
 {
-	DrawSprite(renderer,
-		image,
+	Draw(image,
 		position,
 		NULL,
 		NULL,
@@ -176,46 +184,3 @@ void SpriteManager::DrawSpriteImage(SDL_Renderer* renderer, Sprite* image, Vecto
 		width,
 		height);
 }
-
-SpriteManager::SpriteManager(SDL_Renderer *ren)
-{
-	sprites = new std::vector<Sprite*>();
-	renderer = ren;
-}
-
-SpriteManager::~SpriteManager()
-{
-	delete sprites;
-}
-
-SpriteManager::Sprite* SpriteManager::GetSpriteById(int id)
-{
-	if (id < 0 || id >= sprites->size()) {
-		std::cout << "Sprite with ID " << id << " was not found!" << std::endl;
-		
-		return NULL;
-	}
-
-	return sprites->at(id);
-}
-
-void SpriteManager::LoadSprite(char* filepath)
-{
-	Sprite* sprite = new Sprite(sprites->size());
-
-	sprite->LoadPNGImage(filepath, renderer);
-
-	sprites->push_back(sprite);
-}
-
-void SpriteManager::Draw()
-{
-	for (int i = 0; i < sprites->size(); i++) {
-		Sprite* sprite = sprites->at(i);
-
-		DrawSpriteImage(renderer, sprite, sprite->GetPosition(), 1280, 720);
-	}
-}
-
-
-

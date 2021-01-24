@@ -7,9 +7,8 @@
 
 class Graphics {
 private:
-	SDL_Renderer* renderer;
 	SDL_Window* window;
-	SDL_Surface* surface;
+	SDL_Renderer* renderer;
 
 	//Used for intialization of graphics, image, audio and text subsystems
 	int SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight);
@@ -22,6 +21,7 @@ protected:
 	float framerate;
 
 public:
+
 	Graphics();
 
 	~Graphics();

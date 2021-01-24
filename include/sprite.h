@@ -1,61 +1,57 @@
 #pragma once
 
+#include <SDL.h>
 #include <SDL_image.h>
 #include <iostream>
 #include <vector>
 
 #include "vectortypes.h"
+#include "graphics.h"
 
-class SpriteManager {
-private:
-	class Sprite {
-	private:
-		Uint16 id;
+class Sprite {
+protected:
+	Uint32 frame;
+	Uint32 offset;
+	Uint32 frameWidth;
+	Uint32 frameHeight;
 
-		Uint32 frame;
-		Uint32 offset;
-		Uint32 frameWidth;
-		Uint32 frameHeight;
+	Vector2 flip;
+	Vector2 scale;
+	Vector2 scaleCenter;
+	Vector2 position;
 
-		Vector2 flip;
-		Vector2 scale;
-		Vector2 scaleCenter;
-		Vector2 position;
+	Vector3 rotation;
 
-		Vector3 rotation;
+	Vector4 color;
 
-		Vector4 color;
-
-		SDL_Texture* texture;
-	
-	public:
-		Sprite(int id);
-
-		~Sprite();
-
-		Uint8 LoadPNGImage(char* filepath, SDL_Renderer* renderer);
-
-		SDL_Texture* GetTexture();
-
-		Uint16 GetId();
-
-		Vector2 GetPosition();
-	};
-
-	std::vector<Sprite*>* sprites;
+	SDL_Texture* texture;
 	SDL_Renderer* renderer;
-
+	
 public:
-	SpriteManager(SDL_Renderer* ren);
+	Sprite();
 
-	~SpriteManager();
+	Sprite(const char* filepath,
+		Vector2 drawPosition,
+		Vector2* scale,
+		Vector2* scaleCenter,
+		Vector3* rotation,
+		Vector2 flip,
+		Vector4* colorShift,
+		Uint32 frame,
+		Uint32 offset,
+		Uint32 frameWidth,
+		Uint32 frameHeight,
+		SDL_Renderer* ren);
 
-	Sprite* GetSpriteById(int id);
+	~Sprite();
 
-	void LoadSprite(char* filepath);
+	Uint8 LoadPNGImage(const char* filepath);
 
-	void DrawSprite(SDL_Renderer* renderer,
-		Sprite* sprite,
+	SDL_Texture* GetTexture();
+
+	Vector2 GetPosition();
+
+	void Draw(Sprite* sprite,
 		Vector2 drawPosition,
 		Vector2* scale,
 		Vector2* scaleCenter,
@@ -67,7 +63,5 @@ public:
 		Uint32 frameWidth,
 		Uint32 frameHeight);
 
-	void DrawSpriteImage(SDL_Renderer* renderer, Sprite* image, Vector2 position, Uint32 width, Uint32 height);
-
-	void Draw();
+	void DrawSpriteImage(Sprite* image, Vector2 position, Uint32 width, Uint32 height);
 };

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 
+
 int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 	if (SDL_Init(flags) < 0){
 		std::cout << "SDL failed to initialize!" << SDL_GetError() << std::endl;
@@ -24,16 +25,10 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 		return -1;
 	}
 
-	surface = SDL_GetWindowSurface(window);
-
-	if (SDL_UpdateWindowSurface(window) < 0) {
-		std::cout << "Failed to update window surface!" << std::endl;
-	}
-
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 	if (!renderer) {
-		std::cout << "Could not get surface from SDL_Window" << std::endl;
+		std::cout << "Could not create renderer from SDL_Window" << std::endl;
 		return -1;
 	}
 
@@ -45,7 +40,6 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 Graphics::Graphics() {
 	renderer = NULL;
 	window = NULL;
-	surface = NULL;
 
 	lastUpdateTime = 0;
 	deltaTime = 0;
@@ -93,6 +87,7 @@ void Graphics::SetCurrentUpdateTime()
 	currentUpdateTime = SDL_GetTicks();
 }
 
-SDL_Renderer* Graphics::GetRenderer() {
+SDL_Renderer* Graphics::GetRenderer()
+{
 	return renderer;
 }
