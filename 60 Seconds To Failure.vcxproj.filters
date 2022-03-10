@@ -27,7 +27,25 @@
     <ClCompile Include="source\sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vectortypes.cpp">
+    <ClCompile Include="source\vectortypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\actor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\gamearea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\gameworld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,6 +57,24 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\vectortypes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\animation.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\entity.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\player.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gamearea.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gameworld.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\actor.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

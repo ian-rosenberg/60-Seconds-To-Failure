@@ -1,0 +1,5 @@
+﻿  gameworld.cpp
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\graphics.h(16,33): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\graphics.h(20,55): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\gameworld.cpp(58,66): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  60 Seconds To Failure.vcxproj -> C:\Users\Ian\source\repos\60-Seconds-To-Failure\x64\Debug\60 Seconds To Failure.exe

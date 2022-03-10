@@ -1,2 +1,2 @@
-#TargetFrameworkVersion=v4.0:PlatformToolSet=v142:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit:WindowsTargetPlatformVersion=10.0
-Debug|Win32|D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\|
+PlatformToolSet=v143:VCToolArchitecture=Native32Bit:VCToolsVersion=14.30.30705:TargetPlatformVersion=10.0.19041.0:
+Debug|Win32|C:\Users\Ian\source\repos\60-Seconds-To-Failure\|

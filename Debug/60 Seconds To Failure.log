@@ -1,2 +1,92 @@
-﻿  game.cpp
-  60 Seconds To Failure.vcxproj -> D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\Debug\60 Seconds To Failure.exe
+﻿  actor.cpp
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\actor.cpp(9,6): warning C4101: 'j': unreferenced local variable
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\actor.cpp(125,16): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\actor.cpp(210,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  animation.cpp
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\animation.cpp(37,26): warning C4018: '>=': signed/unsigned mismatch
+  entity.cpp
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\entity.cpp(37,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\entity.cpp(50,20): warning C4018: '<': signed/unsigned mismatch
+  game.cpp
+  graphics.cpp
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\graphics.cpp(47,5): warning C4305: 'argument': truncation from 'unsigned int' to 'Uint8'
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\graphics.cpp(47,17): warning C4309: 'argument': truncation of constant value
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\graphics.cpp(81,21): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  player.cpp
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(67,27): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(70,27): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(73,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(76,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(80,50): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(80,27): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(84,27): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(87,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(94,27): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(97,27): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(100,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(103,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(129,27): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(132,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(158,31): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(175,37): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(174,57): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(190,36): warning C4244: 'argument': conversion from 'float' to 'Uint32', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(156,10): warning C4101: 'centerScalePoint': unreferenced local variable
+  sprite.cpp
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\sprite.cpp(105,3): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\sprite.cpp(109,3): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\sprite.cpp(110,21): warning C4244: '*=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\sprite.cpp(111,21): warning C4244: '*=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\sprite.cpp(115,3): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\sprite.cpp(134,14): warning C4244: 'argument': conversion from 'double' to 'Uint8', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\sprite.cpp(133,14): warning C4244: 'argument': conversion from 'double' to 'Uint8', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\sprite.cpp(132,14): warning C4244: 'argument': conversion from 'double' to 'Uint8', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\sprite.cpp(137,14): warning C4244: 'argument': conversion from 'double' to 'Uint8', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\sprite.cpp(146,1): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  vectortypes.cpp
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(45,16): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(50,16): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(55,16): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(60,23): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(65,35): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(70,47): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(277,9): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(281,40): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(307,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(312,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(317,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(388,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(389,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(390,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(392,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(393,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(394,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(396,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(397,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(398,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(412,21): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(413,21): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(414,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(415,21): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(430,19): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(446,19): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(462,19): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(479,22): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(480,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(481,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(482,22): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(483,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(484,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(485,22): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(486,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(487,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(511,31): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(511,26): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(524,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(525,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(543,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(553,9): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(561,9): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\vectortypes.cpp(570,9): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
+  60 Seconds To Failure.vcxproj -> C:\Users\Ian\source\repos\60-Seconds-To-Failure\Debug\60 Seconds To Failure.exe

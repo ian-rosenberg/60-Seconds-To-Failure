@@ -1,16 +1,16 @@
-#include "graphics.h"
-#include "sprite.h"
+#include <graphics.h>
+#include <gameworld.h>
 
 int main(int argc, char* argv[]) {
-	const char* testImage = "images/bobby.png";
+	//const char* testImage = "images/bobby.png";
 
 	SDL_Event input;
 
 	Uint8 quit = 0;
 
 	Graphics* graphics = new Graphics();
-	SpriteManager* spriteManager = new SpriteManager(graphics->GetRenderer());
-	spriteManager->LoadSprite((char*)testImage);
+	GameWorld* gameWorld = new GameWorld(graphics->GetRenderer());
+
 
 	SDL_PollEvent(&input);
 
@@ -26,8 +26,8 @@ int main(int argc, char* argv[]) {
 			}
 
 			SDL_RenderClear(graphics->GetRenderer());
-
-			spriteManager->Draw();
+						
+			gameWorld->Update();
 
 			graphics->NextFrame();
 		}
@@ -35,5 +35,7 @@ int main(int argc, char* argv[]) {
 
 	delete graphics;
 
-	return 0;
+	delete gameWorld;
+
+	return EXIT_SUCCESS;
 }
