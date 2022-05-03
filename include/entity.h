@@ -1,8 +1,9 @@
 #pragma once
 
 #include <vector>
-#include <box2d/b2_body.h>
+#include <box2d/box2d.h>
 #include <actor.h>
+#include <debugdraw.h>
 
 class Entity: public Actor
 {
@@ -10,11 +11,14 @@ protected:
 	int						id;
 
 	b2Body*					body;
+	b2Fixture*				jumpTrigger;
+
 	b2Vec2					worldDimensions;
 
 	State					logicalState; // Same enum as used for animations, used here for logic of those states
 
 	SDL_Rect			    srcRect;
+	Vector2					screenPosition;
 
 	Vector2					velocity;
 	Vector2					position;
@@ -32,12 +36,14 @@ protected:
 	float					cooldown;
 	int						grounded;
 
-	float					jumpCool;
-
 	Uint16					energy;
 	Uint16					maxEnergy;
 
 	float					maxSpeed;
+
+	//Debug Drawing, null if not enabled
+	DebugDraw				*debugDraw;
+	SDL_Rect			    debugRect;
 
 public:
 	Entity();
@@ -64,6 +70,8 @@ public:
 	*/
 	Animation* GetAnimationByName(const char* name);
 
+	void SetJumpTrigger(b2Fixture* f);
+
 	void SetVelocity(float x, float y);
 
 	void SetLogicalState(State state);
@@ -81,6 +89,18 @@ public:
 	inline b2Vec2 GetWorldDimensions() { return worldDimensions; }
 
 	void SetWorldDimensions(b2Vec2 dim);
+
+	inline Vector2 GetDrawPosition() { return position; }
+
+	inline void EnableDebugDraw(DebugDraw* ddPtr) { debugDraw = ddPtr; }
+
+	inline Uint8 GetDebugDrawEnabled() { return debugDraw!=NULL;}
+
+	inline DebugDraw* GetDebugDraw() { return debugDraw;}
+	
+	inline Vector2 GetScreenPosition() { return screenPosition; }
+
+	void UpdateScreenPosition();
 };
 
 class EntityManager {
@@ -110,4 +130,6 @@ public:
 	* @brief Let all managed entities think
 	*/
 	void EntityThinkAll();
+
+	void SetDebugDrawActive();
 };

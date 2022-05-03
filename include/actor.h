@@ -67,4 +67,6 @@ public:
 	std::vector<Animation*>* GetAnimations();
 
 	void SetAnimation(Animation* anim);
+
+	SDL_Renderer* GetRenderer() { return renderer; }
 };

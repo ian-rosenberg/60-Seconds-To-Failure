@@ -130,7 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="source\actor.cpp" />
     <ClCompile Include="source\animation.cpp" />
+    <ClCompile Include="source\debugdraw.cpp" />
     <ClCompile Include="source\entity.cpp" />
     <ClCompile Include="source\game.cpp" />
     <ClCompile Include="source\gamearea.cpp" />
@@ -171,6 +172,7 @@
   <ItemGroup>
     <ClInclude Include="include\actor.h" />
     <ClInclude Include="include\animation.h" />
+    <ClInclude Include="include\debugdraw.h" />
     <ClInclude Include="include\entity.h" />
     <ClInclude Include="include\gamearea.h" />
     <ClInclude Include="include\gameworld.h" />

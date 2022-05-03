@@ -9,7 +9,7 @@ Player::Player(SDL_Renderer* ren)
 	keys = 0;
 	controller = NULL;
 	sensitivity = 0;
-	maxSpeed = 30;
+	maxSpeed = 100;
 	dimensions = { 0,0,0 };
 	enteredFrom = { 0,0 };
 	axisLeftXLock = 0; 
@@ -28,6 +28,7 @@ Player::Player(SDL_Renderer* ren)
 	CalculateAverageActorDimensions();
 	SetWorldDimensions(b2Vec2(avgDim.x * PIX_TO_MET, avgDim.y * PIX_TO_MET));
 	currentAnimation = GetAnimationByName("idle");
+	grounded = true;
 }
 
 void Player::Think()
@@ -109,13 +110,16 @@ void Player::Think()
 		{
 			SetVelocity(maxSpeed, 0);
 		}
-		if (keys[SDL_SCANCODE_W])
+		if (keys[SDL_SCANCODE_W] && grounded)
 		{
-			SetVelocity(0, -maxSpeed);
+			//SetVelocity(0, -maxSpeed);
+			body->ApplyLinearImpulse(b2Vec2(0, -7500), body->GetPosition(), true);
+			grounded = false;
 		}
 		else if (keys[SDL_SCANCODE_S])
 		{
-			SetVelocity(0, maxSpeed);
+			//SetVelocity(0, maxSpeed);
+		
 		}
 		else if (keys[SDL_SCANCODE_E]) {
 			punching = true;
@@ -176,7 +180,7 @@ void Player::Draw()
 	//vector2d_sub(resultPos, position, GetCameraPosition());
 
 	currentSprite->Draw(currentSprite,
-		position,
+		screenPosition,
 		&scale,
 		&scaleCenter,
 		&rotation,
@@ -197,9 +201,8 @@ void Player::Draw()
 
 void Player::Update()
 {
-	//Vector2 tilemapDimensions = vector2(GetCurrentTileMap()->boundingBox.w, GetCurrentTileMap()->boundingBox.h);
 	b2Vec2 worldPos = body->GetPosition();
-
+	
 	if (!this)
 	{
 		return;
@@ -239,13 +242,9 @@ void Player::Update()
 	//position.x += velocity.x;
 	//position.y += velocity.y;
 
-	srcRect.w = srcRect.w * PIX_TO_MET;
-	srcRect.h = srcRect.h * PIX_TO_MET;
-	position.x = ((SCALED_WIDTH / 2.0f) + worldPos.x) * MET_TO_PIX - worldDimensions.x / 2;
-	position.y = ((SCALED_HEIGHT / 2.0f) + worldPos.y) * MET_TO_PIX - worldDimensions.y / 2;
-
 	std::cout << "World Position: " << worldPos.x << "," << worldPos.y << std::endl;
-	std::cout << "Draw Position: " << position.x << "," << position.y << std::endl;
+	std::cout << "Draw Position: " << screenPosition.x << "," << screenPosition.y << std::endl;
+	std::cout << "X Velocity " << body->GetLinearVelocity().x << std::endl;
 
 	rotation.z = body->GetAngle() * GF2D_RADTODEG;
 

@@ -9,7 +9,9 @@
 
 class GameArea {
 private:
-	int id;
+	int							id;
+
+	SDL_Renderer*				ren;
 
 	Player*						player;
 
@@ -34,7 +36,7 @@ private:
 	const int32					positionIterations = 2;
 
 public:
-	GameArea(int ID, b2Vec2 grav);
+	GameArea(int ID, b2Vec2 grav, SDL_Renderer* r);
 
 	~GameArea();
 
@@ -45,4 +47,6 @@ public:
 	void AddEntity(Entity* e);
 
 	void SetPlayer(Player* p);
+
+	inline EntityManager* GetEntityManager() { return entityManager; }
 };

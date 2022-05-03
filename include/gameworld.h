@@ -1,6 +1,7 @@
 #pragma once
 #include <gamearea.h>
 #include <player.h>
+#include <debugdraw.h>
 
 class GameWorld {
 private:
@@ -17,6 +18,8 @@ public:
 	GameWorld(SDL_Renderer* ren);
 
 	~GameWorld();
+
+	void EnableDebugDraw();
 		
 	void Update();
 

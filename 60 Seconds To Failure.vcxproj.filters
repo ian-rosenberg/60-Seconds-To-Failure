@@ -48,6 +48,9 @@
     <ClCompile Include="source\gameworld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\debugdraw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\graphics.h">
@@ -75,6 +78,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\actor.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\debugdraw.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,6 +6,8 @@ Entity::Entity()
 	logicalState = State::State_Idle;
 	worldDimensions = {};
 	srcRect = { 0,0,0,0 };
+	screenPosition = vector2(0, 0);
+	debugRect = { 0,0,0,0 };
 	velocity = { 0,0 };
 	position = { 0,0 };
 	scale = { 0,0 };
@@ -17,12 +19,12 @@ Entity::Entity()
 	health = 0;
 	cooldown = 0;
 	grounded = 0;
-	jumpCool = 0;
 	energy = 0;
 	maxEnergy = 0;
 	maxSpeed = 0;
 	dead = 0;
 	body = NULL;
+	jumpTrigger = NULL;
 }
 
 Entity::~Entity()
@@ -40,10 +42,9 @@ Entity::~Entity()
 	
 	if (currentSprite)
 		currentSprite = NULL;
-
+	 
 	renderer = NULL;
 }
-
 void Entity::SetAnimationByName(const char* name)
 {
 	std::vector<Animation*>* animations = GetAnimations();
@@ -55,6 +56,10 @@ void Entity::SetAnimationByName(const char* name)
 			return;
 		}
 	}
+}
+
+void Entity::SetJumpTrigger(b2Fixture* f) {
+	jumpTrigger = f;
 }
 
 Animation* Entity::GetAnimationByName(const char* name)
@@ -76,8 +81,8 @@ void Entity::SetVelocity(float x, float y)
 	velocity = { x,y };
 	b2Vec2 v = b2Vec2(velocity.x, velocity.y);
 
-	if (x != 0 || y != 0 && abs(body->GetLinearVelocity().x) < maxSpeed) {
-		body->SetLinearVelocity(v);
+	if ((x != 0 || y != 0) && abs(body->GetLinearVelocity().x) < maxSpeed) {
+		body->ApplyForceToCenter(v, true);
 	}
 }
 
@@ -111,6 +116,24 @@ void Entity::SetBody(b2Body* b) {
 
 void Entity::SetWorldDimensions(b2Vec2 dim) {
 	worldDimensions.Set(dim.x, dim.y);
+}
+
+void Entity::UpdateScreenPosition()
+{
+	b2Vec2 worldPos;
+
+	if (body)
+		worldPos = body->GetPosition();
+	else{
+		screenPosition = GetDrawPosition();
+		return;
+	}
+
+	debugRect.w = srcRect.w * PIX_TO_MET;
+	debugRect.h = srcRect.h * PIX_TO_MET;
+
+	screenPosition.x = debugRect.x = ((SCALED_WIDTH / 2.0f) + worldPos.x) * MET_TO_PIX - worldDimensions.x / 2;
+	screenPosition.y = debugRect.y = ((SCALED_HEIGHT / 2.0f) + worldPos.y) * MET_TO_PIX - worldDimensions.y / 2;
 }
 
 
@@ -153,11 +176,23 @@ Entity* EntityManager::DeleteEntity(Entity* ent)
 
 void EntityManager::EntityDrawAll()
 {
+	SDL_Rect r;
+	Vector2 p, dim;
+
 	for (std::vector<Entity*>::iterator it = entities->begin();
 		it != entities->end();
 		it++)
 	{
+
 		(*it)->Draw();
+
+		//Debug Drawing
+		if ((*it)->GetDebugDrawEnabled()) {
+			p = (*it)->GetScreenPosition();
+			dim = (*it)->GetAverageActorDimensions();
+			r = { (int)floor(p.x-(dim.x/2)), (int)floor(p.y-(dim.y/2)), (int)dim.x, (int)dim.y };
+			(*it)->GetDebugDraw()->DrawRect(&r); 
+		}
 	}
 }
 
@@ -168,6 +203,7 @@ void EntityManager::EntityUpdateAll()
 		it++)
 	{
 		(*it)->Update();
+		(*it)->UpdateScreenPosition();
 	}
 }
 
@@ -178,6 +214,18 @@ void EntityManager::EntityThinkAll()
 		it++)
 	{
 		(*it)->Think();
+	}
+}
+
+void EntityManager::SetDebugDrawActive()
+{
+	DebugDraw* dd = new DebugDraw((*entities->begin())->GetRenderer());
+
+	for (std::vector<Entity*>::iterator it = entities->begin();
+		it != entities->end();
+		it++)
+	{
+		(*it)->EnableDebugDraw(dd);
 	}
 }
 

@@ -5,7 +5,7 @@
 
 #define TARGET_FRAME_RATE 60
 
-const float MET_TO_PIX = 5.0f;
+const float MET_TO_PIX = 25.0f;
 const float PIX_TO_MET = 1/MET_TO_PIX;
 const float WIDTH = 1280.0f;
 const float HEIGHT = 720.0f;
