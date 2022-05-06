@@ -1,12 +1,5 @@
-﻿  entity.cpp
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\graphics.h(16,33): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\graphics.h(20,55): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\entity.cpp(82,40): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\entity.cpp(82,28): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\entity.cpp(132,26): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\entity.cpp(133,26): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\entity.cpp(135,85): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\entity.cpp(136,86): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\entity.cpp(159,29): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\entity.cpp(175): warning C4715: 'EntityManager::DeleteEntity': not all control paths return a value
+﻿  gameworld.cpp
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\graphics.h(18,33): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\graphics.h(22,55): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\gameworld.cpp(77,76): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   60 Seconds To Failure.vcxproj -> C:\Users\Ian\source\repos\60-Seconds-To-Failure\x64\Debug\60 Seconds To Failure.exe

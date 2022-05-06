@@ -5,13 +5,15 @@
 
 #define TARGET_FRAME_RATE 60
 
-const float MET_TO_PIX = 25.0f;
-const float PIX_TO_MET = 1/MET_TO_PIX;
 const float WIDTH = 1280.0f;
 const float HEIGHT = 720.0f;
 
-const float SCALED_WIDTH = WIDTH / MET_TO_PIX;
-const float SCALED_HEIGHT = HEIGHT / MET_TO_PIX;
+const float MET_TO_PIX = 20.0f;
+const float PIX_TO_MET = 1/MET_TO_PIX;
+
+
+const float SCALED_WIDTH = WIDTH * PIX_TO_MET;
+const float SCALED_HEIGHT = HEIGHT * PIX_TO_MET;
 
 const float RAD2DEG = 180 / M_PI;
 

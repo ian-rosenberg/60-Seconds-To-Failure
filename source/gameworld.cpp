@@ -13,15 +13,14 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 
 		b2PolygonShape shape;
 		shape.SetAsBox(player->GetWorldDimensions().x / 2, player->GetWorldDimensions().y / 2);
-
 		player->GetBody()->CreateFixture(&shape, 100.0f);
 
 		b2EdgeShape edge;
 		b2Vec2 v1, v2, v3, v4;
-		v1.Set(player->GetWorldDimensions().x / -2, player->GetWorldDimensions().y / 2);
-		v2.Set(player->GetWorldDimensions().x / -2, player->GetWorldDimensions().y);
-		v3.Set(player->GetWorldDimensions().x / 2, player->GetWorldDimensions().y);
-		v4.Set(player->GetWorldDimensions().x / 2, player->GetWorldDimensions().y/2);
+		v1.Set(player->GetWorldDimensions().x / -2, -player->GetWorldDimensions().y);
+		v2.Set(player->GetWorldDimensions().x / -2, player->GetWorldDimensions().y/2);
+		v3.Set(player->GetWorldDimensions().x / 2, player->GetWorldDimensions().y/2);
+		v4.Set(player->GetWorldDimensions().x / 2, -player->GetWorldDimensions().y);
 		edge.SetOneSided(v1, v2, v3, v4);
 
 		b2FixtureDef jd;
@@ -46,8 +45,7 @@ GameWorld::GameWorld(SDL_Renderer* ren) {
 	}
 	
 	areas = new std::vector<GameArea*>();
-	player = new Player(ren);
-	renderer = ren;
+	player = new Player(renderer);
 
 	InitTestArea();
 }
@@ -68,7 +66,6 @@ GameWorld::~GameWorld() {
 void GameWorld::EnableDebugDraw() {
 	for (auto itArea = areas->begin(); itArea != areas->end(); itArea++) {
 		EntityManager* em = (*itArea)->GetEntityManager();
-		em->SetDebugDrawActive();
 	}
 }
 

@@ -49,5 +49,7 @@ public:
 	int Damage(int amount, Entity* source);						/**<when this entity takes damage*/
 
 	void Die();													/**<when this entity dies*/
+
+	void UpdateScreenPosition();
 };
 

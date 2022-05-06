@@ -199,6 +199,19 @@ void Player::Draw()
 	}
 }
 
+void Player::UpdateScreenPosition()
+{
+	b2Vec2 worldPos = body->GetPosition();
+
+	debugRect.w = avgDim.x;
+	debugRect.h = avgDim.y;
+
+	screenPosition.x = ((SCALED_WIDTH / 2.0f) + worldPos.x) * MET_TO_PIX;
+	screenPosition.y = ((SCALED_HEIGHT / 2.0f) + worldPos.y) * MET_TO_PIX;
+	debugRect.x = screenPosition.x - avgDim.x/2;
+	debugRect.y = screenPosition.y - avgDim.y/2;
+}
+
 void Player::Update()
 {
 	b2Vec2 worldPos = body->GetPosition();
@@ -242,9 +255,10 @@ void Player::Update()
 	//position.x += velocity.x;
 	//position.y += velocity.y;
 
-	std::cout << "World Position: " << worldPos.x << "," << worldPos.y << std::endl;
-	std::cout << "Draw Position: " << screenPosition.x << "," << screenPosition.y << std::endl;
-	std::cout << "X Velocity " << body->GetLinearVelocity().x << std::endl;
+	//std::cout << "World Position: " << worldPos.x << "," << worldPos.y << std::endl;
+	//std::cout << "Draw Position: " << screenPosition.x << "," << screenPosition.y << std::endl;
+	//std::cout << "Debug Rect: " << debugRect.x << "," << debugRect.y << "," << debugRect.w << "," << debugRect.h << std::endl;
+	//std::cout << "X Velocity " << body->GetLinearVelocity().x << std::endl;
 
 	rotation.z = body->GetAngle() * GF2D_RADTODEG;
 

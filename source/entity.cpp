@@ -5,7 +5,6 @@ Entity::Entity()
 	id = -1;
 	logicalState = State::State_Idle;
 	worldDimensions = {};
-	srcRect = { 0,0,0,0 };
 	screenPosition = vector2(0, 0);
 	debugRect = { 0,0,0,0 };
 	velocity = { 0,0 };
@@ -36,6 +35,9 @@ Entity::~Entity()
 			delete anim;
 		}
 	}
+
+	if (debugDraw)
+		delete debugDraw;
 
 	if (currentAnimation)
 		currentAnimation = NULL;
@@ -118,28 +120,15 @@ void Entity::SetWorldDimensions(b2Vec2 dim) {
 	worldDimensions.Set(dim.x, dim.y);
 }
 
-void Entity::UpdateScreenPosition()
-{
-	b2Vec2 worldPos;
-
-	if (body)
-		worldPos = body->GetPosition();
-	else{
-		screenPosition = GetDrawPosition();
-		return;
-	}
-
-	debugRect.w = srcRect.w * PIX_TO_MET;
-	debugRect.h = srcRect.h * PIX_TO_MET;
-
-	screenPosition.x = debugRect.x = ((SCALED_WIDTH / 2.0f) + worldPos.x) * MET_TO_PIX - worldDimensions.x / 2;
-	screenPosition.y = debugRect.y = ((SCALED_HEIGHT / 2.0f) + worldPos.y) * MET_TO_PIX - worldDimensions.y / 2;
+EntityManager::EntityManager() {
+	entities = new std::vector<Entity*>();
+	debugDraw = 0;
 }
 
-
-EntityManager::EntityManager()
+EntityManager::EntityManager(Uint8 debugFlag)
 {
 	entities = new std::vector<Entity*>();
+	debugDraw = debugFlag;
 }
 
 EntityManager::~EntityManager()
@@ -155,6 +144,12 @@ EntityManager::~EntityManager()
 
 void EntityManager::AddEntity(Entity* ent)
 {
+	if (debugDraw) {
+		ent->EnableDebugDraw(new DebugDraw(ent->GetRenderer(), ent->GetActorName()));
+		ent->GetDebugDraw()->SetBodyReference(ent->GetBody());
+		ent->GetDebugDraw()->SetWorldDimensions(ent->GetWorldDimensions());
+	}
+
 	entities->push_back(ent);
 	ent->SetId(entities->size());
 }
@@ -179,6 +174,7 @@ void EntityManager::EntityDrawAll()
 	SDL_Rect r;
 	Vector2 p, dim;
 
+
 	for (std::vector<Entity*>::iterator it = entities->begin();
 		it != entities->end();
 		it++)
@@ -188,10 +184,23 @@ void EntityManager::EntityDrawAll()
 
 		//Debug Drawing
 		if ((*it)->GetDebugDrawEnabled()) {
-			p = (*it)->GetScreenPosition();
-			dim = (*it)->GetAverageActorDimensions();
-			r = { (int)floor(p.x-(dim.x/2)), (int)floor(p.y-(dim.y/2)), (int)dim.x, (int)dim.y };
-			(*it)->GetDebugDraw()->DrawRect(&r); 
+			Vector2 drawPos = (*it)->GetScreenPosition();
+			//(*it)->GetDebugDraw()->UpdateBodyPosition(b2Vec2(drawPos.x, drawPos.y));
+
+			for (b2Fixture* f = (*it)->GetBody()->GetFixtureList(); f; f = f->GetNext()) {
+				b2Shape::Type shapeType = f->GetType();
+
+				if (shapeType == b2Shape::e_polygon) {
+					b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
+					(*it)->GetDebugDraw()->DrawPolygon(poly->m_vertices, poly->m_count, b2Color());
+				}
+
+				else if (shapeType == b2Shape::e_edge) {
+					b2EdgeShape* edge = (b2EdgeShape*)f->GetShape();
+
+					(*it)->GetDebugDraw()->DrawSegment(edge->m_vertex1, edge->m_vertex2, b2Color(0, 1.0f, 0));
+				}
+			}
 		}
 	}
 }
@@ -214,18 +223,6 @@ void EntityManager::EntityThinkAll()
 		it++)
 	{
 		(*it)->Think();
-	}
-}
-
-void EntityManager::SetDebugDrawActive()
-{
-	DebugDraw* dd = new DebugDraw((*entities->begin())->GetRenderer());
-
-	for (std::vector<Entity*>::iterator it = entities->begin();
-		it != entities->end();
-		it++)
-	{
-		(*it)->EnableDebugDraw(dd);
 	}
 }
 

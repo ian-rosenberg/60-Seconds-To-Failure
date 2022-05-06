@@ -17,7 +17,6 @@ protected:
 
 	State					logicalState; // Same enum as used for animations, used here for logic of those states
 
-	SDL_Rect			    srcRect;
 	Vector2					screenPosition;
 
 	Vector2					velocity;
@@ -48,7 +47,7 @@ protected:
 public:
 	Entity();
 
-	virtual ~Entity();
+	~Entity();
 
 	virtual void Draw() = 0;											/**<called after system entity drawing for custom effects*/
 	virtual void Think() = 0;											/**<called before system updates to make decisions / hand input*/
@@ -57,7 +56,8 @@ public:
 	virtual void Activate(Entity* activator) = 0;						/**<some entities can be activated by others, doors opened, levels, etc*/
 	virtual int Damage(int amount, Entity* source) = 0;					/**<when this entity takes damage*/
 	virtual void Die() = 0;
-
+	virtual void UpdateScreenPosition() = 0;
+	
 	/**
 	* @brief Set this actor's animation by the name of the animation
 	* @param name Animation to set for actor
@@ -98,17 +98,22 @@ public:
 
 	inline DebugDraw* GetDebugDraw() { return debugDraw;}
 	
+	inline SDL_Rect* GetDebugRect() { return &debugRect; }
+
 	inline Vector2 GetScreenPosition() { return screenPosition; }
 
-	void UpdateScreenPosition();
+	inline const char* GetActorName() { return name.c_str(); }
 };
 
 class EntityManager {
 private:
-	std::vector<Entity*>* entities;
+	std::vector<Entity*>	*entities; 
+	Uint8					debugDraw;
 
 public:
 	EntityManager();
+
+	EntityManager(Uint8 debug);
 
 	~EntityManager();
 
@@ -130,6 +135,4 @@ public:
 	* @brief Let all managed entities think
 	*/
 	void EntityThinkAll();
-
-	void SetDebugDrawActive();
 };

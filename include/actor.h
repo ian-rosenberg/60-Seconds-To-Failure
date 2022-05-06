@@ -36,6 +36,8 @@ public:
 
 	virtual ~Actor() = 0;
 
+	inline SDL_Renderer* GetRenderer() { return renderer; }
+
 	/**
 	* @brief Load an actor from file
 	* @param actor The actor to load into
@@ -68,5 +70,5 @@ public:
 
 	void SetAnimation(Animation* anim);
 
-	SDL_Renderer* GetRenderer() { return renderer; }
+	inline void SetActorName(const char* n) { name = n; }
 };
