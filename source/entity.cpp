@@ -3,12 +3,15 @@
 Entity::Entity()
 {
 	id = -1;
+	gravityEnabled = 0;
+	dampening = 1.0f;
 	logicalState = State::State_Idle;
 	worldDimensions = {};
-	screenPosition = vector2(0, 0);
+	newDrawPosition = vector2(0, 0);
 	debugRect = { 0,0,0,0 };
 	velocity = { 0,0 };
-	position = { 0,0 };
+	prevDrawPosition = newDrawPosition = { 0,0 };
+	prevBodyPosition = newBodyPosition = { 0,0 };
 	scale = { 0,0 };
 	scaleCenter = { 0,0 };
 	rotation = { 0,0,0 };
@@ -16,14 +19,17 @@ Entity::Entity()
 	facing = { 0,0 };
 	maxHealth = 0;
 	health = 0;
-	cooldown = 0;
-	grounded = 0;
+	jumpTimer = 0.0f;
+	grounded = false;
 	energy = 0;
 	maxEnergy = 0;
 	maxSpeed = 0;
 	dead = 0;
+	jumpForce = 0;
 	body = NULL;
 	jumpTrigger = NULL;
+	parentEntity = NULL;
+	debugDraw = NULL;
 }
 
 Entity::~Entity()
@@ -44,13 +50,12 @@ Entity::~Entity()
 	
 	if (currentSprite)
 		currentSprite = NULL;
-	 
-	renderer = NULL;
 }
 void Entity::SetAnimationByName(const char* name)
 {
 	std::vector<Animation*>* animations = GetAnimations();
 
+	
 	for (int i = 0; i < animations->size(); i++)
 	{
 		if (strcmp(animations->at(i)->GetName().c_str(), name) == 0) {
@@ -67,7 +72,7 @@ void Entity::SetJumpTrigger(b2Fixture* f) {
 Animation* Entity::GetAnimationByName(const char* name)
 {
 	std::vector<Animation*>* animations = GetAnimations();
-	
+		
 	for (int i = 0; i < animations->size(); i++)
 	{
 		if (strcmp(animations->at(i)->GetName().c_str(), name) == 0) {
@@ -78,14 +83,20 @@ Animation* Entity::GetAnimationByName(const char* name)
 	return NULL;
 }
 
+void Entity::SetVelocity(float x)
+{
+	velocity = { x,body->GetLinearVelocity().y};
+	b2Vec2 v = b2Vec2(velocity.x, velocity.y);
+	
+	body->SetLinearVelocity(v);
+}
+
 void Entity::SetVelocity(float x, float y)
 {
-	velocity = { x,y };
+	velocity = { x, y };
 	b2Vec2 v = b2Vec2(velocity.x, velocity.y);
 
-	if ((x != 0 || y != 0) && abs(body->GetLinearVelocity().x) < maxSpeed) {
-		body->ApplyForceToCenter(v, true);
-	}
+	body->SetLinearVelocity(v);
 }
 
 void Entity::RotateTranslate(b2Vec2& vector, const b2Vec2& center, float angle)
@@ -120,15 +131,44 @@ void Entity::SetWorldDimensions(b2Vec2 dim) {
 	worldDimensions.Set(dim.x, dim.y);
 }
 
+void Entity::Jump()
+{
+	if (!jumpTrigger)
+		return;
+
+	if (grounded && jumpTimer <= 0) {
+		body->ApplyLinearImpulse(b2Vec2(0, -jumpForce), body->GetPosition(), true);
+		ToggleGrounded(false);
+		jumpTimer = jumpCooldown;
+	}
+}
+
+void Entity::ToggleGrounded(bool flag)
+{
+	if (flag)
+		debugDraw->SetCollisionColor(1);
+	else
+		debugDraw->SetCollisionColor(0);
+
+	grounded = flag;
+}
+
 EntityManager::EntityManager() {
 	entities = new std::vector<Entity*>();
 	debugDraw = 0;
 }
 
-EntityManager::EntityManager(Uint8 debugFlag)
+EntityManager::EntityManager(std::shared_ptr<InputDriver> driver) {
+	entities = new std::vector<Entity*>();
+	debugDraw = 0;
+	inputDriver = driver;
+}
+
+EntityManager::EntityManager(std::shared_ptr<InputDriver> driver, Uint8 debugFlag)
 {
 	entities = new std::vector<Entity*>();
 	debugDraw = debugFlag;
+	inputDriver = driver;
 }
 
 EntityManager::~EntityManager()
@@ -148,6 +188,13 @@ void EntityManager::AddEntity(Entity* ent)
 		ent->EnableDebugDraw(new DebugDraw(ent->GetRenderer(), ent->GetActorName()));
 		ent->GetDebugDraw()->SetBodyReference(ent->GetBody());
 		ent->GetDebugDraw()->SetWorldDimensions(ent->GetWorldDimensions());
+		if(ent->GetJumpTrigger())
+			ent->GetDebugDraw()->SetTriggerFixture(ent->GetJumpTrigger());
+
+	}
+
+	if (!ent->GetInputDriverReference()) {
+		ent->SetInputDriverForEntity(inputDriver);
 	}
 
 	entities->push_back(ent);
@@ -169,7 +216,7 @@ Entity* EntityManager::DeleteEntity(Entity* ent)
 	}
 }
 
-void EntityManager::EntityDrawAll()
+void EntityManager::EntityDrawAll(double alpha)
 {
 	SDL_Rect r;
 	Vector2 p, dim;
@@ -180,39 +227,53 @@ void EntityManager::EntityDrawAll()
 		it++)
 	{
 
+		(*it)->UpdateScreenPosition(alpha);
 		(*it)->Draw();
 
 		//Debug Drawing
 		if ((*it)->GetDebugDrawEnabled()) {
-			Vector2 drawPos = (*it)->GetScreenPosition();
-			//(*it)->GetDebugDraw()->UpdateBodyPosition(b2Vec2(drawPos.x, drawPos.y));
-
-			for (b2Fixture* f = (*it)->GetBody()->GetFixtureList(); f; f = f->GetNext()) {
-				b2Shape::Type shapeType = f->GetType();
-
-				if (shapeType == b2Shape::e_polygon) {
-					b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
-					(*it)->GetDebugDraw()->DrawPolygon(poly->m_vertices, poly->m_count, b2Color());
-				}
-
-				else if (shapeType == b2Shape::e_edge) {
-					b2EdgeShape* edge = (b2EdgeShape*)f->GetShape();
-
-					(*it)->GetDebugDraw()->DrawSegment(edge->m_vertex1, edge->m_vertex2, b2Color(0, 1.0f, 0));
-				}
-			}
+			DebugDrawing(*it);
 		}
 	}
 }
 
-void EntityManager::EntityUpdateAll()
+void EntityManager::DebugDrawing(Entity* it)
+{
+	Vector2 drawPos = it->GetScreenPosition();
+	it->GetDebugDraw()->UpdateBodyPosition(b2Vec2(drawPos.x, drawPos.y));
+
+	for (b2Fixture* f = it->GetBody()->GetFixtureList(); f; f = f->GetNext()) {
+		b2Shape::Type shapeType = f->GetType();
+
+		if (f == it->GetJumpTrigger()) {
+			b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
+			it->GetDebugDraw()->DrawTriggerPolygon(poly->m_vertices, poly->m_count);
+			continue;
+		}
+
+
+		if (shapeType == b2Shape::e_polygon) {
+			b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
+			it->GetDebugDraw()->DrawPolygon(poly->m_vertices, poly->m_count, b2Color());
+		}
+
+		else if (shapeType == b2Shape::e_edge) {
+			b2EdgeShape* edge = (b2EdgeShape*)f->GetShape();
+
+			it->GetDebugDraw()->DrawSegment(edge->m_vertex1, edge->m_vertex2, b2Color(0, 1.0f, 0));
+		}
+	}
+}
+
+void EntityManager::EntityUpdateAll(double ticks)
 {
 	for (std::vector<Entity*>::iterator it = entities->begin();
 		it != entities->end();
 		it++)
 	{
+		if ((*it)->IsGrounded())
+			(*it)->DecrementJumpTimer(ticks);
 		(*it)->Update();
-		(*it)->UpdateScreenPosition();
 	}
 }
 

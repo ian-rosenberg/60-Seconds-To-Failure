@@ -25,7 +25,7 @@ private:
 	Bool					punching;
 
 public:
-	Player(SDL_Renderer* renderer);
+	Player(std::shared_ptr<Graphics> g);
 
 	/**
 	* @brief Handle input
@@ -50,6 +50,6 @@ public:
 
 	void Die();													/**<when this entity dies*/
 
-	void UpdateScreenPosition();
+	void UpdateScreenPosition(double alpha);
 };
 

@@ -4,45 +4,56 @@
 #include <box2d/box2d.h>
 #include <actor.h>
 #include <debugdraw.h>
+#include <inputdriver.h>
 
 class Entity: public Actor
 {
 protected:
-	int						id;
+	int								id;
 
-	b2Body*					body;
-	b2Fixture*				jumpTrigger;
+	Uint8							gravityEnabled;
 
-	b2Vec2					worldDimensions;
+	b2Body*							body;
+	b2Fixture*						jumpTrigger;
 
-	State					logicalState; // Same enum as used for animations, used here for logic of those states
+	std::shared_ptr<InputDriver>	inputDriver;
 
-	Vector2					screenPosition;
+	b2Vec2							worldDimensions;
 
-	Vector2					velocity;
-	Vector2					position;
-	Vector2					scale;												/**<scale to draw sprite at*/
-	Vector2					scaleCenter;										/**<where to scale sprite from*/
-	Vector3					rotation;											/**<how to rotate the sprite*/
-	Vector2					flip;												/**<if to flip the sprite*/
-	Vector2					facing;												/**<direction the entity is facing*/
+	State							logicalState; // Same enum as used for animations, used here for logic of those states
+		
+	Entity							*parentEntity;
 
-	Uint8					dead;												/**<when true, the entity system will delete the entity on the next update*/
+	Vector2							velocity;
+	Vector2							prevDrawPosition;
+	Vector2							newDrawPosition;
+	b2Vec2							prevBodyPosition;
+	b2Vec2							newBodyPosition;
+	Vector2							scale;												/**<scale to draw sprite at*/
+	Vector2							scaleCenter;										/**<where to scale sprite from*/
+	Vector3							rotation;											/**<how to rotate the sprite*/
+	Vector2							flip;												/**<if to flip the sprite*/
+	Vector2							facing;												/**<direction the entity is facing*/
 
-	Uint16					health;
-	Uint16					maxHealth;
+	Uint8							dead;												/**<when true, the entity system will delete the entity on the next update*/
 
-	float					cooldown;
-	int						grounded;
+	Uint16							health;
+	Uint16							maxHealth;
 
-	Uint16					energy;
-	Uint16					maxEnergy;
+	const double					jumpCooldown = 50.0;	//.5 second jump cooldown
+	double							jumpTimer;
+	float							jumpForce;
+	float							dampening;
+	bool							grounded;
+		
+	Uint16							energy;
+	Uint16							maxEnergy;
 
-	float					maxSpeed;
+	float							maxSpeed;
 
 	//Debug Drawing, null if not enabled
-	DebugDraw				*debugDraw;
-	SDL_Rect			    debugRect;
+	DebugDraw						*debugDraw;
+	SDL_Rect						debugRect;
 
 public:
 	Entity();
@@ -56,7 +67,7 @@ public:
 	virtual void Activate(Entity* activator) = 0;						/**<some entities can be activated by others, doors opened, levels, etc*/
 	virtual int Damage(int amount, Entity* source) = 0;					/**<when this entity takes damage*/
 	virtual void Die() = 0;
-	virtual void UpdateScreenPosition() = 0;
+	virtual void UpdateScreenPosition(double alpha) = 0;
 	
 	/**
 	* @brief Set this actor's animation by the name of the animation
@@ -72,8 +83,6 @@ public:
 
 	void SetJumpTrigger(b2Fixture* f);
 
-	void SetVelocity(float x, float y);
-
 	void SetLogicalState(State state);
 
 	void SetId(int newId);
@@ -84,13 +93,32 @@ public:
 
 	inline b2Body* GetBody() { return body; }
 
+	inline b2Fixture* GetJumpTrigger() { return jumpTrigger; }
+
 	void RotateTranslate(b2Vec2& vector, const b2Vec2& center, float angle);
 
 	inline b2Vec2 GetWorldDimensions() { return worldDimensions; }
 
 	void SetWorldDimensions(b2Vec2 dim);
+	
+	/** Gameplay -------------------------------------------------------------**/
+	void Jump();
+	
+	void ToggleGrounded(bool flag);
 
-	inline Vector2 GetDrawPosition() { return position; }
+	void SetVelocity(float x);
+
+	void SetVelocity(float x, float y);
+
+	inline void SetGravityEnabled(Uint8 flag) { gravityEnabled = flag; }
+
+	/** Inline Fcns -------------------------------------------------------------**/
+
+	inline void SetInputDriverForEntity(std::shared_ptr<InputDriver> driver) { inputDriver = driver != NULL ? driver: NULL; }
+
+	inline std::shared_ptr<InputDriver> GetInputDriverReference() { return inputDriver; }
+
+	inline Vector2 GetDrawPosition() { return newDrawPosition; }
 
 	inline void EnableDebugDraw(DebugDraw* ddPtr) { debugDraw = ddPtr; }
 
@@ -100,20 +128,31 @@ public:
 	
 	inline SDL_Rect* GetDebugRect() { return &debugRect; }
 
-	inline Vector2 GetScreenPosition() { return screenPosition; }
+	inline Vector2 GetScreenPosition() { return newDrawPosition; }
 
 	inline const char* GetActorName() { return name.c_str(); }
+
+	inline void DecrementJumpTimer(double ticks) { jumpTimer -= (jumpTimer > 0) ? ticks : 0; }
+
+	inline void ResetJumpTimer() { jumpTimer = 0.0f; }
+
+	inline bool IsJumpTimeReady() { return jumpTimer <= 0; }
+
+	inline bool IsGrounded() { return grounded; }
 };
 
 class EntityManager {
 private:
-	std::vector<Entity*>	*entities; 
-	Uint8					debugDraw;
+	std::vector<Entity*>			*entities; 
+	Uint8							debugDraw;
+	std::shared_ptr<InputDriver>	inputDriver;
 
 public:
 	EntityManager();
 
-	EntityManager(Uint8 debug);
+	EntityManager(std::shared_ptr<InputDriver> driver);
+
+	EntityManager(std::shared_ptr<InputDriver> driver, Uint8 debug);
 
 	~EntityManager();
 
@@ -121,18 +160,24 @@ public:
 
 	Entity* DeleteEntity(Entity* ent);
 
+	void SetInputDriver(std::shared_ptr<InputDriver> driver);
+
 	/**
 	* @brief Render all entites to screen
 	*/
-	void EntityDrawAll();
+	void EntityDrawAll(double alpha);
+
+	void DebugDrawing(Entity* it);
 
 	/**
 	* @brief Update all entites
 	*/
-	void EntityUpdateAll();
+	void EntityUpdateAll(double ticks);
 
 	/**
 	* @brief Let all managed entities think
 	*/
 	void EntityThinkAll();
+
+	void SetAlpha(double a);
 };
