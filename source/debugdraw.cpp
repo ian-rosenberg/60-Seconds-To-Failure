@@ -7,11 +7,22 @@ DebugDraw::DebugDraw(SDL_Renderer* r, const char* name) {
 	bodyPosition = b2Vec2(0, 0);
 	bodyRef = nullptr;
 	objName = name;
+	isColliding = 0;
+	dR = dB = 0;
+	dG = 255;
 }
 
 void DebugDraw::UpdateBodyPosition(b2Vec2 p)
 {
 	bodyPosition = p;
+	if (isColliding) {
+		dR = 255;
+		dG = 0;
+	}
+	else {
+		dR = 0;
+		dG = 255;
+	}
 }
 
 void DebugDraw::SetWorldDimensions(b2Vec2 dim) {
@@ -26,7 +37,6 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 
 	//std::cout << "Object: " << objName << std::endl;
 
-	
 	SDL_SetRenderDrawColor(ren, 0, 255, 0, 255);
 
 	for (int i = 0, j = 1; j < vertexCount; i++, j++) {
@@ -55,6 +65,38 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 
 	//std::cout << "Transform vertex " << t.x << "," << t.y << "\tto\t" << x2 << "," << y2 << std::endl;
 
+
+	SDL_RenderDrawLine(ren, x1, y1, x2, y2);
+
+	SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
+}
+
+void DebugDraw::DrawTriggerPolygon(const b2Vec2* vertices, int32 vertexCount)
+{
+	int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+	b2Vec2 t;
+
+	SDL_SetRenderDrawColor(ren, dR, dG, dB, 255);
+
+	for (int i = 0, j = 1; j < vertexCount; i++, j++) {
+		t = bodyRef->GetWorldPoint((*(vertices + i)));
+		x1 = ((SCALED_WIDTH / 2.0f) + t.x) * MET_TO_PIX;
+		y1 = ((SCALED_HEIGHT / 2.0f) + t.y) * MET_TO_PIX;
+
+		t = bodyRef->GetWorldPoint((*(vertices + j)));
+		x2 = ((SCALED_WIDTH / 2.0f) + t.x) * MET_TO_PIX;
+		y2 = ((SCALED_HEIGHT / 2.0f) + t.y) * MET_TO_PIX;
+
+		SDL_RenderDrawLine(ren, x1, y1, x2, y2);
+	}
+
+	x1 = x2;
+	y1 = y2;
+
+
+	t = bodyRef->GetWorldPoint(*vertices);
+	x2 = ((SCALED_WIDTH / 2.0f) + t.x) * MET_TO_PIX;
+	y2 = ((SCALED_HEIGHT / 2.0f) + t.y) * MET_TO_PIX;
 
 	SDL_RenderDrawLine(ren, x1, y1, x2, y2);
 
@@ -91,7 +133,7 @@ void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& c
 	v2.position.x = ((SCALED_WIDTH / 2.0f) + bodyRef->GetWorldPoint(p2).x) * MET_TO_PIX;
 	v2.position.y = ((SCALED_HEIGHT / 2.0f) + bodyRef->GetWorldPoint(p1).y) * MET_TO_PIX;
 
-	SDL_SetRenderDrawColor(ren, color.r, 255, color.b, 255);
+	SDL_SetRenderDrawColor(ren, dR, dG, dB, 255);
 	SDL_RenderDrawLineF(ren, v1.position.x, v1.position.y, v2.position.x, v2.position.y);
 	SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
 }

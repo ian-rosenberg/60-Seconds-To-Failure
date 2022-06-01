@@ -10,8 +10,11 @@ private:
 	SDL_Renderer* ren;
 	b2Vec2 bodyPosition;
 	b2Body* bodyRef;
+	b2Fixture* triggerFix;
 	int32 worldWidth, worldHeight;
 	std::string objName;
+	Uint8 isColliding;
+	Uint8 dR, dG, dB;
 
 public:
 
@@ -19,12 +22,16 @@ public:
 
 	void SetWorldDimensions(b2Vec2 dim);
 	void UpdateBodyPosition(b2Vec2 p);
+	void SetCollisionColor(Uint8 on) { isColliding = on; }
 
 	inline void SetBodyReference(b2Body* ref) { bodyRef = ref; }
+	inline void SetTriggerFixture(b2Fixture* ref) { triggerFix = ref; }
+	inline b2Fixture* GetTrigger() { return triggerFix; }
 	
 	// Inherited via b2Draw
 	void DrawRect(const SDL_Rect* rect); 
 	void DrawRect(const b2Vec2* vertices, int32 vertexCount);
+	void DrawTriggerPolygon(const b2Vec2* vertices, int32 vertexCount);
 
 	
 	virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override;

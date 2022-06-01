@@ -19,9 +19,9 @@ private:
 public:
 	StaticEntity();
 
-	StaticEntity(SDL_Renderer* ren);
+	StaticEntity(std::shared_ptr<Graphics> g);
 
-	StaticEntity(SDL_Renderer* ren, float w, float h);
+	StaticEntity(std::shared_ptr<Graphics> g, float w, float h);
 
 	~StaticEntity();
 
@@ -39,7 +39,7 @@ public:
 
 	void Die();													/**<when this entity dies*/
 
-	void UpdateScreenPosition();
+	void UpdateScreenPosition(double alpha);
 
 	inline void SetStaticTriggerFixture(b2Fixture* f) { boundingVolume = f; }
 };

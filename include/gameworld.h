@@ -5,9 +5,11 @@
 
 class GameWorld {
 private:
+	SDL_Event					currentEvent;
+
 	Player*						player;
 
-	SDL_Renderer*				renderer;
+	std::shared_ptr<Graphics>	graphicsPtr;
 
 	std::vector<GameArea*>*		areas;
 	GameArea*					currentArea;
@@ -15,15 +17,15 @@ private:
 	void						PlayerPhysicsInit(b2World* physicsArea);
 
 public:
-	GameWorld(SDL_Renderer* ren);
+	GameWorld();
 
 	~GameWorld();
 
+	inline std::shared_ptr<Graphics> GetGraphics() { return graphicsPtr; }
+
 	void EnableDebugDraw();
-		
-	void Update();
 
 	void InitTestArea();
 
-	void Draw();
+	bool GameLoop(double &accumulator);
 };

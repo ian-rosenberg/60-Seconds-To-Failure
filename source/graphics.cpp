@@ -40,9 +40,8 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 Graphics::Graphics() {
 	renderer = NULL;
 	window = NULL;
-	DELTA_TIME = 0.0f;
-
-	lastUpdateTime = 0;
+	currentTime = 0.0;
+	accumulator = 0.0;
 
 	if (!SDL2_Init(SDL_INIT_EVERYTHING, 1280, 720)) {
 		return;
@@ -62,28 +61,10 @@ Graphics::~Graphics() {
 	std::cout << "SDL Subsystems closed successfully!" << std::endl;
 }
 
-void Graphics::NextFrame(){
-	FrameDelay();
+void Graphics::NextFrame() {
 
+	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
-
-	lastUpdateTime = SDL_GetTicks();
-}
-
-void Graphics::FrameDelay(){
-	lastUpdateTime = SDL_GetTicks()/1000.0f;
-	DELTA_TIME = (currentUpdateTime - lastUpdateTime) / MS;
-	if (DELTA_TIME < FRAME_DELAY)
-	{
-		SDL_Delay(FRAME_DELAY - DELTA_TIME);
-	}
-	
-	framerate = 1000.0 / std::max((float)SDL_GetTicks() - lastUpdateTime, 0.001f);
-}
-
-void Graphics::SetCurrentUpdateTime()
-{
-	currentUpdateTime = SDL_GetTicks();
 }
 
 SDL_Renderer* Graphics::GetRenderer()

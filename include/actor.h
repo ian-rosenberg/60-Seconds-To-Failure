@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <SDL.h>
 #include "sprite.h"
@@ -24,7 +25,7 @@ protected:
 
 	State						animState;
 
-	SDL_Renderer*				renderer;
+	std::shared_ptr<Graphics>	graphics;
 
 public:
 	/**
@@ -36,7 +37,7 @@ public:
 
 	virtual ~Actor() = 0;
 
-	inline SDL_Renderer* GetRenderer() { return renderer; }
+	inline SDL_Renderer* GetRenderer() { return graphics->GetRenderer(); }
 
 	/**
 	* @brief Load an actor from file
