@@ -9,7 +9,9 @@ Entity::Entity()
 	worldDimensions = {};
 	newDrawPosition = vector2(0, 0);
 	debugRect = { 0,0,0,0 };
-	velocity = { 0,0 };
+	velocity = new Vector2();
+	velocity->x = 0;
+	velocity->y = 0;
 	prevDrawPosition = newDrawPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
 	scale = { 0,0 };
@@ -25,7 +27,7 @@ Entity::Entity()
 	maxEnergy = 0;
 	maxSpeed = 0;
 	dead = 0;
-	jumpForce = 0;
+	jumpForce = 0.0;
 	body = NULL;
 	jumpTrigger = NULL;
 	parentEntity = NULL;
@@ -83,19 +85,13 @@ Animation* Entity::GetAnimationByName(const char* name)
 	return NULL;
 }
 
-void Entity::SetVelocity(float x)
+void Entity::SetVelocity(InputEvent* e)
 {
-	velocity = { x,body->GetLinearVelocity().y};
-	b2Vec2 v = b2Vec2(velocity.x, velocity.y);
+	Vector2* vlcty = (Vector2*)e->data;
+	velocity->x = vlcty->x;
+	velocity->y = body->GetLinearVelocity().y;
+	b2Vec2 v = b2Vec2(velocity->x, velocity->y);
 	
-	body->SetLinearVelocity(v);
-}
-
-void Entity::SetVelocity(float x, float y)
-{
-	velocity = { x, y };
-	b2Vec2 v = b2Vec2(velocity.x, velocity.y);
-
 	body->SetLinearVelocity(v);
 }
 
@@ -131,7 +127,7 @@ void Entity::SetWorldDimensions(b2Vec2 dim) {
 	worldDimensions.Set(dim.x, dim.y);
 }
 
-void Entity::Jump()
+void Entity::Jump(InputEvent* e)
 {
 	if (!jumpTrigger)
 		return;
@@ -143,9 +139,9 @@ void Entity::Jump()
 	}
 }
 
-void Entity::ToggleGrounded(bool flag)
+void Entity::ToggleGrounded(int flag)
 {
-	if (flag)
+	if ((bool)flag)
 		debugDraw->SetCollisionColor(1);
 	else
 		debugDraw->SetCollisionColor(0);
@@ -155,20 +151,17 @@ void Entity::ToggleGrounded(bool flag)
 
 EntityManager::EntityManager() {
 	entities = new std::vector<Entity*>();
+	inputQueue = new std::vector<Entity::InputEvent*>();
+	eventsToFire = new std::queue<Entity::InputEvent*>();
 	debugDraw = 0;
 }
 
-EntityManager::EntityManager(std::shared_ptr<InputDriver> driver) {
-	entities = new std::vector<Entity*>();
-	debugDraw = 0;
-	inputDriver = driver;
-}
-
-EntityManager::EntityManager(std::shared_ptr<InputDriver> driver, Uint8 debugFlag)
+EntityManager::EntityManager(Uint8 debugFlag)
 {
 	entities = new std::vector<Entity*>();
+	inputQueue = new std::vector<Entity::InputEvent*>();
+	eventsToFire = new std::queue<Entity::InputEvent*>();
 	debugDraw = debugFlag;
-	inputDriver = driver;
 }
 
 EntityManager::~EntityManager()
@@ -180,6 +173,16 @@ EntityManager::~EntityManager()
 			delete e;
 		}
 	}
+
+	if (!inputQueue->empty())
+		ClearInputEventQueue();
+
+	delete inputQueue;
+
+	if (!eventsToFire->empty())
+		ClearEventsToFireQueue();
+
+	delete eventsToFire;
 }
 
 void EntityManager::AddEntity(Entity* ent)
@@ -191,10 +194,6 @@ void EntityManager::AddEntity(Entity* ent)
 		if(ent->GetJumpTrigger())
 			ent->GetDebugDraw()->SetTriggerFixture(ent->GetJumpTrigger());
 
-	}
-
-	if (!ent->GetInputDriverReference()) {
-		ent->SetInputDriverForEntity(inputDriver);
 	}
 
 	entities->push_back(ent);
@@ -287,3 +286,73 @@ void EntityManager::EntityThinkAll()
 	}
 }
 
+void EntityManager::InputUpdate()
+{
+	Entity::InputEvent* prev;
+	Entity::InputEvent* cur;
+	Uint8 gravityEnabled = 0;
+
+	while (!eventsToFire->empty()) {
+
+		cur = eventsToFire->front();
+		eventsToFire->pop();
+
+		gravityEnabled = cur->gravity;
+		prev = cur->prevEvent ? cur->prevEvent : nullptr;
+
+		if (cur->keyDown) {
+			if(cur->repeat && cur->onHold)
+				cur->onHold(cur);
+			else if (cur->repeat < 1 && cur->onPress)
+				cur->onPress(cur);
+		}
+		else {
+			if (cur->repeat < 1 && cur->onRelease)
+				cur->onRelease(cur);
+		}
+
+		delete cur;
+	}
+}
+
+void EntityManager::ClearInputEventQueue()
+{
+	Entity::InputEvent* e = NULL;
+
+	while (!inputQueue->empty()) {
+		e = inputQueue->at(inputQueue->size() - 1);
+		inputQueue->pop_back();
+		delete e;
+	}
+}
+
+void EntityManager::ClearEventsToFireQueue()
+{
+	Entity::InputEvent* e = NULL;
+
+	while (!eventsToFire->empty()) {
+		e = eventsToFire->front();
+		eventsToFire->pop();
+		delete e;
+	}
+}
+
+Entity::InputEvent* EntityManager::PeekInputEventAtIndex(Uint16 index)
+{
+	if (index < inputQueue->size() && index >= 0)
+		return inputQueue->at(index);
+	else if (index == -1)
+		return inputQueue->at(inputQueue->size() - 1);
+	else
+		return nullptr;
+}
+
+Entity::InputEvent* EntityManager::GetNextInputEvent()
+{
+	Entity::InputEvent* e = PeekInputEventAtIndex(0);
+
+	if (e)
+		inputQueue->erase(inputQueue->begin());
+
+	return e ? e : nullptr;
+}

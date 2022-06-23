@@ -111,6 +111,8 @@ Actor* Actor::LoadActor(const char* filename)
 		animations->push_back(ParseAnimation(p_writable_data));
 	}
 
+	CalculateAverageActorDimensions();
+
 	std::cout << "Actor dimensions: {" << avgDim.x << " , " << avgDim.y << "}" << std::endl;
 
 	std::cout << "Loaded actor " << name << std::endl;

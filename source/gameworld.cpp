@@ -12,7 +12,7 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 
 		b2PolygonShape shape;
 		shape.SetAsBox(player->GetWorldDimensions().x / 2, player->GetWorldDimensions().y / 2);
-		player->GetBody()->CreateFixture(&shape, 5.0f);
+		player->GetBody()->CreateFixture(&shape, 10.0f);
 
 		b2PolygonShape jumpBox;
 		b2Vec2 d = player->GetWorldDimensions();
@@ -72,7 +72,7 @@ void GameWorld::EnableDebugDraw() {
 }
 
 void GameWorld::InitTestArea() {
-	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, .98f), graphicsPtr));
+	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, .0025f), graphicsPtr));
 
 	currentArea = areas->at(0);
 	currentArea->SetActive(1);
@@ -87,6 +87,7 @@ void GameWorld::InitTestArea() {
 bool GameWorld::GameLoop(double &accumulator) {
 	double newTime = graphicsPtr->GetGameTime();
 	double frameTime = newTime - graphicsPtr->GetCurrentTime();
+	SDL_Event currentEvent;
 
 	if (frameTime > 0.25)
 		frameTime = 0.25;
@@ -94,20 +95,17 @@ bool GameWorld::GameLoop(double &accumulator) {
 	graphicsPtr->SetCurrentTime(newTime);
 
 	SDL_RenderClear(graphicsPtr->GetRenderer());
-			
-	SDL_PumpEvents();
-	SDL_PollEvent(&currentEvent);
-
-	if (currentEvent.type == SDL_QUIT)
-		return true;
 
 	accumulator += frameTime;
 
-	currentArea->AreaThink(&currentEvent);
+	currentArea->AreaUpdate();
 
-	while (accumulator >= DELTA_TIME) {
-		currentArea->AreaUpdate();
-		
+	currentArea->AreaThink();
+
+	if (currentArea->CaptureInputEvents(&currentEvent, currentArea->GetEntityManager()->GetNextInputEvent()) < 1)
+		return true;
+
+	while (accumulator >= DELTA_TIME) {	
 		currentArea->PhysicsStep();
 
 		accumulator -= DELTA_TIME;
@@ -117,8 +115,6 @@ bool GameWorld::GameLoop(double &accumulator) {
 	{
 		SDL_Delay(FRAME_DELAY - DELTA_TIME);
 	}
-
-	currentArea->AreaUpdate();
 
 	currentArea->AreaDraw(accumulator / DELTA_TIME);
 

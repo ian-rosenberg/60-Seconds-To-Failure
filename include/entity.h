@@ -4,58 +4,108 @@
 #include <box2d/box2d.h>
 #include <actor.h>
 #include <debugdraw.h>
-#include <inputdriver.h>
+#include <queue>
+#include <functional>
+
+typedef enum {
+	MENU,
+	WALK_UP,
+	WALK_RIGHT,
+	WALK_DOWN,
+	WALK_LEFT,
+	INTERACT,
+	DECLINE,
+	JUMP,
+	PUNCH,
+	KICK,
+	SHOOT,
+	NONE
+}InputType;
 
 class Entity: public Actor
 {
 protected:
-	int								id;
+	int												id;
 
-	Uint8							gravityEnabled;
+	Uint8											gravityEnabled;
 
-	b2Body*							body;
-	b2Fixture*						jumpTrigger;
+	b2Body*											body;
+	b2Fixture*										jumpTrigger;
 
-	std::shared_ptr<InputDriver>	inputDriver;
+	b2Vec2											worldDimensions;
 
-	b2Vec2							worldDimensions;
-
-	State							logicalState; // Same enum as used for animations, used here for logic of those states
+	State											logicalState; // Same enum as used for animations, used here for logic of those states
 		
-	Entity							*parentEntity;
+	Entity*											parentEntity;
 
-	Vector2							velocity;
-	Vector2							prevDrawPosition;
-	Vector2							newDrawPosition;
-	b2Vec2							prevBodyPosition;
-	b2Vec2							newBodyPosition;
-	Vector2							scale;												/**<scale to draw sprite at*/
-	Vector2							scaleCenter;										/**<where to scale sprite from*/
-	Vector3							rotation;											/**<how to rotate the sprite*/
-	Vector2							flip;												/**<if to flip the sprite*/
-	Vector2							facing;												/**<direction the entity is facing*/
+	Vector2*										velocity;
+	Vector2											prevDrawPosition;
+	Vector2											newDrawPosition;
+	b2Vec2											prevBodyPosition;
+	b2Vec2											newBodyPosition;
+	Vector2											scale;												/**<scale to draw sprite at*/
+	Vector2											scaleCenter;										/**<where to scale sprite from*/
+	Vector3											rotation;											/**<how to rotate the sprite*/
+	Vector2											flip;												/**<if to flip the sprite*/
+	Vector2											facing;												/**<direction the entity is facing*/
 
-	Uint8							dead;												/**<when true, the entity system will delete the entity on the next update*/
+	Uint8											dead;												/**<when true, the entity system will delete the entity on the next update*/
 
-	Uint16							health;
-	Uint16							maxHealth;
+	Uint16											health;
+	Uint16											maxHealth;
 
-	const double					jumpCooldown = 50.0;	//.5 second jump cooldown
-	double							jumpTimer;
-	float							jumpForce;
-	float							dampening;
-	bool							grounded;
+	const double									jumpCooldown = 500.0;	//.5 second jump cooldown
+	double											jumpTimer;
+	float											jumpForce;
+	float											dampening;
+	bool											grounded;
 		
-	Uint16							energy;
-	Uint16							maxEnergy;
+	Uint16											energy;
+	Uint16											maxEnergy;
 
-	float							maxSpeed;
+	float											maxSpeed;
 
 	//Debug Drawing, null if not enabled
-	DebugDraw						*debugDraw;
-	SDL_Rect						debugRect;
+	DebugDraw										*debugDraw;
+	SDL_Rect										debugRect;
 
 public:
+	struct InputEvent {
+		InputEvent*				prevEvent;
+		Uint8					keyCount;
+		Uint8					gravity;
+		Uint8					repeat;
+		SDL_Event*				e;
+		InputType				inputType;
+		Uint8					keyDown;
+		Uint32					msSinceLastInput;
+		void*					data;
+
+		std::function<void(Entity::InputEvent*)> onPress;
+		std::function<void(Entity::InputEvent*)> onHold;
+		std::function<void(Entity::InputEvent*)> onRelease;
+
+		/*
+		void			(Entity::* onPress)(InputEvent* data);        //callback for press event
+		void			(Entity::*onHold)(InputEvent* data);         //callback for hold event
+		void			(Entity::*onRelease)(InputEvent* data);      //callback for release event
+		*/
+
+		InputEvent() {
+			prevEvent = nullptr;
+			keyCount = 0;
+			gravity = 0;
+			e = nullptr;
+			keyDown = 0;
+			msSinceLastInput = 0;
+			inputType = NONE;
+			data = nullptr;
+			onPress = nullptr;
+			onHold = nullptr;
+			onRelease = nullptr;
+		}
+	};
+
 	Entity();
 
 	~Entity();
@@ -102,22 +152,15 @@ public:
 	void SetWorldDimensions(b2Vec2 dim);
 	
 	/** Gameplay -------------------------------------------------------------**/
-	void Jump();
-	
-	void ToggleGrounded(bool flag);
+	void Jump(InputEvent* e);
 
-	void SetVelocity(float x);
+	void ToggleGrounded(int flag);
 
-	void SetVelocity(float x, float y);
+	void SetVelocity(InputEvent* e);
 
 	inline void SetGravityEnabled(Uint8 flag) { gravityEnabled = flag; }
 
 	/** Inline Fcns -------------------------------------------------------------**/
-
-	inline void SetInputDriverForEntity(std::shared_ptr<InputDriver> driver) { inputDriver = driver != NULL ? driver: NULL; }
-
-	inline std::shared_ptr<InputDriver> GetInputDriverReference() { return inputDriver; }
-
 	inline Vector2 GetDrawPosition() { return newDrawPosition; }
 
 	inline void EnableDebugDraw(DebugDraw* ddPtr) { debugDraw = ddPtr; }
@@ -143,16 +186,15 @@ public:
 
 class EntityManager {
 private:
-	std::vector<Entity*>			*entities; 
+	std::vector<Entity*>*			entities; 
 	Uint8							debugDraw;
-	std::shared_ptr<InputDriver>	inputDriver;
+	std::vector<Entity::InputEvent*>*		inputQueue;
+	std::queue<Entity::InputEvent*>*		eventsToFire;
 
 public:
 	EntityManager();
 
-	EntityManager(std::shared_ptr<InputDriver> driver);
-
-	EntityManager(std::shared_ptr<InputDriver> driver, Uint8 debug);
+	EntityManager(Uint8 debug);
 
 	~EntityManager();
 
@@ -160,7 +202,24 @@ public:
 
 	Entity* DeleteEntity(Entity* ent);
 
-	void SetInputDriver(std::shared_ptr<InputDriver> driver);
+	void ClearInputEventQueue();
+
+	void ClearEventsToFireQueue();
+
+	Entity::InputEvent* PeekInputEventAtIndex(Uint16 index);
+
+	Entity::InputEvent* GetNextInputEvent();
+
+	/**
+	* Input driver integrated per entity manager, one active at a time
+	*/
+	inline void PushBackInputEvent(Entity::InputEvent* newEvent) { inputQueue->push_back(newEvent); }
+
+	inline void PushBackEventToFire(Entity::InputEvent* newEvent) { eventsToFire->push(newEvent); }
+
+	inline std::vector<Entity::InputEvent*>* GetInputQueue() { return inputQueue; }
+
+	inline std::queue<Entity::InputEvent*>* GetEventsToFire() { return eventsToFire; }
 
 	/**
 	* @brief Render all entites to screen
@@ -177,6 +236,8 @@ public:
 	/**
 	* @brief Let all managed entities think
 	*/
+	void InputUpdate();
+
 	void EntityThinkAll();
 
 	void SetAlpha(double a);

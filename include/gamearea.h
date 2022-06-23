@@ -8,7 +8,6 @@
 #include <player.h>
 #include <contactlistener.h>
 #include <memory>
-#include <inputdriver.h>
 
 class GameArea {
 private:
@@ -18,7 +17,6 @@ private:
 	Uint8							gravityEnabled;
 
 	std::shared_ptr<Graphics>		graphics;
-	std::shared_ptr<InputDriver>	inputDriver;
 
 	Player*							player;
 
@@ -54,9 +52,9 @@ public:
 
 	void SetPlayer(Player* p);
 
-	void CreateInputEvent(SDL_Event* e, InputEvent* prevInput);
+	Uint8 CaptureInputEvents(SDL_Event* e, Entity::InputEvent* prevInput);
 
-	void AreaThink(SDL_Event* e);
+	void AreaThink();
 
 	void AreaUpdate();
 

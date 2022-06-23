@@ -72,4 +72,6 @@ public:
 	void SetAnimation(Animation* anim);
 
 	inline void SetActorName(const char* n) { name = n; }
+
+	inline void SetAnimationState(State s) { animState = s; }
 };

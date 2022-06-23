@@ -166,7 +166,6 @@
     <ClCompile Include="source\gamearea.cpp" />
     <ClCompile Include="source\gameworld.cpp" />
     <ClCompile Include="source\graphics.cpp" />
-    <ClCompile Include="source\inputdriver.cpp" />
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\sprite.cpp" />
     <ClCompile Include="source\staticentity.cpp" />
@@ -181,7 +180,6 @@
     <ClInclude Include="include\gamearea.h" />
     <ClInclude Include="include\gameworld.h" />
     <ClInclude Include="include\graphics.h" />
-    <ClInclude Include="include\inputdriver.h" />
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\sprite.h" />
     <ClInclude Include="include\staticentity.h" />

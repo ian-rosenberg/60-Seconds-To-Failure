@@ -4,7 +4,6 @@ c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\vectortypes.obj
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\staticentity.obj
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\sprite.obj
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\player.obj
-c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\inputdriver.obj
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\graphics.obj
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\gameworld.obj
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\gamearea.obj
@@ -17,13 +16,7 @@ c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\actor.obj
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\60 seconds to failure.exe
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\60 seconds to failure.ilk
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\60 seconds to failure.pdb
-c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\entity.obj.enc
-c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\game.obj.enc
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\gamearea.obj.enc
-c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\gameworld.obj.enc
-c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\inputdriver.obj.enc
-c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\player.obj.enc
-c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\staticentity.obj.enc
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\60 secon.c0a4b3a8.tlog\cl.command.1.tlog
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\60 secon.c0a4b3a8.tlog\cl.read.1.tlog
 c:\users\ian\source\repos\60-seconds-to-failure\x64\debug\60 secon.c0a4b3a8.tlog\cl.write.1.tlog

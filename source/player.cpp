@@ -9,7 +9,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 	keys = 0;
 	controller = NULL;
 	sensitivity = 0;
-	maxSpeed = 4 * PIX_TO_MET;
+	maxSpeed = 0.1;
 	dampening = 0.0f;
 	dimensions = { 0,0,0 };
 	enteredFrom = { 0,0 };
@@ -29,86 +29,75 @@ Player::Player(std::shared_ptr<Graphics> g)
 	punching = false;
 	graphics = g;
 	LoadActor(actorFilePath.c_str());
-	CalculateAverageActorDimensions();
 	SetWorldDimensions(b2Vec2(avgDim.x * PIX_TO_MET, avgDim.y * PIX_TO_MET));
 	currentAnimation = GetAnimationByName("idle");
 	currentSprite = currentAnimation->GetSprite();
 }
 
-void Player::Think()
+Player::~Player()
 {
-	InputEvent* cEvent = inputDriver->GetNextInputEvent();
+	inputQueue = nullptr;
+	eventsToFire = nullptr;
+}
+
+void Player::Think(){
+	InputEvent* cEvent = !inputQueue->empty() ? inputQueue->front(): nullptr;
+	std::vector<InputType> types;
+	InputType t;
+	Uint8 walking;
 
 	if (cEvent) {
-		switch (cEvent->inputType) {
-			case MENU:
-				break;
+		inputQueue->erase(inputQueue->begin());
+		t = cEvent->inputType;
+		walking = 0;
 
-			case WALK_UP:
-				break;
-
-			case WALK_RIGHT:
-				SetVelocity(cEvent->state > RELEASED ? maxSpeed :0);
-				break;
-
-			case WALK_DOWN:
-				break;
-
-			case WALK_LEFT:
-				SetVelocity(cEvent->state > RELEASED ? -maxSpeed : 0);
-				break;
-
-			case INTERACT:
-				break;
-
-			case DECLINE:
-				break;
-
-			case JUMP:
- 				if (cEvent->state == PRESSED) {
-					if (cEvent->prevEvent) {
-						if (cEvent->state == cEvent->prevEvent->state && cEvent->prevEvent->inputType != JUMP) {
-							Jump();
-						}
-					}
-					else {
-						Jump();
-					}
-				}
-				break;
-
-			case PUNCH:
-				break;
-
-			case KICK:
-				break;
-
-			case SHOOT:
-				break;
-
-			default:
-				break;
+		if (t == WALK_UP) {
+			walking = 1;
+			velocity->x = velocity->x;
+			velocity->y = -maxSpeed;
+			cEvent->data = velocity;
+			cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);
 		}
-	}
+		if (t == WALK_DOWN) {
+			walking = 1;
+			velocity->x = velocity->x;
+			velocity->y = maxSpeed;
+			cEvent->data = velocity;
+			cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);
+		}
+		if (t == WALK_LEFT) {
+			walking = 1;
+			velocity->x = -maxSpeed;
+			velocity->y = velocity->y;
+			cEvent->data = velocity;
+			cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);
+		}
+		if (t == WALK_RIGHT) {
+			walking = 1;
+			velocity->x = maxSpeed;
+			velocity->y = velocity->y;
+			cEvent->data = velocity;
+			cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);
+		}
+		if (!walking) {
+			velocity->x = velocity->x * dampening;
+			velocity->y = velocity->y;
+			cEvent->data = velocity;
+			cEvent->onRelease = std::bind(&Entity::SetVelocity, this, cEvent);
+		}
 
-	//Handle walk release
+		if (t == JUMP && gravityEnabled) {
+			if (cEvent->prevEvent) {
+				if (t != JUMP) {
+					cEvent->onPress = std::bind(&Entity::Jump, this, cEvent);
+				}
+			}
+			else {
+				cEvent->onPress = std::bind(&Entity::Jump, this, cEvent);
+			}
+		}
 
-	//Set logical state
- 	if (punching) {
-		SetLogicalState(State::State_Attacking);
-		SetAnimationByName("attacking");
-	}
-	else if (velocity.x != 0.0f)
-	{
-
-		SetLogicalState(State::State_Walking);
-		if(logicalState != animState)
-			SetAnimationByName("walk");
-	}
-	else
-	{
-		SetLogicalState(State::State_Idle);
-		SetAnimationByName("idle");
+		eventsToFire->push(cEvent);
 	}
 }
 
@@ -152,12 +141,7 @@ void Player::Draw()
 		currentAnimation->GetCellWidth(),
 		currentAnimation->GetCellHeight());
 
-
-	if (currentAnimation->AnimationNextFrame(currentAnimation) == AnimationReturnType::ART_END 
-		&& strcmp(currentAnimation->GetName().c_str(), "attacking")==0) 
-	{
-		punching = false;
-	}
+	currentAnimation->AnimationNextFrame(currentAnimation);
 }
 
 void Player::UpdateScreenPosition(double alpha)
@@ -185,21 +169,25 @@ void Player::UpdateScreenPosition(double alpha)
 
 void Player::Update()
 {
-	if (dead != 0)
+	SetLogicalState(State::State_Idle);
+
+	if (dead)
 	{
 		return;
 	}
 
-	if (velocity.x != 0 || velocity.y != 0)
+	if ((velocity->x < maxSpeed && velocity->x > -maxSpeed) ||
+		(velocity->y < maxSpeed && velocity->y > -maxSpeed))
 	{
-		if (velocity.x < 0)
+		if (velocity->x < 0)
 		{
 			flip.x = 1;
 		}
-		else if (velocity.x > 0)
+		else if (velocity->x > 0)
 		{
 			flip.x = 0;
 		}
+		SetLogicalState(State::State_Walking);
 	}
 
 	//std::cout << "World Position: " << newBodyPosition.x << "," << newBodyPosition.y << std::endl;
@@ -215,21 +203,21 @@ void Player::Update()
 		switch (logicalState)
 		{
 			case State::State_Walking:
-				logicalState = animState;
+				animState = logicalState;
 				currentAnimation = GetAnimationByName("walk");
 				currentSprite = currentAnimation->GetSprite();
 				scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);
 				break;
 
 			case State::State_Idle:
-				logicalState = animState;
+				animState = logicalState;
 				currentAnimation = GetAnimationByName("idle");
 				currentSprite = currentAnimation->GetSprite();
 				scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);
 				break;
 
 			case State::State_Attacking:
-				logicalState = animState;
+				animState = logicalState;
 				currentAnimation = GetAnimationByName("attacking");
 				currentSprite = currentAnimation->GetSprite();
 				scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);

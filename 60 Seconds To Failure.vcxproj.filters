@@ -57,9 +57,6 @@
     <ClCompile Include="source\contactListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\inputdriver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\graphics.h">
@@ -96,9 +93,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\contactlistener.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\inputdriver.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

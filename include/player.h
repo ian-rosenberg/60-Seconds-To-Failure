@@ -3,6 +3,7 @@
 #include <string>
 #include <entity.h>
 
+
 class Player : public Entity
 {
 private:
@@ -12,6 +13,9 @@ private:
 	const Uint8*			keys;
 	SDL_GameController*		controller;
 	float					sensitivity;
+
+	std::vector<InputEvent*>* 	inputQueue;
+	std::queue<InputEvent*>*	eventsToFire;
 
 	Vector3					dimensions;
 
@@ -26,6 +30,11 @@ private:
 
 public:
 	Player(std::shared_ptr<Graphics> g);
+
+	~Player();
+
+	inline void SetInputQueuePtr(std::vector<Entity::InputEvent*>* sp) { inputQueue = sp; }
+	inline void SetEventsToFirePtr(std::queue<Entity::InputEvent*>* q) { eventsToFire = q; }
 
 	/**
 	* @brief Handle input

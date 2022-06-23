@@ -3,11 +3,12 @@
 
 void GameArea::CreateTestArea() {
 	float hDim = player->GetWorldDimensions().y;
-	float fVal = 0.01f;
+	float fVal = 0.1f;
 	areaPhysics = new b2World(*gravityScale);
 
 	listener = new ContactListener();
 	areaPhysics->SetContactListener(listener);
+	areaPhysics->SetAllowSleeping(false);
 
 	// Ground
 	{
@@ -57,8 +58,7 @@ void GameArea::CreateTestArea() {
 GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
 	id = ID;
 	player = NULL;
-	inputDriver = std::make_shared<InputDriver>();
-	entityManager = new EntityManager(inputDriver, 1);//enabling debug draw with parameter, renderer
+	entityManager = new EntityManager(1);//enabling debug draw with parameter, renderer
 	gravityScale = new b2Vec2(grav);
 	gravityEnabled = gravityScale->y != 0 || gravityScale->x != 0;
 	areaPhysics = NULL;
@@ -76,18 +76,9 @@ GameArea::~GameArea() {
 	delete listener;
 }
 
-void GameArea::AreaThink(SDL_Event *e) {
-	InputEvent* pEvent = nullptr;
-
+void GameArea::AreaThink() {
 	if (!active)
 		return;
-
-
-	pEvent = inputDriver->GetNextInputEvent();
-	if (e->key.keysym.scancode != SDL_SCANCODE_UNKNOWN)
-		CreateInputEvent(e, pEvent);
-	//else
-		//std::cout << "NO INPUT" << std::endl;
 
 	entityManager->EntityThinkAll();
 }
@@ -96,11 +87,8 @@ void GameArea::AreaUpdate() {
 	if (!active)
 		return;
 
+	entityManager->InputUpdate();
 	entityManager->EntityUpdateAll(graphics->GetFrameDeltaTime());
-}
-
-void GameArea::PhysicsStep() {
-	areaPhysics->Step(timeStep, velocityIterations, positionIterations);
 
 	for (auto c = listener->_contacts.begin(); c != listener->_contacts.end(); c++) {
 		Contact contact = *c;
@@ -112,6 +100,10 @@ void GameArea::PhysicsStep() {
 			}
 		}
 	}
+}
+
+void GameArea::PhysicsStep() {
+	areaPhysics->Step(timeStep, velocityIterations, positionIterations);
 }
 
 void GameArea::AreaDraw(double accumulator) {
@@ -127,89 +119,82 @@ void GameArea::AddEntity(Entity* e) {
 
 void GameArea::SetPlayer(Player* p) {
 	player = p;
+	player->SetInputQueuePtr(entityManager->GetInputQueue());
+	player->SetEventsToFirePtr(entityManager->GetEventsToFire());
 
 	CreateTestArea();
 }
 
-void GameArea::CreateInputEvent(SDL_Event* e, InputEvent* prevInput)
-{
-	const Uint8* state = SDL_GetKeyboardState(NULL);
-	InputEvent* newEvent = new InputEvent();
-	InputState s = IDLE;
-	InputType t = NONE;
+Uint8 GameArea::CaptureInputEvents(SDL_Event* e, Entity::InputEvent* prevInput){
+	const Uint8* keyboardState;
+	int keyCount = 0;
+	Entity::InputEvent* newEvent = nullptr;
+	Entity::InputEvent* prevEvent = entityManager->GetNextInputEvent();
+	Uint8 started = prevEvent != nullptr ? 1 : 0;
 
+	SDL_PumpEvents();
 
-	if(state[SDL_SCANCODE_ESCAPE])
-		t = MENU;
+	while (SDL_PollEvent(e)) {
+		keyboardState = SDL_GetKeyboardState(&keyCount);
+		if (e->type == SDL_WINDOWEVENT && e->window.event == SDL_WINDOWEVENT_CLOSE)
+			return 0;
 
-	if (state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP])
-		if (!gravityEnabled)
-			t = WALK_UP;
-		else
-			t = NONE;
-	else if (state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN])
-		if (!gravityEnabled)
-			t = WALK_DOWN;
-		else
-			t = NONE;
+		if (started)
+			prevEvent = newEvent;
 
-	if (state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT])
-		t = WALK_RIGHT;
-	else if (state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT])
-		t = WALK_LEFT;
-	else
-		t = NONE;
+		keyCount = 0;
 
-	if (state[SDL_SCANCODE_E])
-		t = INTERACT;
+		newEvent = new Entity::InputEvent();
 
-	if (state[SDL_SCANCODE_BACKSPACE])
-		t = DECLINE;
+		if (keyboardState[SDL_SCANCODE_ESCAPE])
+			newEvent->inputType = MENU;
+		if (keyboardState[SDL_SCANCODE_W] || keyboardState[SDL_SCANCODE_UP])
+			if (!gravityEnabled)
+				newEvent->inputType = WALK_UP;
+		if (keyboardState[SDL_SCANCODE_S] || keyboardState[SDL_SCANCODE_DOWN])
+			if (!gravityEnabled)
+				newEvent->inputType = WALK_DOWN;
+		if (keyboardState[SDL_SCANCODE_D] || keyboardState[SDL_SCANCODE_RIGHT])
+			newEvent->inputType = WALK_RIGHT;
+		if (keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT])
+			newEvent->inputType = WALK_LEFT;
+		if (keyboardState[SDL_SCANCODE_E])
+			newEvent->inputType = INTERACT;
+		if (keyboardState[SDL_SCANCODE_BACKSPACE])
+			newEvent-> inputType = DECLINE;
+		if (keyboardState[SDL_SCANCODE_SPACE])
+			if (gravityEnabled)
+				newEvent->inputType = JUMP;
+		if (keyboardState[SDL_SCANCODE_Q])
+			if (gravityEnabled)
+				newEvent->inputType = PUNCH;
+		if (keyboardState[SDL_SCANCODE_R])
+			if (gravityEnabled)
+				newEvent->inputType = SHOOT;
+		if (keyboardState[SDL_SCANCODE_F])
+			if (gravityEnabled)
+				newEvent->inputType = KICK;
 
-	if (state[SDL_SCANCODE_SPACE])
-		if (gravityEnabled)
-			t = JUMP;
-		else
-			t = NONE;
+		if (newEvent->inputType == NONE) {
+			delete newEvent;
+			continue;
+		}
 
-	if (state[SDL_SCANCODE_Q])
-		if (gravityEnabled)
-			t = PUNCH;
-		else
-			t = NONE;
+		newEvent->keyDown = 1;
+		if (e->key.state == SDL_RELEASED)
+			newEvent->keyDown = 0;
+		newEvent->keyCount = keyCount;
+		newEvent->prevEvent = prevEvent;
+		newEvent->gravity = gravityEnabled;
+		newEvent->e = e;
+		newEvent->msSinceLastInput = (prevInput != nullptr) ? SDL_GetTicks() - prevInput->msSinceLastInput : SDL_GetTicks();
+		newEvent->repeat = e->key.repeat ? 1 : 0;
 
-	if (state[SDL_SCANCODE_R])
-		if (gravityEnabled)
-			t = SHOOT;
-		else
-			t = NONE;
+		if (!started)
+			started = 1;
 
-	if (state[SDL_SCANCODE_F])
-		if (gravityEnabled)
-			t = KICK;
-		else
-			t = NONE;
-
-	if (t == WALK_UP || t == WALK_RIGHT || t == WALK_DOWN || t == WALK_LEFT) {
-		if (prevInput && prevInput->state == PRESSED && prevInput->inputType == t)
-			s = HOLD;
-		else
-			s = PRESSED;
+		entityManager->PushBackInputEvent(newEvent);
 	}
-	else if (t == JUMP)
-		s = PRESSED;
-	else
-		s = RELEASED;
 
-	std::cout << s << "\t" << t << std::endl;
-
-	newEvent->e = e;
-	newEvent->inputType = t;
-	newEvent->state = s;
-	newEvent->msSinceLastInput = (prevInput != nullptr) ? SDL_GetTicks() - prevInput->msSinceLastInput : SDL_GetTicks();
-
-	inputDriver->PushBackInputEvent(newEvent);
-
-	if (s == HOLD)
-		inputDriver->PushBackHeldEvent(newEvent);
+	return 1;
 }

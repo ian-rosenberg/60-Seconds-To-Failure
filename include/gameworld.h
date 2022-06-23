@@ -5,8 +5,6 @@
 
 class GameWorld {
 private:
-	SDL_Event					currentEvent;
-
 	Player*						player;
 
 	std::shared_ptr<Graphics>	graphicsPtr;

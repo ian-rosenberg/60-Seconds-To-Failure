@@ -5,6 +5,7 @@
 #include <actor.h>
 #include <debugdraw.h>
 
+
 class StaticEntity : public Entity {
 private:
 	int id;
