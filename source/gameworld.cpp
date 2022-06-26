@@ -10,9 +10,15 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 		bd.position.Set(0, -SCALED_HEIGHT/2);
 		player->SetBody(physicsArea->CreateBody(&bd));
 
+		b2FixtureDef fd;
 		b2PolygonShape shape;
+
 		shape.SetAsBox(player->GetWorldDimensions().x / 2, player->GetWorldDimensions().y / 2);
-		player->GetBody()->CreateFixture(&shape, 10.0f);
+		fd.shape = &shape;
+		fd.friction = 0.4f;
+		fd.density = 20.0f;
+		
+		player->GetBody()->CreateFixture(&fd );
 
 		b2PolygonShape jumpBox;
 		b2Vec2 d = player->GetWorldDimensions();
@@ -98,14 +104,16 @@ bool GameWorld::GameLoop(double &accumulator) {
 
 	accumulator += frameTime;
 
-	currentArea->AreaUpdate();
+	SDL_PumpEvents();
 
-	currentArea->AreaThink();
-
-	if (currentArea->CaptureInputEvents(&currentEvent, currentArea->GetEntityManager()->GetNextInputEvent()) < 1)
+	if (currentArea->CaptureInputEvents(&currentEvent) < 1)
 		return true;
 
 	while (accumulator >= DELTA_TIME) {	
+		currentArea->AreaUpdate();
+
+		currentArea->AreaThink();
+
 		currentArea->PhysicsStep();
 
 		accumulator -= DELTA_TIME;

@@ -299,18 +299,14 @@ void EntityManager::InputUpdate()
 
 		gravityEnabled = cur->gravity;
 		prev = cur->prevEvent ? cur->prevEvent : nullptr;
-
-		if (cur->keyDown) {
-			if(cur->repeat && cur->onHold)
-				cur->onHold(cur);
-			else if (cur->repeat < 1 && cur->onPress)
-				cur->onPress(cur);
-		}
-		else {
-			if (cur->repeat < 1 && cur->onRelease)
-				cur->onRelease(cur);
-		}
-
+		
+		if(cur->onHold)
+			cur->onHold(cur);
+		else if (cur->onPress)
+			cur->onPress(cur);
+		if (cur->onRelease)
+			cur->onRelease(cur);
+		
 		delete cur;
 	}
 }

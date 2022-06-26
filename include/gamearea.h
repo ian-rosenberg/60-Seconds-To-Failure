@@ -52,7 +52,7 @@ public:
 
 	void SetPlayer(Player* p);
 
-	Uint8 CaptureInputEvents(SDL_Event* e, Entity::InputEvent* prevInput);
+	Uint8 CaptureInputEvents(SDL_Event* e);
 
 	void AreaThink();
 

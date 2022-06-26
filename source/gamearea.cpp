@@ -3,7 +3,7 @@
 
 void GameArea::CreateTestArea() {
 	float hDim = player->GetWorldDimensions().y;
-	float fVal = 0.1f;
+	float fVal = 0.9f;
 	areaPhysics = new b2World(*gravityScale);
 
 	listener = new ContactListener();
@@ -125,25 +125,55 @@ void GameArea::SetPlayer(Player* p) {
 	CreateTestArea();
 }
 
-Uint8 GameArea::CaptureInputEvents(SDL_Event* e, Entity::InputEvent* prevInput){
+Uint8 GameArea::CaptureInputEvents(SDL_Event* e){
 	const Uint8* keyboardState;
 	int keyCount = 0;
-	Entity::InputEvent* newEvent = nullptr;
+	Entity::InputEvent* newEvent;
 	Entity::InputEvent* prevEvent = entityManager->GetNextInputEvent();
 	Uint8 started = prevEvent != nullptr ? 1 : 0;
 
-	SDL_PumpEvents();
+	keyboardState = SDL_GetKeyboardState(&keyCount);
 
 	while (SDL_PollEvent(e)) {
-		keyboardState = SDL_GetKeyboardState(&keyCount);
 		if (e->type == SDL_WINDOWEVENT && e->window.event == SDL_WINDOWEVENT_CLOSE)
 			return 0;
+	}
+	
+	if (keyboardState[SDL_SCANCODE_ESCAPE])
+		keyCount++;
+	if (keyboardState[SDL_SCANCODE_W] || keyboardState[SDL_SCANCODE_UP])
+		if (!gravityEnabled)
+			keyCount++;
+	if (keyboardState[SDL_SCANCODE_S] || keyboardState[SDL_SCANCODE_DOWN])
+		if (!gravityEnabled)
+			keyCount++;
+	if (keyboardState[SDL_SCANCODE_D] || keyboardState[SDL_SCANCODE_RIGHT])
+		keyCount++;
+	if (keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT])
+		keyCount++;
+	if (keyboardState[SDL_SCANCODE_E])
+		keyCount++;
+	if (keyboardState[SDL_SCANCODE_BACKSPACE])
+		keyCount++;
+	if (keyboardState[SDL_SCANCODE_SPACE])
+		if (gravityEnabled)
+			keyCount++;
+	if (keyboardState[SDL_SCANCODE_Q])
+		if (gravityEnabled)
+			keyCount++;
+	if (keyboardState[SDL_SCANCODE_R])
+		if (gravityEnabled)
+			keyCount++;
+	if (keyboardState[SDL_SCANCODE_F])
+		if (gravityEnabled)
+			keyCount++;
 
-		if (started)
-			prevEvent = newEvent;
+	if (keyCount == 0) {
+		if (prevEvent)
+			newEvent = prevEvent;
+	}
 
-		keyCount = 0;
-
+	while (keyCount > 0){
 		newEvent = new Entity::InputEvent();
 
 		if (keyboardState[SDL_SCANCODE_ESCAPE])
@@ -161,7 +191,7 @@ Uint8 GameArea::CaptureInputEvents(SDL_Event* e, Entity::InputEvent* prevInput){
 		if (keyboardState[SDL_SCANCODE_E])
 			newEvent->inputType = INTERACT;
 		if (keyboardState[SDL_SCANCODE_BACKSPACE])
-			newEvent-> inputType = DECLINE;
+			newEvent->inputType = DECLINE;
 		if (keyboardState[SDL_SCANCODE_SPACE])
 			if (gravityEnabled)
 				newEvent->inputType = JUMP;
@@ -175,11 +205,6 @@ Uint8 GameArea::CaptureInputEvents(SDL_Event* e, Entity::InputEvent* prevInput){
 			if (gravityEnabled)
 				newEvent->inputType = KICK;
 
-		if (newEvent->inputType == NONE) {
-			delete newEvent;
-			continue;
-		}
-
 		newEvent->keyDown = 1;
 		if (e->key.state == SDL_RELEASED)
 			newEvent->keyDown = 0;
@@ -187,11 +212,25 @@ Uint8 GameArea::CaptureInputEvents(SDL_Event* e, Entity::InputEvent* prevInput){
 		newEvent->prevEvent = prevEvent;
 		newEvent->gravity = gravityEnabled;
 		newEvent->e = e;
-		newEvent->msSinceLastInput = (prevInput != nullptr) ? SDL_GetTicks() - prevInput->msSinceLastInput : SDL_GetTicks();
+		newEvent->msSinceLastInput = (prevEvent != nullptr) ? SDL_GetTicks() - prevEvent->msSinceLastInput : SDL_GetTicks();
 		newEvent->repeat = e->key.repeat ? 1 : 0;
 
-		if (!started)
-			started = 1;
+		entityManager->PushBackInputEvent(newEvent);
+
+		prevEvent = newEvent;
+
+		keyCount--;
+	}
+
+	if (keyCount == 0) {
+		newEvent = new Entity::InputEvent();
+		newEvent->keyDown = 0;
+		newEvent->keyCount = keyCount;
+		newEvent->prevEvent = prevEvent;
+		newEvent->gravity = gravityEnabled;
+		newEvent->e = e;
+		newEvent->msSinceLastInput = (prevEvent != nullptr) ? SDL_GetTicks() - prevEvent->msSinceLastInput : SDL_GetTicks();
+		newEvent->repeat = 0;
 
 		entityManager->PushBackInputEvent(newEvent);
 	}
