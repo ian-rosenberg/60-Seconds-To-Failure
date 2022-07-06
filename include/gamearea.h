@@ -1,13 +1,16 @@
 #pragma once
 
 #include <map>
+#include <memory>
+
 #include <entity.h>
+#include <player.h>
+#include <tile.h>
+#include <contactlistener.h>
+
 #include <box2d/box2d.h>
 #include <box2d/b2_math.h>
 #include <box2d/b2_world.h>
-#include <player.h>
-#include <contactlistener.h>
-#include <memory>
 
 class GameArea {
 private:
@@ -24,6 +27,8 @@ private:
 
 	b2Vec2*							gravityScale;
 	b2World*						areaPhysics;
+
+	TileManager*					tileManager;
 
 	void							CreateTestArea();
 	//Test ground vars

@@ -1,14 +1,31 @@
-﻿  player.cpp
+﻿  debugdraw.cpp
 C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\graphics.h(19,33): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(12,16): warning C4305: '=': truncation from 'double' to 'float'
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(32,60): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(32,37): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(131,31): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(151,37): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(150,57): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(162,36): warning C4244: 'argument': conversion from 'float' to 'Uint32', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(177,22): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(178,22): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(184,34): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\player.cpp(185,34): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(30,19): warning C4244: '=': conversion from 'float' to 'int32', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(31,18): warning C4244: '=': conversion from 'float' to 'int32', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(45,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(46,39): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(51,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(52,39): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(64,37): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(65,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(84,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(85,39): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(88,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(89,39): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(99,37): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(100,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(120,24): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(122,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(127,48): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(128,49): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(131,27): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(134,17): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(135,17): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(139,19): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(140,19): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(147,55): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(162,73): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(163,74): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(165,73): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(166,74): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   60 Seconds To Failure.vcxproj -> C:\Users\Ian\source\repos\60-Seconds-To-Failure\x64\Debug\60 Seconds To Failure.exe

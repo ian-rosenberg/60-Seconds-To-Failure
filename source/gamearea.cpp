@@ -67,6 +67,7 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
 	testPlatformBottom = 0.0f;
 	testPlatformTop = 0.0f;
 	graphics = g;
+	tileManager = new TileManager("", graphics);
 }
 
 GameArea::~GameArea() {

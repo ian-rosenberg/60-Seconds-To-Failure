@@ -169,8 +169,6 @@ public:
 
 	inline DebugDraw* GetDebugDraw() { return debugDraw;}
 	
-	inline SDL_Rect* GetDebugRect() { return &debugRect; }
-
 	inline Vector2 GetScreenPosition() { return newDrawPosition; }
 
 	inline const char* GetActorName() { return name.c_str(); }

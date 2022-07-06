@@ -66,8 +66,3 @@ void Graphics::NextFrame() {
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
 }
-
-SDL_Renderer* Graphics::GetRenderer()
-{
-	return renderer;
-}

@@ -42,7 +42,8 @@ public:
 
 	void NextFrame();
 
-	SDL_Renderer* GetRenderer();
+	inline SDL_Renderer* GetRenderer() { return renderer; }
+	inline SDL_Window* GetWindow() { return window; }
 
 	inline double GetGameTime() { return SDL_GetTicks() / MS; }
 	inline double GetCurrentTime() { return currentTime / MS; }

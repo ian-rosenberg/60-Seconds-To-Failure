@@ -83,5 +83,5 @@ void StaticEntity::UpdateScreenPosition(double alpha)
 	debugRect.y = newDrawPosition.y - worldDimensions.y / 2 * MET_TO_PIX;
 	/*std::cout << "Object: " << name << std::endl;
 	std::cout << "World Pos: " << worldPosition.x << "," << worldPosition.y << std::endl;
-	std::cout << "Screen Pos: " << newDrawPosition.x << "," << newDrawPosition.y << "\t\tDEBUG RECT: " << debugRect.x << "," << debugRect.y << std::endl;*/
+	std::cout << "Screen Pos: " << newDrawPosition.x << "," << newDrawPosition.y << "\t\tDEBUG RECT: " << debugCircle.x << "," << debugCircle.y << std::endl;*/
 }

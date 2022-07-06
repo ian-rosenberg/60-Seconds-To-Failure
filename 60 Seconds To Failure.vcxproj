@@ -170,6 +170,7 @@
     <ClCompile Include="source\sprite.cpp" />
     <ClCompile Include="source\staticentity.cpp" />
     <ClCompile Include="source\vectortypes.cpp" />
+    <ClCompile Include="tile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\actor.h" />
@@ -183,6 +184,7 @@
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\sprite.h" />
     <ClInclude Include="include\staticentity.h" />
+    <ClInclude Include="include\tile.h" />
     <ClInclude Include="include\vectortypes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

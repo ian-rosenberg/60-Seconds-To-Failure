@@ -1,6 +1,7 @@
 #include <debugdraw.h>
 #include <graphics.h>
 #include <iostream>
+#include <vector>
 
 DebugDraw::DebugDraw(SDL_Renderer* r, const char* name) {
 	ren = r;
@@ -114,12 +115,43 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
 {
 }
 
-void DebugDraw::DrawCircle(const b2Vec2& center, float radius, const b2Color& color)
+void DebugDraw::DrawCircle(const b2Vec2& c, float radius, const b2Color& color)
 {
+	float pih = M_PI / 2.0; //half of pi
+	uint8_t sides = 16;
+	float step = 2 * M_PI / sides;
+	b2Vec2 center = bodyRef->GetWorldPoint(c);
+	std::vector<SDL_Point> circle;
+	SDL_Point b, pt;
+
+	center.x = ((SCALED_WIDTH / 2.0f) + center.x) * MET_TO_PIX;
+	center.y = ((SCALED_HEIGHT / 2.0f) + center.y) * MET_TO_PIX;
+	
+	//16 sides
+	float d_a = 2 * M_PI / 16,
+		angle = d_a;
+	
+	b.x = center.x + radius * cos(0);
+	b.y = center.y - radius * sin(0);
+
+	for (float theta = 0; theta < 2 * M_PI; theta += step)
+	{
+		pt.x = center.x + radius * cos(theta);
+		pt.y = center.y - radius * sin(theta);
+		circle.push_back(pt);
+	}
+
+	circle.push_back(b);
+
+	SDL_SetRenderDrawColor(ren, 0, 255, 0, 0);
+	SDL_RenderDrawLines(ren, circle.data(), circle.size());
+
+	SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
 }
 
 void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color)
 {
+
 }
 
 void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)

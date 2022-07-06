@@ -32,6 +32,22 @@ Sprite::Sprite(const char* filepath, Vector2 drawPosition, Vector2 scle, Vector2
 	LoadPNGImage(filepath);
 }
 
+Sprite::Sprite(const char* filepath, Uint32 width, Uint32 height, SDL_Renderer* ren)
+{
+	frame = 1.0f;
+	offset = 0;
+	frameWidth = width;
+	frameHeight = height;
+	flip = {};
+	scale = {};
+	scaleCenter = {};
+	position = {};
+	rotation = {};
+	color = {};
+	renderer = ren;
+	LoadPNGImage(filepath);
+}
+
 Sprite::~Sprite()
 {
 	SDL_DestroyTexture(texture);
@@ -54,6 +70,11 @@ Uint8 Sprite::LoadPNGImage(const char* filepath)
 	}
 
 	return 1;
+}
+
+SDL_Surface* Sprite::LoadSurface(const char* filepath)
+{
+	return IMG_Load(filepath);
 }
 
 SDL_Texture* Sprite::GetTexture()

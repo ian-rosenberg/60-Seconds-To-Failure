@@ -9,7 +9,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 	keys = 0;
 	controller = NULL;
 	sensitivity = 0;
-	maxSpeed = 0.1;
+	maxSpeed = .3;
 	dampening = 0.f;
 	dimensions = { 0,0,0 };
 	enteredFrom = { 0,0 };
@@ -21,7 +21,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 	health = maxHealth;
 	maxEnergy = 50;
 	energy = maxEnergy;
-	jumpForce = 15;
+	jumpForce = 200;
 	scale = { 1,1 };
 	prevDrawPosition = newDrawPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
@@ -110,14 +110,7 @@ void Player::Think() {
 		}
 
 		if (t == JUMP && gravityEnabled) {
-			if (cEvent->prevEvent) {
-				if (t != JUMP) {
-					cEvent->onPress = std::bind(&Entity::Jump, this, cEvent);
-				}
-			}
-			else {
-				cEvent->onPress = std::bind(&Entity::Jump, this, cEvent);
-			}
+			cEvent->onPress = std::bind(&Entity::Jump, this, cEvent);
 		}
 
 		eventsToFire->push(cEvent);
@@ -174,15 +167,12 @@ void Player::UpdateScreenPosition(double alpha)
 
 	prevDrawPosition = newDrawPosition;
 
-	debugRect.w = avgDim.x;
-	debugRect.h = avgDim.y;
-
 	newDrawPosition.x = ((SCALED_WIDTH / 2.0f) + newBodyPosition.x) * MET_TO_PIX;
 	newDrawPosition.x = newDrawPosition.x * alpha + prevDrawPosition.x * (1.0 - alpha);
 	newDrawPosition.y = ((SCALED_HEIGHT / 2.0f) + newBodyPosition.y) * MET_TO_PIX;
 	newDrawPosition.y = newDrawPosition.y * alpha + prevDrawPosition.y * (1.0 - alpha);
-	debugRect.x = newDrawPosition.x - avgDim.x/2;
-	debugRect.y = newDrawPosition.y - avgDim.y/2;
+
+	//std::cout << GetAverageActorDimensions().x / 4 << std::endl;
 
 	/*if(newBodyPosition.x != prevBodyPosition.x || newBodyPosition.y != prevBodyPosition.y)
 		std::cout << "World Position: " << newBodyPosition.x << "," << newBodyPosition.y << std::endl;
@@ -215,7 +205,7 @@ void Player::Update()
 
 	//std::cout << "World Position: " << newBodyPosition.x << "," << newBodyPosition.y << std::endl;
 	//std::cout << "Draw Position: " << newDrawPosition.x << "," << newDrawPosition.y << std::endl;
-	//std::cout << "Debug Rect: " << debugRect.x << "," << debugRect.y << "," << debugRect.w << "," << debugRect.h << std::endl;
+	//std::cout << "Debug Rect: " << debugCircle.x << "," << debugCircle.y << "," << debugCircle.w << "," << debugCircle.h << std::endl;
 	//std::cout << "X Velocity " << body->GetLinearVelocity().x << std::endl;
 
 	rotation.z = body->GetAngle() * GF2D_RADTODEG;

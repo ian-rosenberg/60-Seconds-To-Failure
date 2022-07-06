@@ -43,9 +43,16 @@ public:
 		Uint32 frameHeight,
 		SDL_Renderer* ren);
 
+	Sprite(const char* filepath, 
+		Uint32 width, 
+		Uint32 height, 
+		SDL_Renderer* ren);
+
 	~Sprite();
 
 	Uint8 LoadPNGImage(const char* filepath);
+
+	SDL_Surface* LoadSurface(const char* filepath);
 
 	SDL_Texture* GetTexture();
 

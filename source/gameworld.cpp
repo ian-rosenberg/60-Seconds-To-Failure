@@ -4,6 +4,7 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 {
 	// Actor
 	{
+		b2Vec2 d = player->GetWorldDimensions();
 		b2BodyDef bd;
 		bd.type = b2_dynamicBody;
 		bd.fixedRotation = true;
@@ -11,17 +12,18 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 		player->SetBody(physicsArea->CreateBody(&bd));
 
 		b2FixtureDef fd;
-		b2PolygonShape shape;
+		b2CircleShape shape;
 
-		shape.SetAsBox(player->GetWorldDimensions().x / 2, player->GetWorldDimensions().y / 2);
+		shape.m_radius = d.x / 4;
+		shape.m_p = b2Vec2(0, d.y/4);
+
 		fd.shape = &shape;
-		fd.friction = 0.4f;
-		fd.density = 20.0f;
+		fd.friction = 0.6f;
+		fd.density = 50.0f;
 		
-		player->GetBody()->CreateFixture(&fd );
+		player->GetBody()->CreateFixture(&fd);
 
 		b2PolygonShape jumpBox;
-		b2Vec2 d = player->GetWorldDimensions();
 		b2Vec2 verts[] = {
 			b2Vec2(-d.x * 0.25, d.y / 4),
 			b2Vec2(d.x * 0.25, d.y / 4),
@@ -78,7 +80,7 @@ void GameWorld::EnableDebugDraw() {
 }
 
 void GameWorld::InitTestArea() {
-	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, .0025f), graphicsPtr));
+	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, 1.0f), graphicsPtr));
 
 	currentArea = areas->at(0);
 	currentArea->SetActive(1);
@@ -110,9 +112,10 @@ bool GameWorld::GameLoop(double &accumulator) {
 		return true;
 
 	while (accumulator >= DELTA_TIME) {	
-		currentArea->AreaUpdate();
-
+	
 		currentArea->AreaThink();
+
+		currentArea->AreaUpdate();
 
 		currentArea->PhysicsStep();
 
