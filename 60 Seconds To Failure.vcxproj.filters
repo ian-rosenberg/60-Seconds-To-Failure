@@ -57,7 +57,7 @@
     <ClCompile Include="source\contactListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tile.cpp">
+    <ClCompile Include="source\tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

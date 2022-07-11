@@ -8,9 +8,7 @@ Entity::Entity()
 	logicalState = State::State_Idle;
 	worldDimensions = {};
 	newDrawPosition = vector2(0, 0);
-	velocity = new Vector2();
-	velocity->x = 0;
-	velocity->y = 0;
+	velocity = { 0,0 };
 	prevDrawPosition = newDrawPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
 	scale = { 0,0 };
@@ -26,7 +24,7 @@ Entity::Entity()
 	maxEnergy = 0;
 	maxSpeed = 0;
 	dead = 0;
-	jumpForce = 0.0;
+	jumpForce = 1.0;
 	body = NULL;
 	jumpTrigger = NULL;
 	parentEntity = NULL;
@@ -87,10 +85,9 @@ Animation* Entity::GetAnimationByName(const char* name)
 void Entity::SetVelocity(InputEvent* e)
 {
 	Vector2* vlcty = (Vector2*)e->data;
-	velocity->x = vlcty->x;
-	velocity->y = body->GetLinearVelocity().y;
-	b2Vec2 v = b2Vec2(velocity->x, velocity->y);
-	
+	velocity.x = vlcty->x;
+	velocity.y = body->GetLinearVelocity().y;
+	b2Vec2 v = b2Vec2(velocity.x, velocity.y);
 	body->SetLinearVelocity(v);
 }
 
@@ -131,16 +128,14 @@ void Entity::Jump(InputEvent* e)
 	if (!jumpTrigger)
 		return;
 
-	if (grounded && jumpTimer <= 0) {
-		body->ApplyLinearImpulse(b2Vec2(0, -jumpForce), body->GetPosition(), true);
-		ToggleGrounded(false);
-		jumpTimer = jumpCooldown;
-	}
+ 	body->ApplyLinearImpulse(b2Vec2(0, -body->GetMass() * jumpForce), body->GetPosition(), true);
+	ToggleGrounded(false);
+	jumpTimer = jumpCooldown;
 }
 
 void Entity::ToggleGrounded(int flag)
 {
-	if ((bool)flag)
+	if (flag)
 		debugDraw->SetCollisionColor(1);
 	else
 		debugDraw->SetCollisionColor(0);
@@ -153,14 +148,16 @@ EntityManager::EntityManager() {
 	inputQueue = new std::vector<Entity::InputEvent*>();
 	eventsToFire = new std::queue<Entity::InputEvent*>();
 	debugDraw = 0;
+	graphics = nullptr;
 }
 
-EntityManager::EntityManager(Uint8 debugFlag)
+EntityManager::EntityManager(Uint8 debugFlag, std::shared_ptr<Graphics> g)
 {
 	entities = new std::vector<Entity*>();
 	inputQueue = new std::vector<Entity::InputEvent*>();
 	eventsToFire = new std::queue<Entity::InputEvent*>();
 	debugDraw = debugFlag;
+	graphics = std::shared_ptr<Graphics>(g);
 }
 
 EntityManager::~EntityManager()
@@ -187,7 +184,7 @@ EntityManager::~EntityManager()
 void EntityManager::AddEntity(Entity* ent)
 {
 	if (debugDraw) {
-		ent->EnableDebugDraw(new DebugDraw(ent->GetRenderer(), ent->GetActorName()));
+		ent->EnableDebugDraw(new DebugDraw(graphics, ent->GetActorName()));
 		ent->GetDebugDraw()->SetBodyReference(ent->GetBody());
 		ent->GetDebugDraw()->SetWorldDimensions(ent->GetWorldDimensions());
 		if(ent->GetJumpTrigger())
@@ -269,12 +266,13 @@ void EntityManager::DebugDrawing(Entity* it)
 
 void EntityManager::EntityUpdateAll(double ticks)
 {
+	Vector2 vel;
+	b2Vec2 v;
+
 	for (std::vector<Entity*>::iterator it = entities->begin();
 		it != entities->end();
 		it++)
 	{
-		if ((*it)->IsGrounded())
-			(*it)->DecrementJumpTimer(ticks);
 		(*it)->Update();
 	}
 }
@@ -307,7 +305,7 @@ void EntityManager::InputUpdate()
 			cur->onHold(cur);
 		else if (cur->onPress)
 			cur->onPress(cur);
-		if (cur->onRelease)
+		else if (cur->onRelease)
 			cur->onRelease(cur);
 		
 		delete cur;

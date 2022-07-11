@@ -9,8 +9,8 @@ Player::Player(std::shared_ptr<Graphics> g)
 	keys = 0;
 	controller = NULL;
 	sensitivity = 0;
-	maxSpeed = .3;
-	dampening = 0.f;
+	maxSpeed = 0.5f;
+	dampening = 0.8f;
 	dimensions = { 0,0,0 };
 	enteredFrom = { 0,0 };
 	axisLeftXLock = 0; 
@@ -21,7 +21,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 	health = maxHealth;
 	maxEnergy = 50;
 	energy = maxEnergy;
-	jumpForce = 200;
+	jumpForce = .025;
 	scale = { 1,1 };
 	prevDrawPosition = newDrawPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
@@ -36,80 +36,95 @@ Player::Player(std::shared_ptr<Graphics> g)
 
 Player::~Player()
 {
-	inputQueue = nullptr;
-	eventsToFire = nullptr;
+	InputEvent* e;
+	while (!inputQueue->empty()) {
+		e = inputQueue->front();
+		inputQueue->erase(inputQueue->begin());
+
+		delete e;
+	}
+	delete inputQueue;
+	
+	while (!eventsToFire->empty()) {
+		e = eventsToFire->front();
+		eventsToFire->pop();
+		
+		delete e;
+	}
+	delete eventsToFire;
+
+	graphics = nullptr;
 }
 
 void Player::Think() {
 	InputEvent* cEvent = nullptr;
 	InputEvent* pEvent;
 	InputType t;
-	Uint8 walking;
 
 	while (!inputQueue->empty()) {
 		pEvent = cEvent;
 		cEvent = inputQueue->front();
 		inputQueue->erase(inputQueue->begin());
-		walking = 0;
 		t = cEvent->inputType;
+		if(IsGrounded())
+			jumpTimer -= cEvent->msSinceLastInput;
 
 		if (pEvent && pEvent->inputType == t) {
-
 			if (t == WALK_UP) {
-				velocity->x = velocity->x;
-				velocity->y = -maxSpeed;
-				cEvent->data = velocity;
-				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);
+				velocity.y = -maxSpeed;
+				cEvent->data = &velocity;
+				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);				
 			}
 			else if (t == WALK_DOWN) {
-				velocity->x = velocity->x;
-				velocity->y = maxSpeed;
-				cEvent->data = velocity;
-				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);
+				velocity.y = maxSpeed;
+				cEvent->data = &velocity;
+				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);				
 			}
-
-			if (t == WALK_LEFT) {
-				velocity->x = -maxSpeed;
-				velocity->y = velocity->y;
-				cEvent->data = velocity;
-				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);
+			else if (t == WALK_LEFT) {
+				velocity.x = -maxSpeed;
+				cEvent->data = &velocity;
+				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);				
 			}
 			else if (t == WALK_RIGHT) {
-				velocity->x = maxSpeed;
-				velocity->y = velocity->y;
-				cEvent->data = velocity;
-				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);
+				velocity.x = maxSpeed;
+				cEvent->data = &velocity;
+				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);				
+			}
+			else {
+				velocity.x = 0;
+				cEvent->data = &velocity;
+				cEvent->onRelease = std::bind(&Entity::SetVelocity, this, cEvent);
 			}
 		}
 		else {
 			if (t == WALK_UP) {
-				velocity->x = velocity->x;
-				velocity->y = -maxSpeed;
-				cEvent->data = velocity;
-				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);
+				velocity.x = velocity.x;
+				velocity.y = -maxSpeed;
+				cEvent->data = &velocity;
+				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);				
 			}
 			else if (t == WALK_DOWN) {
-				velocity->x = velocity->x;
-				velocity->y = maxSpeed;
-				cEvent->data = velocity;
-				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);
+				velocity.x = velocity.x;
+				velocity.y = maxSpeed;
+				cEvent->data = &velocity;
+				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);				
 			}
 
 			if (t == WALK_LEFT) {
-				velocity->x = -maxSpeed;
-				velocity->y = velocity->y;
-				cEvent->data = velocity;
-				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);
+				velocity.x = -maxSpeed;
+				velocity.y = velocity.y;
+				cEvent->data = &velocity;
+				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);				
 			}
 			else if (t == WALK_RIGHT) {
-				velocity->x = maxSpeed;
-				velocity->y = velocity->y;
-				cEvent->data = velocity;
-				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);
+				velocity.x = maxSpeed;
+				velocity.y = velocity.y;
+				cEvent->data = &velocity;
+				cEvent->onRelease = std::bind(&Entity::SetVelocity, this, cEvent);				
 			}
 		}
 
-		if (t == JUMP && gravityEnabled) {
+		if (t == JUMP && gravityEnabled && IsGrounded() && jumpTimer <= 0.0) {
 			cEvent->onPress = std::bind(&Entity::Jump, this, cEvent);
 		}
 
@@ -162,14 +177,18 @@ void Player::Draw()
 
 void Player::UpdateScreenPosition(double alpha)
 {
+	Vector2 p;
+
 	prevBodyPosition = newBodyPosition;
 	newBodyPosition = body->GetPosition();
 
+	p = { newBodyPosition.x, newBodyPosition.y };
+
 	prevDrawPosition = newDrawPosition;
 
-	newDrawPosition.x = ((SCALED_WIDTH / 2.0f) + newBodyPosition.x) * MET_TO_PIX;
+	graphics->Vector2MetersToPixels(p);
+	newDrawPosition = p;
 	newDrawPosition.x = newDrawPosition.x * alpha + prevDrawPosition.x * (1.0 - alpha);
-	newDrawPosition.y = ((SCALED_HEIGHT / 2.0f) + newBodyPosition.y) * MET_TO_PIX;
 	newDrawPosition.y = newDrawPosition.y * alpha + prevDrawPosition.y * (1.0 - alpha);
 
 	//std::cout << GetAverageActorDimensions().x / 4 << std::endl;
@@ -189,14 +208,13 @@ void Player::Update()
 		return;
 	}
 
-	if ((velocity->x < maxSpeed && velocity->x > -maxSpeed) ||
-		(velocity->y < maxSpeed && velocity->y > -maxSpeed))
+	if (abs(velocity.x) == abs(maxSpeed))
 	{
-		if (velocity->x < 0)
+		if (velocity.x < 0)
 		{
 			flip.x = 1;
 		}
-		else if (velocity->x > 0)
+		else if (velocity.x > 0)
 		{
 			flip.x = 0;
 		}

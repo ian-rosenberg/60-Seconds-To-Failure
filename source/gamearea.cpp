@@ -12,7 +12,7 @@ void GameArea::CreateTestArea() {
 
 	// Ground
 	{
-		StaticEntity *se = new StaticEntity(graphics, SCALED_WIDTH, hDim);
+		StaticEntity *se = new StaticEntity(graphics, graphics->GetScaledWidth(), hDim);
 		se->SetActorName("Ground");
 		
 		b2BodyDef bd;
@@ -20,7 +20,7 @@ void GameArea::CreateTestArea() {
 		se->SetBody(ground);
 
 		b2EdgeShape shape;
-		shape.SetTwoSided(b2Vec2(-SCALED_WIDTH/2, SCALED_HEIGHT/2 - hDim), b2Vec2(SCALED_WIDTH/2, SCALED_HEIGHT / 2 - hDim));
+		shape.SetTwoSided(b2Vec2(-graphics->GetScaledWidth(), graphics->GetScaledHeight()/2 - hDim), b2Vec2(graphics->GetScaledWidth(), graphics->GetScaledHeight() / 2 - hDim));
 
 		b2FixtureDef tpd = {};
 		tpd.friction = fVal;
@@ -34,15 +34,15 @@ void GameArea::CreateTestArea() {
 
 	// Platform
 	{
-		StaticEntity* se = new StaticEntity(graphics, SCALED_WIDTH / 4.0f, 1.0f);
+		StaticEntity* se = new StaticEntity(graphics, graphics->GetScaledWidth() / 4.0f, 1.0f);
 		se->SetActorName("Platform");
 		b2BodyDef bd;
-		bd.position.Set(-SCALED_WIDTH / 8.0f, -SCALED_HEIGHT/4);
+		bd.position.Set(-graphics->GetScaledWidth() / 8.0f, -graphics->GetScaledHeight()/4);
 		b2Body* body = areaPhysics->CreateBody(&bd);
 		se->SetBody(body);
 
 		b2PolygonShape shape;
-		shape.SetAsBox(SCALED_WIDTH / 8, 0.5f);
+		shape.SetAsBox(graphics->GetScaledWidth() / 8, 0.5f);
 
 		b2FixtureDef tpd = {};
 		tpd.friction = fVal;
@@ -58,7 +58,7 @@ void GameArea::CreateTestArea() {
 GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
 	id = ID;
 	player = NULL;
-	entityManager = new EntityManager(1);//enabling debug draw with parameter, renderer
+	entityManager = new EntityManager(1, g);//enabling debug draw with parameter, renderer
 	gravityScale = new b2Vec2(grav);
 	gravityEnabled = gravityScale->y != 0 || gravityScale->x != 0;
 	areaPhysics = NULL;
@@ -66,11 +66,12 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
 	testPlatform = {};
 	testPlatformBottom = 0.0f;
 	testPlatformTop = 0.0f;
-	graphics = g;
+	graphics = std::shared_ptr<Graphics>(g);
 	tileManager = new TileManager("", graphics);
 }
 
 GameArea::~GameArea() {
+	graphics = nullptr;
 	delete gravityScale;
 	delete entityManager;
 	delete areaPhysics;
@@ -131,14 +132,15 @@ Uint8 GameArea::CaptureInputEvents(SDL_Event* e){
 	int keyCount = 0;
 	Entity::InputEvent* newEvent;
 	Entity::InputEvent* prevEvent = entityManager->GetNextInputEvent();
-	Uint8 started = prevEvent != nullptr ? 1 : 0;
-
-	keyboardState = SDL_GetKeyboardState(&keyCount);
+	Uint8 started = prevEvent != nullptr && prevEvent->inputType == JUMP ? 1 : 0;
+	Uint64 elapsedInputTime = 0;
 
 	while (SDL_PollEvent(e)) {
 		if (e->type == SDL_WINDOWEVENT && e->window.event == SDL_WINDOWEVENT_CLOSE)
 			return 0;
 	}
+
+	keyboardState = SDL_GetKeyboardState(&keyCount);
 	
 	if (keyboardState[SDL_SCANCODE_ESCAPE])
 		keyCount++;
@@ -193,9 +195,12 @@ Uint8 GameArea::CaptureInputEvents(SDL_Event* e){
 			newEvent->inputType = INTERACT;
 		if (keyboardState[SDL_SCANCODE_BACKSPACE])
 			newEvent->inputType = DECLINE;
-		if (keyboardState[SDL_SCANCODE_SPACE])
-			if (gravityEnabled)
+		if (keyboardState[SDL_SCANCODE_SPACE] && !started) {
+			if (gravityEnabled){
 				newEvent->inputType = JUMP;
+				started = 1;
+			}
+		}
 		if (keyboardState[SDL_SCANCODE_Q])
 			if (gravityEnabled)
 				newEvent->inputType = PUNCH;

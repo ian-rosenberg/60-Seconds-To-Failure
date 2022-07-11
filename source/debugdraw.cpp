@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
-DebugDraw::DebugDraw(SDL_Renderer* r, const char* name) {
-	ren = r;
+DebugDraw::DebugDraw(std::shared_ptr<Graphics> gr, const char* name) {
+	graphicsRef = std::shared_ptr<Graphics>(gr);
 	bodyPosition = b2Vec2(0, 0);
 	bodyRef = nullptr;
 	objName = name;
@@ -35,80 +35,80 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 {
 	int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 	b2Vec2 t;
+	Vector2 a = {},
+		b = {};
 
 	//std::cout << "Object: " << objName << std::endl;
 
-	SDL_SetRenderDrawColor(ren, 0, 255, 0, 255);
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 255, 0, 255);
 
 	for (int i = 0, j = 1; j < vertexCount; i++, j++) {
 		t = bodyRef->GetWorldPoint((*(vertices + i)));
-		x1 = ((SCALED_WIDTH / 2.0f) + t.x) * MET_TO_PIX;
-		y1 = ((SCALED_HEIGHT / 2.0f) + t.y) * MET_TO_PIX;
+		a = Vector2(t.x, t.y);
+		graphicsRef.get()->Vector2MetersToPixels(a);
 
 		//std::cout << "Transform vertex " << t.x << "," << t.y << "\tto\t" << x1 << "," << y1 << std::endl;
 
 		t = bodyRef->GetWorldPoint((*(vertices + j)));
-		x2 = ((SCALED_WIDTH / 2.0f) + t.x) * MET_TO_PIX;
-		y2 = ((SCALED_HEIGHT / 2.0f) + t.y) * MET_TO_PIX;
-
+		b = Vector2(t.x, t.y);
+		graphicsRef.get()->Vector2MetersToPixels(b);
 		//std::cout << "Transform vertex " << t.x << "," << t.y << "\tto\t" << x2 << "," << y2 << std::endl;
 
-		SDL_RenderDrawLine(ren, x1, y1, x2, y2);
+		SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
 	}
 
-	x1 = x2;
-	y1 = y2;
+	a = b;
 
 
 	t = bodyRef->GetWorldPoint(*vertices);
-	x2 = ((SCALED_WIDTH / 2.0f) + t.x) * MET_TO_PIX;
-	y2 = ((SCALED_HEIGHT / 2.0f) + t.y) * MET_TO_PIX;
-
+	b = Vector2(t.x, t.y);
+	graphicsRef.get()->Vector2MetersToPixels(b);
 	//std::cout << "Transform vertex " << t.x << "," << t.y << "\tto\t" << x2 << "," << y2 << std::endl;
 
 
-	SDL_RenderDrawLine(ren, x1, y1, x2, y2);
+	SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
 
-	SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 0, 0, 0);
 }
 
 void DebugDraw::DrawTriggerPolygon(const b2Vec2* vertices, int32 vertexCount)
 {
 	int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 	b2Vec2 t;
+	Vector2 a = {},
+		b = {};
 
-	SDL_SetRenderDrawColor(ren, dR, dG, dB, 255);
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), dR, dG, dB, 255);
 
 	for (int i = 0, j = 1; j < vertexCount; i++, j++) {
 		t = bodyRef->GetWorldPoint((*(vertices + i)));
-		x1 = ((SCALED_WIDTH / 2.0f) + t.x) * MET_TO_PIX;
-		y1 = ((SCALED_HEIGHT / 2.0f) + t.y) * MET_TO_PIX;
+		a = Vector2(t.x, t.y);
+		graphicsRef.get()->Vector2MetersToPixels(a);
 
 		t = bodyRef->GetWorldPoint((*(vertices + j)));
-		x2 = ((SCALED_WIDTH / 2.0f) + t.x) * MET_TO_PIX;
-		y2 = ((SCALED_HEIGHT / 2.0f) + t.y) * MET_TO_PIX;
+		b = Vector2(t.x, t.y);
+		graphicsRef.get()->Vector2MetersToPixels(b);
 
-		SDL_RenderDrawLine(ren, x1, y1, x2, y2);
+		SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), x1, y1, x2, y2);
 	}
 
-	x1 = x2;
-	y1 = y2;
+	a = b;
 
 
 	t = bodyRef->GetWorldPoint(*vertices);
-	x2 = ((SCALED_WIDTH / 2.0f) + t.x) * MET_TO_PIX;
-	y2 = ((SCALED_HEIGHT / 2.0f) + t.y) * MET_TO_PIX;
+	b = Vector2(t.x, t.y);
+	graphicsRef.get()->Vector2MetersToPixels(b);
 
-	SDL_RenderDrawLine(ren, x1, y1, x2, y2);
+	SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
 
-	SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 0, 0, 0);
 }
 
 void DebugDraw::DrawRect(const SDL_Rect* srcRect)
 {
-	SDL_SetRenderDrawColor(ren, 0, 255, 0, 255);
-	SDL_RenderDrawRect(ren, srcRect);
-	SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 255, 0, 255);
+	SDL_RenderDrawRect(graphicsRef.get()->GetRenderer(), srcRect);
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 0, 0, 0);
 }
 
 void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
@@ -121,32 +121,33 @@ void DebugDraw::DrawCircle(const b2Vec2& c, float radius, const b2Color& color)
 	uint8_t sides = 16;
 	float step = 2 * M_PI / sides;
 	b2Vec2 center = bodyRef->GetWorldPoint(c);
+	Vector2 transformCenter = { center.x, center.y };
 	std::vector<SDL_Point> circle;
 	SDL_Point b, pt;
 
-	center.x = ((SCALED_WIDTH / 2.0f) + center.x) * MET_TO_PIX;
-	center.y = ((SCALED_HEIGHT / 2.0f) + center.y) * MET_TO_PIX;
+
+	graphicsRef.get()->Vector2MetersToPixels(transformCenter);
 	
 	//16 sides
 	float d_a = 2 * M_PI / 16,
 		angle = d_a;
 	
-	b.x = center.x + radius * cos(0);
-	b.y = center.y - radius * sin(0);
+	b.x = transformCenter.x + radius * cos(0);
+	b.y = transformCenter.y - radius * sin(0);
 
 	for (float theta = 0; theta < 2 * M_PI; theta += step)
 	{
-		pt.x = center.x + radius * cos(theta);
-		pt.y = center.y - radius * sin(theta);
+		pt.x = transformCenter.x + radius * cos(theta);
+		pt.y = transformCenter.y - radius * sin(theta);
 		circle.push_back(pt);
 	}
 
 	circle.push_back(b);
 
-	SDL_SetRenderDrawColor(ren, 0, 255, 0, 0);
-	SDL_RenderDrawLines(ren, circle.data(), circle.size());
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 255, 0, 0);
+	SDL_RenderDrawLines(graphicsRef.get()->GetRenderer(), circle.data(), circle.size());
 
-	SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 0, 0, 0);
 }
 
 void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color)
@@ -156,18 +157,19 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2
 
 void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
-	SDL_Vertex v1, v2;
+	SDL_Vertex v1,
+		v2;
+	Vector2 a = {},
+		b = {};
 
+	a = Vector2(p1.x, p1.y);
+	graphicsRef.get()->Vector2MetersToPixels(a);
+	b = Vector2(p2.x, p2.y);
+	graphicsRef.get()->Vector2MetersToPixels(b);
 
-	v1.position.x = ((SCALED_WIDTH / 2.0f) + bodyRef->GetWorldPoint(p1).x) * MET_TO_PIX;
-	v1.position.y = ((SCALED_HEIGHT / 2.0f) + bodyRef->GetWorldPoint(p1).y) * MET_TO_PIX;
-
-	v2.position.x = ((SCALED_WIDTH / 2.0f) + bodyRef->GetWorldPoint(p2).x) * MET_TO_PIX;
-	v2.position.y = ((SCALED_HEIGHT / 2.0f) + bodyRef->GetWorldPoint(p1).y) * MET_TO_PIX;
-
-	SDL_SetRenderDrawColor(ren, dR, dG, dB, 255);
-	SDL_RenderDrawLineF(ren, v1.position.x, v1.position.y, v2.position.x, v2.position.y);
-	SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), dR, dG, dB, 255);
+	SDL_RenderDrawLineF(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 0, 0, 0);
 }
 
 void DebugDraw::DrawTransform(const b2Transform& xf)

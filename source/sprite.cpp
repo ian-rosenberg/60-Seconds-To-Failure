@@ -51,6 +51,7 @@ Sprite::Sprite(const char* filepath, Uint32 width, Uint32 height, SDL_Renderer* 
 Sprite::~Sprite()
 {
 	SDL_DestroyTexture(texture);
+	renderer = nullptr;
 }
 
 Uint8 Sprite::LoadPNGImage(const char* filepath)

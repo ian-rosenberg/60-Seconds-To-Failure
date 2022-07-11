@@ -77,8 +77,8 @@ void StaticEntity::Die()
 
 void StaticEntity::UpdateScreenPosition(double alpha)
 {
-	newDrawPosition.x = ((SCALED_WIDTH / 2.0f) + worldPosition.x) * MET_TO_PIX;
-	newDrawPosition.y = ((SCALED_HEIGHT / 2.0f) + worldPosition.y) * MET_TO_PIX;
+	newDrawPosition.x = ((graphics->GetScaledWidth() / 2.0f) + worldPosition.x) * MET_TO_PIX;
+	newDrawPosition.y = ((graphics->GetScaledHeight() / 2.0f) + worldPosition.y) * MET_TO_PIX;
 	debugRect.x = newDrawPosition.x - worldDimensions.x / 2 * MET_TO_PIX;
 	debugRect.y = newDrawPosition.y - worldDimensions.y / 2 * MET_TO_PIX;
 	/*std::cout << "Object: " << name << std::endl;

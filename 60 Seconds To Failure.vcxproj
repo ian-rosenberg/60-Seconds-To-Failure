@@ -87,7 +87,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>C:\Users\Ian\source\repos\60-Seconds-To-Failure\lib\Debug;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2-2.0.20\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_ttf-2.0.18\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_mixer-2.0.4\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <LibraryPath>C:\Users\Ian\source\repos\60-Seconds-To-Failure\box2d-main\build\bin\Release;C:\Users\Ian\source\repos\60-Seconds-To-Failure\lib\Debug;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2-2.0.20\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_ttf-2.0.18\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_mixer-2.0.4\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <IncludePath>C:\Users\Ian\source\repos\60-Seconds-To-Failure\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_image-2.0.5\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_mixer-2.0.4\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_ttf-2.0.18;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2-2.0.20\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -147,6 +147,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -169,8 +171,8 @@
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\sprite.cpp" />
     <ClCompile Include="source\staticentity.cpp" />
+    <ClCompile Include="source\tile.cpp" />
     <ClCompile Include="source\vectortypes.cpp" />
-    <ClCompile Include="tile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\actor.h" />

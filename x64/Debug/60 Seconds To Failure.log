@@ -1,31 +1,18 @@
-﻿  debugdraw.cpp
+﻿  graphics.cpp
 C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\graphics.h(19,33): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(30,19): warning C4244: '=': conversion from 'float' to 'int32', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(31,18): warning C4244: '=': conversion from 'float' to 'int32', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(45,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(46,39): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(51,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(52,39): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(64,37): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(65,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(84,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(85,39): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(88,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(89,39): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(99,37): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(100,38): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(120,24): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(122,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(127,48): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(128,49): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(131,27): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(134,17): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(135,17): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(139,19): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(140,19): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(147,55): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(162,73): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(163,74): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(165,73): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\debugdraw.cpp(166,74): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  60 Seconds To Failure.vcxproj -> C:\Users\Ian\source\repos\60-Seconds-To-Failure\x64\Debug\60 Seconds To Failure.exe
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\graphics.cpp(51,5): warning C4305: 'argument': truncation from 'unsigned int' to 'Uint8'
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\graphics.cpp(51,17): warning C4309: 'argument': truncation of constant value
+  player.obj : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+player.obj : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in actor.obj
+player.obj : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in actor.obj
+sprite.obj : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in actor.obj
+sprite.obj : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in actor.obj
+staticentity.obj : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in actor.obj
+staticentity.obj : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in actor.obj
+tile.obj : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in actor.obj
+tile.obj : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in actor.obj
+vectortypes.obj : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in actor.obj
+vectortypes.obj : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in actor.obj
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\x64\Debug\60 Seconds To Failure.exe : fatal error LNK1319: 10 mismatches detected

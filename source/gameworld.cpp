@@ -8,7 +8,7 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 		b2BodyDef bd;
 		bd.type = b2_dynamicBody;
 		bd.fixedRotation = true;
-		bd.position.Set(0, -SCALED_HEIGHT/2);
+		bd.position.Set(0, -graphicsPtr->GetScaledHeight() / 2);
 		player->SetBody(physicsArea->CreateBody(&bd));
 
 		b2FixtureDef fd;
@@ -18,8 +18,8 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 		shape.m_p = b2Vec2(0, d.y/4);
 
 		fd.shape = &shape;
-		fd.friction = 0.6f;
-		fd.density = 50.0f;
+		fd.friction = 0.7f;
+		fd.density = 1;
 		
 		player->GetBody()->CreateFixture(&fd);
 
@@ -71,6 +71,8 @@ GameWorld::~GameWorld() {
 			delete a;
 		}
 	}
+
+	graphicsPtr.reset();
 }
 
 void GameWorld::EnableDebugDraw() {
@@ -80,7 +82,7 @@ void GameWorld::EnableDebugDraw() {
 }
 
 void GameWorld::InitTestArea() {
-	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, 1.0f), graphicsPtr));
+	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, 0.0025), graphicsPtr));
 
 	currentArea = areas->at(0);
 	currentArea->SetActive(1);
@@ -111,10 +113,9 @@ bool GameWorld::GameLoop(double &accumulator) {
 	if (currentArea->CaptureInputEvents(&currentEvent) < 1)
 		return true;
 
-	while (accumulator >= DELTA_TIME) {	
-	
-		currentArea->AreaThink();
+	currentArea->AreaThink();
 
+	while (accumulator >= DELTA_TIME) {	
 		currentArea->AreaUpdate();
 
 		currentArea->PhysicsStep();
@@ -126,6 +127,8 @@ bool GameWorld::GameLoop(double &accumulator) {
 	{
 		SDL_Delay(FRAME_DELAY - DELTA_TIME);
 	}
+
+	//currentArea->AreaUpdate();
 
 	currentArea->AreaDraw(accumulator / DELTA_TIME);
 

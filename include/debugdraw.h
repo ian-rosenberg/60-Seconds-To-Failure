@@ -4,10 +4,12 @@
 #include <SDL.h>
 #include <box2d/b2_body.h>
 #include <string>
+#include <memory>
+#include <graphics.h>
 
 class DebugDraw : public b2Draw {
 private:
-	SDL_Renderer* ren;
+	std::shared_ptr<Graphics> graphicsRef;
 	b2Vec2 bodyPosition;
 	b2Body* bodyRef;
 	b2Fixture* triggerFix;
@@ -18,7 +20,7 @@ private:
 
 public:
 
-	DebugDraw(SDL_Renderer* r, const char* name);
+	DebugDraw(std::shared_ptr<Graphics> gr, const char* name);
 
 	void SetWorldDimensions(b2Vec2 dim);
 	void UpdateBodyPosition(b2Vec2 p);

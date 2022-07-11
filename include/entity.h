@@ -38,7 +38,7 @@ protected:
 		
 	Entity*											parentEntity;
 
-	Vector2*										velocity;
+	Vector2											velocity;
 	Vector2											prevDrawPosition;
 	Vector2											newDrawPosition;
 	b2Vec2											prevBodyPosition;
@@ -54,7 +54,7 @@ protected:
 	Uint16											health;
 	Uint16											maxHealth;
 
-	const double									jumpCooldown = 500.0;	//.5 second jump cooldown
+	const double									jumpCooldown = 2550.0;	//1.25 second jump cooldown
 	double											jumpTimer;
 	float											jumpForce;
 	float											dampening;
@@ -92,6 +92,20 @@ public:
 		*/
 
 		InputEvent() {
+			prevEvent = nullptr;
+			keyCount = 0;
+			gravity = 0;
+			e = nullptr;
+			keyDown = 0;
+			msSinceLastInput = 0;
+			inputType = NONE;
+			data = nullptr;
+			onPress = nullptr;
+			onHold = nullptr;
+			onRelease = nullptr;
+		}
+
+		~InputEvent() {
 			prevEvent = nullptr;
 			keyCount = 0;
 			gravity = 0;
@@ -157,6 +171,7 @@ public:
 	void ToggleGrounded(int flag);
 
 	void SetVelocity(InputEvent* e);
+	inline void SetPixelVelocity(Vector2 v) { velocity = v; }
 
 	inline void SetGravityEnabled(Uint8 flag) { gravityEnabled = flag; }
 
@@ -184,15 +199,16 @@ public:
 
 class EntityManager {
 private:
-	std::vector<Entity*>*			entities; 
-	Uint8							debugDraw;
+	std::vector<Entity*>*					entities; 
+	Uint8									debugDraw;
 	std::vector<Entity::InputEvent*>*		inputQueue;
 	std::queue<Entity::InputEvent*>*		eventsToFire;
+	std::shared_ptr<Graphics>				graphics;
 
 public:
 	EntityManager();
 
-	EntityManager(Uint8 debug);
+	EntityManager(Uint8 debug, std::shared_ptr<Graphics> g);
 
 	~EntityManager();
 

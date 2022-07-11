@@ -6,9 +6,6 @@
 
 Actor::Actor()
 {
-	int j = 0;
-	Actor* act = NULL;
-
 	animState = State::State_Idle;
 	currentSprite = NULL;
 	color = vector4(0, 0, 0, 0);
@@ -23,6 +20,16 @@ Actor::Actor()
 
 Actor::~Actor()
 {
+	Animation* a;
+	currentSprite = nullptr;
+	while (!animations->empty()) {
+		a = animations->front();
+		animations->erase(animations->begin());
+		delete a;
+	}
+
+	graphics.reset();
+	graphics = nullptr;
 }
 
 Actor* Actor::LoadActor(const char* filename)

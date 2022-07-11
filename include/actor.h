@@ -35,7 +35,7 @@ public:
 	*/
 	Actor();
 
-	virtual ~Actor() = 0;
+	~Actor();
 
 	inline SDL_Renderer* GetRenderer() { return graphics->GetRenderer(); }
 
