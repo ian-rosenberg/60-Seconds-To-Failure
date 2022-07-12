@@ -91,7 +91,7 @@ void GameArea::AreaUpdate() {
 
 	entityManager->InputUpdate();
 	entityManager->EntityUpdateAll(graphics->GetFrameDeltaTime());
-
+	player->ToggleGrounded(false);
 	for (auto c = listener->_contacts.begin(); c != listener->_contacts.end(); c++) {
 		Contact contact = *c;
 
@@ -100,6 +100,7 @@ void GameArea::AreaUpdate() {
 			if (!player->IsGrounded()) {
 				player->ToggleGrounded(true);
 			}
+			break;
 		}
 	}
 }
