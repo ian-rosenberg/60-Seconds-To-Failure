@@ -97,12 +97,6 @@ Vector4 vector4(int x, int y, int z, int w);
 
 typedef short unsigned int Bool;
 
-#ifndef false
-#define false 0
-#endif
-#ifndef true
-#define true 1
-#endif
 
 /**
  * @brief random macro taken from Id Software's Quake 2 Source.

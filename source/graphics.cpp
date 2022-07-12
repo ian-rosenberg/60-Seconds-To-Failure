@@ -2,11 +2,21 @@
 #include <iostream>
 #include <algorithm>
 
+
 int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 	if (SDL_Init(flags) < 0){
 		std::cout << "SDL failed to initialize!" << SDL_GetError() << std::endl;
 		return -1;
 	}
+
+	SDL_DisplayMode DM;
+	SDL_GetCurrentDisplayMode(0, &DM);
+	screenWidth = 1280;// DM.w;
+	screenHeight = 720;// DM.h;
+	scaledWidth = screenWidth * PIX_TO_MET;
+	scaledHeight = screenHeight * PIX_TO_MET;
+
+	std::cout << "Screen resolution: " << DM.w << "," << DM.h << std::endl;
 	
 	if (!IMG_Init(IMG_INIT_PNG)) {
 		std::cout << "SDL_Image failed to initialize!" << std::endl;
@@ -16,24 +26,18 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 	window = SDL_CreateWindow("60 Seconds To Failure",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		windowWidth, windowHeight,
-		0);
+		screenWidth, screenHeight,
+		SDL_WINDOW_ALLOW_HIGHDPI);
 
 	if (!window) {
 		std::cout << "Could not create SDL_Window!" << std::endl;
 		return -1;
 	}
 
-	surface = SDL_GetWindowSurface(window);
-
-	if (SDL_UpdateWindowSurface(window) < 0) {
-		std::cout << "Failed to update window surface!" << std::endl;
-	}
-
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 	if (!renderer) {
-		std::cout << "Could not get surface from SDL_Window" << std::endl;
+		std::cout << "Could not create renderer from SDL_Window" << std::endl;
 		return -1;
 	}
 
@@ -45,10 +49,8 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 Graphics::Graphics() {
 	renderer = NULL;
 	window = NULL;
-	surface = NULL;
-
-	lastUpdateTime = 0;
-	deltaTime = 0;
+	currentTime = 0.0;
+	accumulator = 0.0;
 
 	if (!SDL2_Init(SDL_INIT_EVERYTHING, 1280, 720)) {
 		return;
@@ -60,39 +62,28 @@ Graphics::Graphics() {
 }
 
 Graphics::~Graphics() {
+	int r = 0;
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	IMG_Quit();
 	SDL_Quit();
 
 	std::cout << "SDL Subsystems closed successfully!" << std::endl;
+	std::cin >> r;
 }
 
-void Graphics::NextFrame(){
-	FrameDelay();
+void Graphics::NextFrame() {
 
+	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
-
-	lastUpdateTime = SDL_GetTicks();
 }
 
-void Graphics::FrameDelay(){
-	lastUpdateTime = SDL_GetTicks();
-	deltaTime = currentUpdateTime - lastUpdateTime;
-	if (deltaTime < FRAME_DELAY)
-	{
-		SDL_Delay(FRAME_DELAY - deltaTime);
-	}
-	
-	framerate = 1000.0 / std::max((float)SDL_GetTicks() - lastUpdateTime, 0.001f);
-	//std::cout << framerate << " FPS" << std::endl;
-}
-
-void Graphics::SetCurrentUpdateTime()
+void Graphics::Vector2PixelsToMeters(Vector2& val)
 {
-	currentUpdateTime = SDL_GetTicks();
 }
 
-SDL_Renderer* Graphics::GetRenderer() {
-	return renderer;
+void Graphics::Vector2MetersToPixels(Vector2& val)
+{
+	val.x = ((scaledWidth / 2.0f) + val.x) * MET_TO_PIX;
+	val.y = ((scaledHeight / 2.0f) + val.y) * MET_TO_PIX;
 }
