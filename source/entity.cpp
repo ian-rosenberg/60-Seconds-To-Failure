@@ -129,18 +129,14 @@ void Entity::Jump(InputEvent* e)
 		return;
 
  	body->ApplyLinearImpulse(b2Vec2(0, -body->GetMass() * jumpForce), body->GetPosition(), true);
-	ToggleGrounded(false);
-	jumpTimer = jumpCooldown;
+	this->ToggleGrounded(false);
 }
 
 void Entity::ToggleGrounded(int flag)
 {
-	if (flag)
-		debugDraw->SetCollisionColor(1);
-	else
-		debugDraw->SetCollisionColor(0);
+	debugDraw->SetCollisionColor(flag);
 
-	grounded = flag;
+	grounded = flag == 1;
 }
 
 EntityManager::EntityManager() {
@@ -243,23 +239,27 @@ void EntityManager::DebugDrawing(Entity* it)
 		if (f == it->GetJumpTrigger()) {
 			b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
 			it->GetDebugDraw()->DrawTriggerPolygon(poly->m_vertices, poly->m_count);
+			continue;
 		}
-
 
 		if (shapeType == b2Shape::e_polygon) {
 			b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
 			it->GetDebugDraw()->DrawPolygon(poly->m_vertices, poly->m_count, b2Color(0,1.0f, 0));
+			continue;
 		}
 
 		else if (shapeType == b2Shape::e_edge) {
 			b2EdgeShape* edge = (b2EdgeShape*)f->GetShape();
 
 			it->GetDebugDraw()->DrawSegment(edge->m_vertex1, edge->m_vertex2, b2Color(0, 1.0f, 0));
+	
+			continue;
 		}
 
 		else if (shapeType == b2Shape::e_circle) {
 			b2CircleShape* poly = (b2CircleShape*)f->GetShape();
 			it->GetDebugDraw()->DrawCircle(poly->m_p, poly->m_radius * MET_TO_PIX, b2Color(0, 1.0f, 0));
+			continue;
 		}
 	}
 }

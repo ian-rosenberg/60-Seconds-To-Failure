@@ -21,7 +21,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 	health = maxHealth;
 	maxEnergy = 50;
 	energy = maxEnergy;
-	jumpForce = .025;
+	jumpForce = .01;
 	scale = { 1,1 };
 	prevDrawPosition = newDrawPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
@@ -61,13 +61,13 @@ void Player::Think() {
 	InputEvent* pEvent;
 	InputType t;
 
+	DecrementJumpTimer(graphics->GetFrameDeltaTime());
+
 	while (!inputQueue->empty()) {
 		pEvent = cEvent;
 		cEvent = inputQueue->front();
 		inputQueue->erase(inputQueue->begin());
 		t = cEvent->inputType;
-		if(IsGrounded())
-			jumpTimer -= cEvent->msSinceLastInput;
 
 		if (pEvent && pEvent->inputType == t) {
 			if (t == WALK_UP) {
@@ -90,7 +90,7 @@ void Player::Think() {
 				cEvent->data = &velocity;
 				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);				
 			}
-			else {
+			else if (IsGrounded()) {
 				velocity.x = 0;
 				cEvent->data = &velocity;
 				cEvent->onRelease = std::bind(&Entity::SetVelocity, this, cEvent);
@@ -109,8 +109,7 @@ void Player::Think() {
 				cEvent->data = &velocity;
 				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);				
 			}
-
-			if (t == WALK_LEFT) {
+			else if (t == WALK_LEFT) {
 				velocity.x = -maxSpeed;
 				velocity.y = velocity.y;
 				cEvent->data = &velocity;
@@ -124,7 +123,8 @@ void Player::Think() {
 			}
 		}
 
-		if (t == JUMP && gravityEnabled && IsGrounded() && jumpTimer <= 0.0) {
+		if (t == JUMP && IsGrounded() && IsJumpTimeReady()) {
+			ResetJumpTimer();
 			cEvent->onPress = std::bind(&Entity::Jump, this, cEvent);
 		}
 
@@ -142,6 +142,9 @@ void Player::Draw()
 	{
 		return;
 	}
+	
+	if (IsGrounded())
+		debugDraw->SetCollisionColor(1);
 
 	if ((health / maxHealth) < 0.25f)
 	{
@@ -151,9 +154,6 @@ void Player::Draw()
 	{
 		color = vector4(SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8);
 	}
-
-	if (!IsGrounded() && debugDraw)
-		debugDraw->SetCollisionColor(0);
 
 	scaleCenter = vector2(currentAnimation->GetCellWidth() / 2.0f,
 		currentAnimation->GetCellHeight() / 2.0f);

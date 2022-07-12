@@ -89,7 +89,7 @@ void DebugDraw::DrawTriggerPolygon(const b2Vec2* vertices, int32 vertexCount)
 		b = Vector2(t.x, t.y);
 		graphicsRef.get()->Vector2MetersToPixels(b);
 
-		SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), x1, y1, x2, y2);
+		SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
 	}
 
 	a = b;

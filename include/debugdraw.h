@@ -15,7 +15,7 @@ private:
 	b2Fixture* triggerFix;
 	int32 worldWidth, worldHeight;
 	std::string objName;
-	Uint8 isColliding;
+	bool isColliding;
 	Uint8 dR, dG, dB;
 
 public:
@@ -24,7 +24,7 @@ public:
 
 	void SetWorldDimensions(b2Vec2 dim);
 	void UpdateBodyPosition(b2Vec2 p);
-	void SetCollisionColor(Uint8 on) { isColliding = on; }
+	void SetCollisionColor(Uint8 on) { isColliding = on == 1; }
 
 	inline void SetBodyReference(b2Body* ref) { bodyRef = ref; }
 	inline void SetTriggerFixture(b2Fixture* ref) { triggerFix = ref; }

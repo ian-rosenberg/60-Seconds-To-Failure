@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="source\actor.cpp" />
     <ClCompile Include="source\animation.cpp" />
+    <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\contactListener.cpp" />
     <ClCompile Include="source\debugdraw.cpp" />
     <ClCompile Include="source\entity.cpp" />
@@ -177,6 +178,7 @@
   <ItemGroup>
     <ClInclude Include="include\actor.h" />
     <ClInclude Include="include\animation.h" />
+    <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\contactlistener.h" />
     <ClInclude Include="include\debugdraw.h" />
     <ClInclude Include="include\entity.h" />

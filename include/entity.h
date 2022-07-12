@@ -3,9 +3,17 @@
 #include <vector>
 #include <box2d/box2d.h>
 #include <actor.h>
+#include <camera.h>
 #include <debugdraw.h>
 #include <queue>
 #include <functional>
+
+typedef enum {
+	PLAYER = 1,
+	GROUND = 2,
+	INTERACTABLE = 4,
+	ENEMY = 8
+}EntityLayer;
 
 typedef enum {
 	MENU,
@@ -188,7 +196,7 @@ public:
 
 	inline const char* GetActorName() { return name.c_str(); }
 
-	inline void DecrementJumpTimer(double ticks) { jumpTimer -= (jumpTimer > 0) ? ticks : 0; }
+	inline void DecrementJumpTimer(double ticks) { jumpTimer -= ticks; }
 
 	inline void ResetJumpTimer() { jumpTimer = 0.0f; }
 
