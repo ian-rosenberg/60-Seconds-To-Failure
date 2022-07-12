@@ -179,11 +179,12 @@ public:
 	void ToggleGrounded(int flag);
 
 	void SetVelocity(InputEvent* e);
+
+	/** Inline Fcns -------------------------------------------------------------**/
 	inline void SetPixelVelocity(Vector2 v) { velocity = v; }
 
 	inline void SetGravityEnabled(Uint8 flag) { gravityEnabled = flag; }
-
-	/** Inline Fcns -------------------------------------------------------------**/
+	
 	inline Vector2 GetDrawPosition() { return newDrawPosition; }
 
 	inline void EnableDebugDraw(DebugDraw* ddPtr) { debugDraw = ddPtr; }
@@ -198,7 +199,7 @@ public:
 
 	inline void DecrementJumpTimer(double ticks) { jumpTimer -= ticks; }
 
-	inline void ResetJumpTimer() { jumpTimer = 0.0f; }
+	inline void ResetJumpTimer() { jumpTimer = jumpCooldown; }
 
 	inline bool IsJumpTimeReady() { return jumpTimer <= 0; }
 

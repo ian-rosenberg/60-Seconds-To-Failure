@@ -123,8 +123,8 @@ void Player::Think() {
 			}
 		}
 
-		if (t == JUMP && IsGrounded() && IsJumpTimeReady()) {
-			ResetJumpTimer();
+		if (t == JUMP && IsGrounded()) {
+			//ResetJumpTimer();
 			cEvent->onPress = std::bind(&Entity::Jump, this, cEvent);
 		}
 
