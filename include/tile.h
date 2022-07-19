@@ -5,7 +5,7 @@
 #include "debugdraw.h"
 
 
-const int VERTICES_PER_EDGE = 4;
+const int VERTICES_PER_EDGE = 2;
 const int MAX_EDGES = 4;
 
 class Tile {
@@ -18,7 +18,7 @@ private:
 	Vector2						pixelPosition;
 	b2Vec2						worldPosition;
 
-	std::vector<b2EdgeShape*>	edges;
+	b2ChainShape*				chainShape;
 
 	b2Body*						physicsBody;
 	b2FixtureDef*				fixtureDef;
@@ -27,29 +27,36 @@ private:
 
 	std::shared_ptr<Graphics>	graphicsRef;
 
-
 	//Debug Drawing, null if not enabled
 	DebugDraw*					debugDraw;
-	
 
 
-	int CreatePhysicsEdges(SDL_Surface* readSurface);
+	std::vector<std::vector<SDL_Color>> GetPixelDataFromFile(const char* file);
+	Uint32								GetPixel(SDL_Surface* surface, int x, int y);
 
 public:
-	Tile(std::shared_ptr<Graphics> graphics);
+	Tile(std::shared_ptr<Graphics> graphics, Vector2 pDim, DebugDraw* debugDraw);
 	~Tile();
 
-	void Draw();
+	inline void							SetBody(b2Body* b) { physicsBody = b; }
+	void								Draw();
+	std::vector<b2Vec2>					CreatePhysicsEdges();
 };
 
 class TileManager {
 private:
-	std::vector<std::vector<Tile*>*>*	tileMap;
-
+	std::vector<std::vector<Tile*>>     tileMap;
 
 	std::shared_ptr<Graphics>			graphicsRef;
 
+	b2World*							physics;
+	
 public:
-	TileManager(const char* filepath, std::shared_ptr<Graphics> graphics);
+	TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDimensions, DebugDraw* ddRef);
+	
 	~TileManager();
+
+	void UpdateMap();
+
+	void DrawMap(Vector2 cameraOffset);
 };

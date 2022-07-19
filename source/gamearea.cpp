@@ -67,7 +67,7 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
 	testPlatformBottom = 0.0f;
 	testPlatformTop = 0.0f;
 	graphics = std::shared_ptr<Graphics>(g);
-	tileManager = new TileManager("", graphics);
+	tileManager = nullptr;
 }
 
 GameArea::~GameArea() {
@@ -88,7 +88,7 @@ void GameArea::AreaThink() {
 void GameArea::AreaUpdate() {
 	if (!active)
 		return;
-
+	tileManager->UpdateMap();
 	entityManager->InputUpdate();
 	entityManager->EntityUpdateAll(graphics->GetFrameDeltaTime());
 	player->ToggleGrounded(false);
@@ -112,7 +112,7 @@ void GameArea::PhysicsStep() {
 void GameArea::AreaDraw(double accumulator) {
 	if (!active)
 		return;
-
+	tileManager->DrawMap(Vector2(0,0));
 	entityManager->EntityDrawAll(accumulator);
 }
 
@@ -126,6 +126,8 @@ void GameArea::SetPlayer(Player* p) {
 	player->SetEventsToFirePtr(entityManager->GetEventsToFire());
 
 	CreateTestArea();
+
+	tileManager = new TileManager("", graphics, areaPhysics, player->GetAverageActorDimensions(), new DebugDraw(graphics, "TestArea"));
 }
 
 Uint8 GameArea::CaptureInputEvents(SDL_Event* e){

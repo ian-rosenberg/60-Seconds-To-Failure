@@ -10,6 +10,7 @@
 
 class Sprite {
 protected:
+	char* filepath;
 	Uint32 frame;
 	Uint32 offset;
 	Uint32 frameWidth;
@@ -57,6 +58,8 @@ public:
 	SDL_Texture* GetTexture();
 
 	Vector2 GetPosition();
+
+	inline const char* GetFilePath() { return (const char*)filepath; }
 
 	void Draw(Sprite* sprite,
 		Vector2 drawPosition,

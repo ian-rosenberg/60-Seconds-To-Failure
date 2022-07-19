@@ -115,6 +115,43 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
 {
 }
 
+void DebugDraw::DrawChainShape(const b2Vec2* vertices, int32 vertexCount, b2Vec2 gPrev, b2Vec2 gNext)
+{
+	Vector2 a = {},
+		b = {};
+	b2Vec2 p = bodyRef->GetWorldPoint(gPrev);
+
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), dR, dG, dB, 255);
+
+	a = { p.x, p.y};
+	graphicsRef.get()->Vector2MetersToPixels(a);
+	p = bodyRef->GetWorldPoint(*vertices);
+	b = { p.x, p.y};
+	graphicsRef.get()->Vector2MetersToPixels(b);
+
+	SDL_RenderDrawLineF(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
+
+	for (int i = 0; i < vertexCount-1; i++) {
+		p = bodyRef->GetWorldPoint( *(vertices + i));
+		a = Vector2(p.x, p.y);
+		graphicsRef.get()->Vector2MetersToPixels(a);
+		p = bodyRef->GetWorldPoint(*(vertices + i + 1));
+		b = Vector2(p.x, p.y);
+		graphicsRef.get()->Vector2MetersToPixels(b);
+
+		SDL_RenderDrawLineF(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
+	}
+
+
+	p = bodyRef->GetWorldPoint(gNext);
+	a = { p.x, p.y };
+	graphicsRef.get()->Vector2MetersToPixels(a);
+	b = { vertices[vertexCount-1].x , vertices[vertexCount-1].y };
+	graphicsRef.get()->Vector2MetersToPixels(b);
+	
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 0, 0, 0);
+}
+
 void DebugDraw::DrawCircle(const b2Vec2& c, float radius, const b2Color& color)
 {
 	float pih = M_PI / 2.0; //half of pi

@@ -35,7 +35,7 @@ public:
 	void DrawRect(const b2Vec2* vertices, int32 vertexCount);
 	void DrawTriggerPolygon(const b2Vec2* vertices, int32 vertexCount);
 	void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
-
+	void DrawChainShape(const b2Vec2* vertices, int32 vertexCount, b2Vec2 gPrev, b2Vec2 gNext);
 
 	virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override;
 	virtual void DrawCircle(const b2Vec2& center, float radius, const b2Color& color) override;

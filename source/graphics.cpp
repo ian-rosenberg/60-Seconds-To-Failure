@@ -18,7 +18,7 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 
 	std::cout << "Screen resolution: " << DM.w << "," << DM.h << std::endl;
 	
-	if (!IMG_Init(IMG_INIT_PNG)) {
+	if (!IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) {
 		std::cout << "SDL_Image failed to initialize!" << std::endl;
 		return -1;
 	}
@@ -80,6 +80,8 @@ void Graphics::NextFrame() {
 
 void Graphics::Vector2PixelsToMeters(Vector2& val)
 {
+	val.x *= PIX_TO_MET;
+	val.y *= PIX_TO_MET;
 }
 
 void Graphics::Vector2MetersToPixels(Vector2& val)

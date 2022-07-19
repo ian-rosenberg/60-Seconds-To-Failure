@@ -93,12 +93,6 @@ public:
 		std::function<void(Entity::InputEvent*)> onHold;
 		std::function<void(Entity::InputEvent*)> onRelease;
 
-		/*
-		void			(Entity::* onPress)(InputEvent* data);        //callback for press event
-		void			(Entity::*onHold)(InputEvent* data);         //callback for hold event
-		void			(Entity::*onRelease)(InputEvent* data);      //callback for release event
-		*/
-
 		InputEvent() {
 			prevEvent = nullptr;
 			keyCount = 0;
