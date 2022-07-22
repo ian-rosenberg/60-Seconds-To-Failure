@@ -657,7 +657,7 @@ extern DECLSPEC int SDLCALL SDL_UpdateNVTexture(SDL_Texture * texture,
  * \param rect an SDL_Rect structure representing the area to lock for access;
  *             NULL to lock the entire texture
  * \param pixels this is filled in with a pointer to the locked pixels,
- *               appropriately offset by the locked area
+ *               appropriately yOffset by the locked area
  * \param pitch this is filled in with the pitch of the locked pixels; the
  *              pitch is the length of one row in bytes
  * \returns 0 on success or a negative error code if the texture is not valid

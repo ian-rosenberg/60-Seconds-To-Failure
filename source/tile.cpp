@@ -1,26 +1,55 @@
 #include "tile.h"
+#include "RSJparser.tcc"
 
 std::vector<b2Vec2> Tile::CreatePhysicsEdges()
 {
 	std::vector<std::vector<SDL_Color>> pixels = GetPixelDataFromFile(animSprite->GetSprite()->GetFilePath());
 	std::vector<b2Vec2> chain;
 	b2Vec2 vert;
+	Vector2 pixel;
+	int col=0, row=pixels.size()-1;
 
-
-	for (int col = 0; col < pixels.size(); col++)
-	{
-		for (int row = pixels.size()-1; row >= 0; row--)
+	while(col < pixels[row].size()) {
+		for (int row = pixels.size() - 1; row >= 0; row--)
 		{
 			if (pixels[row][col].a == 0) {
-				vert = { b2Vec2(col * PIX_TO_MET, (row+2) * PIX_TO_MET)};
+				pixel = { col * 1.0f, row * 1.0f };
+				std::cout << "column: " << pixel.x << " row: " << pixel.y << std::endl;
+				graphicsRef->Vector2PixelsToMeters(pixel);
+				vert = b2Vec2(pixel.x, pixel.y);
 				chain.push_back(vert);
-				col += (pixelDimensions.x/2);
+				col += (pixelDimensions.x / 2);
 				break;
 			}
 		}
 	}
 
 	return chain;
+}
+
+void Tile::TilePhysicsInit(b2World* world)
+{
+	b2ChainShape chainShape;
+	b2BodyDef bd;
+	b2FixtureDef fd;
+	std::vector<b2Vec2> verts = CreatePhysicsEdges();
+	b2Vec2 pg = verts.at(0);
+	b2Vec2 ng = verts.at(verts.size() - 1);
+
+	chainShape.m_count = verts.size();
+	chainShape.m_vertices = verts.data();
+	chainShape.CreateChain(verts.data(), verts.size(), pg, ng);
+
+	bd.type = b2_staticBody;
+	bd.position.SetZero();
+
+	physicsBody = world->CreateBody(&bd);
+	debugDraw->SetBodyReference(physicsBody);
+
+
+	fd.shape = &chainShape;
+
+	physicsBody->CreateFixture(&fd);
 }
 
 std::vector<std::vector<SDL_Color>> Tile::GetPixelDataFromFile(const char* file)
@@ -98,30 +127,23 @@ Uint32 Tile::GetPixel(SDL_Surface* surface, int x, int y)
 	}
 }
 
-Tile::Tile(std::shared_ptr<Graphics> graphics, Vector2 playerDim, DebugDraw* dd)
+Tile::Tile(Sprite* s, DebugDraw* dd, Vector2 gridPosition, Vector2 playerDim, std::shared_ptr<Graphics> g)
 {
-	Vector2 pixDim = playerDim;
-
-	graphicsRef = graphics;
-	animSprite = new Animation(std::string("idle"), 
-		std::string("images/GeometryTest.png"), 
-		1, 
-		64,
-		64,
-		0,
-		vector4(255,255,255,255),
-		1.0f,
-		0.0f,
-		AnimationType::AT_LOOP,
-		graphics->GetRenderer());
+	graphicsRef = g;
+	animSprite = new Animation(std::string("pipeTile-" + std::to_string(gridPosition.x) + "-" + std::to_string(gridPosition.y)),
+		s,
+		pixelDimensions.x,
+		pixelDimensions.y,
+		s->GetXOffset(),
+		s->GetYOffset(),
+		{ SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8 });
 	pixelDimensions = playerDim;
 	debugDraw = dd;
+	pixelPosition = { gridPosition.x * pixelDimensions.x, gridPosition.y * pixelDimensions.y };
 }
 
 Tile::~Tile()
 {
-	chainShape = nullptr;
-
 	if (animSprite)
 		delete animSprite;
 
@@ -137,18 +159,24 @@ void Tile::Draw()
 	b2Fixture* f;
 	b2Shape::Type shapeType;
 	b2ChainShape* chain;
-
 	b2Vec2 wPos = physicsBody->GetPosition();
+	Vector2 drawPosition = { wPos.x, wPos.y };
+	Vector2 scale = { 1,1 };
+	Vector2 scaleCenter = { 0.5f, 0.5f };
+	Vector2 flip = { 0,0 };
+	Vector3 rotation = { 0,0,0 };
+	Vector4 colorShift = { SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8 };
 
-	pixelPosition = { wPos.x, wPos.y };
+	graphicsRef->Vector2MetersToPixels(drawPosition);
 
-	graphicsRef->Vector2MetersToPixels(pixelPosition);
-
-	pixelPosition.x += (pixelDimensions.x / 2.0);
-	pixelPosition.y += (pixelDimensions.y / 2.0);
-
-
-	animSprite->GetSprite()->DrawSpriteImage(s, pixelPosition, pixelDimensions.x, pixelDimensions.y);
+	s->Draw(s,
+		drawPosition,
+		&scale,
+		&scaleCenter,
+		&rotation,
+		flip,
+		&colorShift,
+		0, 0, pixelDimensions.x, pixelDimensions.y);
 
 	//Debug Drawing
 	if (debugDraw) {
@@ -163,21 +191,67 @@ void Tile::Draw()
 	}
 }
 
-TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDimensions, DebugDraw* ddRef)
+std::pair<std::string, std::vector<Tile*>> TileManager::TileParseTypesFromJSON(std::string json)
+{
+	std::pair<std::string, std::vector<Tile*>> tilesOfType;
+	std::vector<Tile*> tiles;
+	std::string typeName;
+	std::string filepath;
+	int tileCount, tileWidth, tileHeight,
+		imgWidth, imgHeight, spacing;
+	SDL_Rect srcRect;
+	std::ifstream fileInputstream(json);
+	RSJresource jsonResource(fileInputstream);
+	Sprite* s;
+	Tile* t;
+
+	tileCount = jsonResource["tilecount"].as<int>();
+	tileWidth = jsonResource["tilewidth"].as<int>();
+	tileHeight = jsonResource["tileheight"].as<int>();
+	imgWidth = jsonResource["imagewidth"].as<int>();
+	imgHeight = jsonResource["imageheight"].as<int>();
+	spacing = jsonResource["spacing"].as<int>();
+	typeName = jsonResource["name"].as<std::string>();
+	filepath = jsonResource["image"].as<std::string>();
+	//Maybe a loading screen for parsing tiles
+	for (int i = 0; i < tileCount; i++) {
+		s = new Sprite(filepath.c_str(), imgWidth, imgHeight, tileWidth, tileHeight, spacing, 0, graphicsRef);
+		t = new Tile(s,
+			new DebugDraw(graphicsRef, typeName.c_str(), playerDimensions),
+			{ -1,-1 },
+			playerDimensions,
+			graphicsRef);
+
+		t->TilePhysicsInit(physics);
+
+		tiles.push_back(t);
+
+		spacing += tileHeight;
+	}
+
+	tilesOfType = std::make_pair(typeName, tiles);
+
+	return tilesOfType;
+}
+
+TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDim)
 {
 	std::vector<Tile*> tileRow;
-	b2ChainShape chainShape;
-	b2BodyDef bd;
-	b2Body* b;
-	b2FixtureDef fd;
-	b2Vec2 pg, ng;
+
+	tileTypes.clear();
 
 	tileMap.clear();
 
+	playerDimensions = playerDim;
+
 	graphicsRef = graphics;
 
-	Tile* testTile = new Tile(graphics, playerDimensions, ddRef);
-	std::vector<b2Vec2> verts = testTile->CreatePhysicsEdges();
+	physics = world;
+
+	tileTypes.insert(TileParseTypesFromJSON("data/tilemap/factory/pipeTiles.json"));
+	tileTypes.at("pipeTiles")[0]->Draw();
+	SDL_RenderPresent(graphics->GetRenderer());
+	/*std::vector<b2Vec2> verts = testTile->CreatePhysicsEdges();
 
 	pg = verts.at(0);
 	ng = verts.at(verts.size() - 1);
@@ -187,7 +261,7 @@ TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphic
 	chainShape.CreateChain(verts.data(), verts.size(), pg, ng);
 	
 	bd.type = b2_staticBody;
-	bd.position = b2Vec2(0, 0);
+	bd.position.SetZero();
 	
 	b = world->CreateBody(&bd);
 	ddRef->SetBodyReference(b);
@@ -199,7 +273,7 @@ TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphic
 
 	testTile->SetBody(b);
 
-	tileRow.push_back(testTile);
+	tileRow.push_back(testTile);*/
 	tileMap.push_back(tileRow);
 }
 

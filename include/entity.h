@@ -198,6 +198,8 @@ public:
 	inline bool IsJumpTimeReady() { return jumpTimer <= 0; }
 
 	inline bool IsGrounded() { return grounded; }
+
+	inline Vector2 GetAvgPixelDimensions() { return avgDim; }
 };
 
 class EntityManager {

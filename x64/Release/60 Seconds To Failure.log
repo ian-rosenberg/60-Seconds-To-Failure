@@ -1,13 +1,30 @@
 ﻿  tile.cpp
 C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\graphics.h(10,33): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(12,3): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(17,30): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(151,95): warning C4244: 'argument': conversion from 'double' to 'Uint32', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(151,76): warning C4244: 'argument': conversion from 'double' to 'Uint32', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(185,35): warning C4267: '=': conversion from 'size_t' to 'int32', possible loss of data
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(187,59): warning C4267: 'argument': conversion from 'size_t' to 'int32', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(72,46): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(82,39): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(169,53): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(171,53): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(176,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(212,36): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(380,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(386,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(603,53): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(605,53): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(610,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(10,32): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(13,3): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(19,33): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(19,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(21,31): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(39,35): warning C4267: '=': conversion from 'size_t' to 'int32', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(41,59): warning C4267: 'argument': conversion from 'size_t' to 'int32', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(136,18): warning C4244: 'argument': conversion from 'double' to 'Uint32', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(135,18): warning C4244: 'argument': conversion from 'double' to 'Uint32', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(179,43): warning C4244: 'argument': conversion from 'double' to 'Uint32', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(179,24): warning C4244: 'argument': conversion from 'double' to 'Uint32', possible loss of data
+C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\tile.cpp(202,11): warning C4101: 'srcRect': unreferenced local variable
   Generating code
-  1 of 1358 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  4 of 2049 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

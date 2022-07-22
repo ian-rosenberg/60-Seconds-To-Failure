@@ -1,4 +1,7 @@
 #pragma once
+#include <unordered_map>
+#include <utility>
+
 #include "vectortypes.h"
 #include <box2d/box2d.h>
 #include "animation.h"
@@ -18,10 +21,7 @@ private:
 	Vector2						pixelPosition;
 	b2Vec2						worldPosition;
 
-	b2ChainShape*				chainShape;
-
 	b2Body*						physicsBody;
-	b2FixtureDef*				fixtureDef;
 
 	Animation*					animSprite;
 
@@ -35,24 +35,31 @@ private:
 	Uint32								GetPixel(SDL_Surface* surface, int x, int y);
 
 public:
-	Tile(std::shared_ptr<Graphics> graphics, Vector2 pDim, DebugDraw* debugDraw);
+	Tile(Sprite* s, DebugDraw* debugDraw, Vector2 gridPosition, Vector2 pDim, std::shared_ptr<Graphics> g);
 	~Tile();
 
 	inline void							SetBody(b2Body* b) { physicsBody = b; }
 	void								Draw();
 	std::vector<b2Vec2>					CreatePhysicsEdges();
+	void								TilePhysicsInit(b2World* world);
 };
 
 class TileManager {
 private:
-	std::vector<std::vector<Tile*>>     tileMap;
+	std::unordered_map<std::string, std::vector<Tile*>>	tileTypes;
+	std::vector<std::vector<Tile*>>						tileMap;
 
-	std::shared_ptr<Graphics>			graphicsRef;
+	std::shared_ptr<Graphics>							graphicsRef;
 
-	b2World*							physics;
+	b2World*											physics;
+	
+	Vector2												playerDimensions;
+
+
+	std::pair<std::string, std::vector<Tile*>>			TileParseTypesFromJSON(std::string json);
 	
 public:
-	TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDimensions, DebugDraw* ddRef);
+	TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDimensions);
 	
 	~TileManager();
 

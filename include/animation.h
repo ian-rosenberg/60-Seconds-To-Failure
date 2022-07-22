@@ -41,7 +41,7 @@ protected:
 	Sprite*			sprite;
 
 	Uint32			length;
-	Uint32			cellWidth, cellHeight, yOffset;
+	Uint32			cellWidth, cellHeight, yOffset, xOffset;
 
 	Vector4			colorSpecial;
 
@@ -49,11 +49,11 @@ protected:
 	float			frameTimer;
 	float			currentFrame;
 
-	AnimationType	animType;//Following DJ's style, set the type at rutime
+	AnimationType	animType;
 
 public:
-	Animation(std::string n, std::string fp, Uint32 len, Uint32 width, Uint32 height, Uint32 offset, Vector4 color, float fr, float current, AnimationType type, SDL_Renderer* renderer);
-
+	Animation(std::string n, std::string fp, Uint32 len, Uint32 width, Uint32 height, Uint32 xOffset, Uint32 yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g);
+	Animation(std::string n, Sprite* s, Uint32 width, Uint32 height, Uint32 xOffset, Uint32 yOffset, Vector4 color);
 	~Animation();
 
 	/**

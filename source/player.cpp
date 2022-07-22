@@ -134,8 +134,6 @@ void Player::Think() {
 
 void Player::Draw()
 {
-	Vector2 centerScalePoint = {0};
-	Vector2 resultPos = { 0 };
 	Vector4 debugColor = vector4(.5, 1, 0, 1);
 
 	if (!this)

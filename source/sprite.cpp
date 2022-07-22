@@ -4,55 +4,71 @@ Sprite::Sprite()
 {
 	texture = NULL;
 	frame = 0;
-	offset = 0;
+	yOffset = 0;
 	frameWidth = 0;
 	frameHeight = 0;
 	flip = { 0,0 };
 	scale = { 0,0 };
 	scaleCenter = { 0,0 };
-	position = { 0,0 };
 	rotation = { 0,0,0 };
 	color = { 0,0,0,255 };
-	renderer = NULL;
+	graphics = NULL;
+	filepath = nullptr;
 }
 
-Sprite::Sprite(const char* fp, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, Uint32 frm, Uint32 off, Uint32 width, Uint32 height, SDL_Renderer* ren)
+Sprite::Sprite(const char* fp, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, Uint32 frm, Uint32 off, Uint32 width, Uint32 height, std::shared_ptr<Graphics> ren)
 {
 	filepath = (char*)fp;
 	frame = frm;
-	offset = off;
+	yOffset = off;
 	frameWidth = width;
 	frameHeight = height;
 	flip = flp;
 	scale = scle;
 	scaleCenter = scleCen;
-	position = drawPosition;
 	rotation = rot;
 	color = colorShift;
-	renderer = ren;
+	graphics = ren;
 	LoadPNGImage(filepath);
 }
 
-Sprite::Sprite(const char* filepath, Uint32 width, Uint32 height, SDL_Renderer* ren)
+Sprite::Sprite(const char* filepath, Uint32 width, Uint32 height, std::shared_ptr<Graphics> ren)
 {
+	this->filepath = (char*)filepath;
 	frame = 1.0f;
-	offset = 0;
+	yOffset = 0;
 	frameWidth = width;
 	frameHeight = height;
 	flip = {};
 	scale = {};
 	scaleCenter = {};
-	position = {};
 	rotation = {};
 	color = {};
-	renderer = ren;
+	graphics = ren;
 	LoadPNGImage(filepath);
 }
 
 Sprite::~Sprite()
 {
 	SDL_DestroyTexture(texture);
-	renderer = nullptr;
+	graphics = nullptr;
+}
+
+Sprite::Sprite(const char* filepath, Uint32 imgWidth, Uint32 imgHeight, Uint32 width, Uint32 height, Uint32 yOffset, Uint32 xOffset, std::shared_ptr<Graphics> ren)
+{
+	frame = 1.0f;
+	this->filepath = (char*)filepath;
+	this->yOffset = yOffset;
+	this->xOffset = xOffset;
+	frameWidth = width;
+	frameHeight = height;
+	flip = {};
+	scale = {};
+	scaleCenter = {};
+	rotation = {};
+	color = {SDL_MAX_UINT8,SDL_MAX_UINT8,SDL_MAX_UINT8,SDL_MAX_UINT8 };
+	graphics = ren;
+	LoadPNGImage(filepath);
 }
 
 Uint8 Sprite::LoadPNGImage(const char* filepath)
@@ -61,7 +77,7 @@ Uint8 Sprite::LoadPNGImage(const char* filepath)
 	
 	tempSurface = IMG_Load(filepath);
 
-	texture = SDL_CreateTextureFromSurface(renderer, tempSurface);
+	texture = SDL_CreateTextureFromSurface(graphics->GetRenderer(), tempSurface);
 
 	SDL_FreeSurface(tempSurface);
 
@@ -70,6 +86,8 @@ Uint8 Sprite::LoadPNGImage(const char* filepath)
 		printf("IMG_Load: %s\n", IMG_GetError());
 		return 0;
 	}
+
+	std::cout << "Image " << filepath << " was loaded!" << std::endl;
 
 	return 1;
 }
@@ -82,11 +100,6 @@ SDL_Surface* Sprite::LoadSurface(const char* filepath)
 SDL_Texture* Sprite::GetTexture()
 {
 	return texture;
-}
-
-Vector2 Sprite::GetPosition()
-{
-	return position;
 }
 
 void Sprite::Draw(Sprite* sprite,
@@ -112,14 +125,12 @@ void Sprite::Draw(Sprite* sprite,
 	{
 		return;
 	}
+
 	if (scale != NULL)
 	{
 		vector2_copy(scaleFactor, (*scale));
 	}
-	else
-	{
-		vector2_copy(scaleFactor, (vector2(1, 1)));
-	}
+
 	if (scaleCenter != NULL)
 	{
 		vector2_copy(scaleOffset, (*scaleCenter));
@@ -174,7 +185,7 @@ void Sprite::Draw(Sprite* sprite,
 		frameWidth * scaleFactor.x,
 		frameHeight * scaleFactor.y);
 
-	SDL_RenderCopyEx(renderer,
+	SDL_RenderCopyEx(graphics->GetRenderer(),
 		sprite->GetTexture(),
 		&cell,
 		&target,

@@ -191,6 +191,9 @@
     <ClInclude Include="include\tile.h" />
     <ClInclude Include="include\vectortypes.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="include\RSJparser.tcc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

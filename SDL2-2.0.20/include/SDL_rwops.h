@@ -60,10 +60,10 @@ typedef struct SDL_RWops
     Sint64 (SDLCALL * size) (struct SDL_RWops * context);
 
     /**
-     *  Seek to \c offset relative to \c whence, one of stdio's whence values:
+     *  Seek to \c yOffset relative to \c whence, one of stdio's whence values:
      *  RW_SEEK_SET, RW_SEEK_CUR, RW_SEEK_END
      *
-     *  \return the final offset in the data stream, or -1 on error.
+     *  \return the final yOffset in the data stream, or -1 on error.
      */
     Sint64 (SDLCALL * seek) (struct SDL_RWops * context, Sint64 offset,
                              int whence);
@@ -417,10 +417,10 @@ extern DECLSPEC Sint64 SDLCALL SDL_RWsize(SDL_RWops *context);
  * Prior to SDL 2.0.10, this function was a macro.
  *
  * \param context a pointer to an SDL_RWops structure
- * \param offset an offset in bytes, relative to **whence** location; can be
+ * \param yOffset an yOffset in bytes, relative to **whence** location; can be
  *               negative
  * \param whence any of `RW_SEEK_SET`, `RW_SEEK_CUR`, `RW_SEEK_END`
- * \returns the final offset in the data stream after the seek or -1 on error.
+ * \returns the final yOffset in the data stream after the seek or -1 on error.
  *
  * \since This function is available since SDL 2.0.10.
  *
@@ -437,17 +437,17 @@ extern DECLSPEC Sint64 SDLCALL SDL_RWseek(SDL_RWops *context,
                                           Sint64 offset, int whence);
 
 /**
- * Determine the current read/write offset in an SDL_RWops data stream.
+ * Determine the current read/write yOffset in an SDL_RWops data stream.
  *
  * SDL_RWtell is actually a wrapper function that calls the SDL_RWops's `seek`
- * method, with an offset of 0 bytes from `RW_SEEK_CUR`, to simplify
+ * method, with an yOffset of 0 bytes from `RW_SEEK_CUR`, to simplify
  * application development.
  *
  * Prior to SDL 2.0.10, this function was a macro.
  *
  * \param context a SDL_RWops data stream object from which to get the current
- *                offset
- * \returns the current offset in the stream, or -1 if the information can not
+ *                yOffset
+ * \returns the current yOffset in the stream, or -1 if the information can not
  *          be determined.
  *
  * \since This function is available since SDL 2.0.10.

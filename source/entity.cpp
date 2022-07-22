@@ -180,7 +180,7 @@ EntityManager::~EntityManager()
 void EntityManager::AddEntity(Entity* ent)
 {
 	if (debugDraw) {
-		ent->EnableDebugDraw(new DebugDraw(graphics, ent->GetActorName()));
+		ent->EnableDebugDraw(new DebugDraw(graphics, ent->GetActorName(), ent->GetAvgPixelDimensions()));
 		ent->GetDebugDraw()->SetBodyReference(ent->GetBody());
 		ent->GetDebugDraw()->SetWorldDimensions(ent->GetWorldDimensions());
 		if(ent->GetJumpTrigger())

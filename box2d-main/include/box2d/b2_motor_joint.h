@@ -70,11 +70,11 @@ public:
 	b2Vec2 GetReactionForce(float inv_dt) const override;
 	float GetReactionTorque(float inv_dt) const override;
 
-	/// Set/get the target linear offset, in frame A, in meters.
+	/// Set/get the target linear yOffset, in frame A, in meters.
 	void SetLinearOffset(const b2Vec2& linearOffset);
 	const b2Vec2& GetLinearOffset() const;
 
-	/// Set/get the target angular offset, in radians.
+	/// Set/get the target angular yOffset, in radians.
 	void SetAngularOffset(float angularOffset);
 	float GetAngularOffset() const;
 

@@ -14,6 +14,7 @@ void GameArea::CreateTestArea() {
 	{
 		StaticEntity *se = new StaticEntity(graphics, graphics->GetScaledWidth(), hDim);
 		se->SetActorName("Ground");
+		se->CalculateAverageActorDimensions();
 		
 		b2BodyDef bd;
 		b2Body* ground = areaPhysics->CreateBody(&bd);
@@ -28,6 +29,7 @@ void GameArea::CreateTestArea() {
 
 		b2Fixture* f = ground->CreateFixture(&tpd);
 		se->SetStaticTriggerFixture(f);
+		se->CalculateAverageActorDimensions();
 
 		entityManager->AddEntity(se);
 	}
@@ -121,13 +123,14 @@ void GameArea::AddEntity(Entity* e) {
 }
 
 void GameArea::SetPlayer(Player* p) {
+	Vector2 dim = p->GetAvgPixelDimensions();
 	player = p;
 	player->SetInputQueuePtr(entityManager->GetInputQueue());
 	player->SetEventsToFirePtr(entityManager->GetEventsToFire());
 
 	CreateTestArea();
 
-	tileManager = new TileManager("", graphics, areaPhysics, player->GetAverageActorDimensions(), new DebugDraw(graphics, "TestArea"));
+	tileManager = new TileManager("", graphics, areaPhysics, dim);
 }
 
 Uint8 GameArea::CaptureInputEvents(SDL_Event* e){

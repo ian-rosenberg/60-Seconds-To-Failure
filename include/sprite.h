@@ -10,23 +10,23 @@
 
 class Sprite {
 protected:
-	char* filepath;
-	Uint32 frame;
-	Uint32 offset;
-	Uint32 frameWidth;
-	Uint32 frameHeight;
+	char*						filepath;
+	Uint32						frame;
+	Uint32						yOffset;
+	Uint32						xOffset;
+	Uint32						frameWidth;
+	Uint32						frameHeight;
 
-	Vector2 flip;
-	Vector2 scale;
-	Vector2 scaleCenter;
-	Vector2 position;
+	Vector2						flip;
+	Vector2						scale;
+	Vector2						scaleCenter;
 
-	Vector3 rotation;
+	Vector3						rotation;
 
-	Vector4 color;
+	Vector4						color;
 
-	SDL_Texture* texture;
-	SDL_Renderer* renderer;
+	SDL_Texture*				texture;
+	std::shared_ptr<Graphics>	graphics;
 	
 public:
 	Sprite();
@@ -42,12 +42,21 @@ public:
 		Uint32 offset,
 		Uint32 frameWidth,
 		Uint32 frameHeight,
-		SDL_Renderer* ren);
+		std::shared_ptr<Graphics> ren);
 
-	Sprite(const char* filepath, 
+	Sprite(const char* filepath,
+		Uint32 imgWidth,
+		Uint32 imgHeight,
 		Uint32 width, 
-		Uint32 height, 
-		SDL_Renderer* ren);
+		Uint32 height,
+		Uint32 yOffset,
+		Uint32 xOffset, 
+		std::shared_ptr<Graphics> ren);
+
+	Sprite(const char* filepath,
+		Uint32 width,
+		Uint32 height,
+		std::shared_ptr<Graphics> g);
 
 	~Sprite();
 
@@ -60,6 +69,9 @@ public:
 	Vector2 GetPosition();
 
 	inline const char* GetFilePath() { return (const char*)filepath; }
+
+	inline Uint32 GetXOffset() { return xOffset; }
+	inline Uint32 GetYOffset() { return yOffset; }
 
 	void Draw(Sprite* sprite,
 		Vector2 drawPosition,

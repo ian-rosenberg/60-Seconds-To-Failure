@@ -12,6 +12,7 @@ private:
 	std::shared_ptr<Graphics> graphicsRef;
 	b2Vec2 bodyPosition;
 	b2Body* bodyRef;
+	Vector2 pixelDimensions;
 	b2Fixture* triggerFix;
 	int32 worldWidth, worldHeight;
 	std::string objName;
@@ -20,7 +21,7 @@ private:
 
 public:
 
-	DebugDraw(std::shared_ptr<Graphics> gr, const char* name);
+	DebugDraw(std::shared_ptr<Graphics> gr, const char* name, Vector2 pixelDimensions);
 
 	void SetWorldDimensions(b2Vec2 dim);
 	void UpdateBodyPosition(b2Vec2 p);

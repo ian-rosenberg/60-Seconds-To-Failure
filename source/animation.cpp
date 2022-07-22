@@ -2,19 +2,36 @@
 #include <fstream>
 #include <string>
 
-Animation::Animation(std::string n, std::string fp, Uint32 len, Uint32 width, Uint32 height, Uint32 offset, Vector4 color, float fr, float current, AnimationType type, SDL_Renderer* renderer)
+Animation::Animation(std::string n, std::string fp, Uint32 len, Uint32 width, Uint32 height, Uint32 xOffset, Uint32 yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g)
 {
 	name = n;
 	filepath = fp;
-	sprite = new Sprite(fp.c_str(), vector2( 0,0 ), vector2( 1,1 ), vector2(0,0), vector3( 0,0,0 ), vector2( 0,0 ), color, 0, offset, width, height, renderer);
+	sprite = new Sprite(fp.c_str(), vector2( 0,0 ), vector2( 1,1 ), vector2(0,0), vector3( 0,0,0 ), vector2( 0,0 ), color, 0, yOffset, width, height, g);
 	length = len;
 	currentFrame = current;
 	cellWidth = width;
 	cellHeight = height;
-	yOffset = offset;
+	this->yOffset = yOffset;
+	xOffset = 0;
 	colorSpecial = color;
 	animType = type;
 	frameRate = fr;
+}
+
+Animation::Animation(std::string n, Sprite* s, Uint32 width, Uint32 height, Uint32 xOffset, Uint32 yOffset, Vector4 color)
+{
+	name = n;
+	filepath = s->GetFilePath();
+	sprite = s;
+	length = 1;
+	currentFrame = 0;
+	cellWidth = width;
+	cellHeight = height;
+	this->yOffset = yOffset;
+	xOffset = 0;
+	colorSpecial = color;
+	animType = AnimationType::AT_LOOP;
+	frameRate = 0;
 }
 
 Animation::~Animation()
