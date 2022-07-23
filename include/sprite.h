@@ -11,11 +11,11 @@
 class Sprite {
 protected:
 	char*						filepath;
-	Uint32						frame;
-	Uint32						yOffset;
-	Uint32						xOffset;
-	Uint32						frameWidth;
-	Uint32						frameHeight;
+	int							frame;
+	int							yOffset;
+	int							xOffset;
+	int							frameWidth;
+	int							frameHeight;
 
 	Vector2						flip;
 	Vector2						scale;
@@ -26,6 +26,7 @@ protected:
 	Vector4						color;
 
 	SDL_Texture*				texture;
+	SDL_Rect					srcRect;
 	std::shared_ptr<Graphics>	graphics;
 	
 public:
@@ -38,24 +39,24 @@ public:
 		Vector3 rotation,
 		Vector2 flip,
 		Vector4 colorShift,
-		Uint32 frame,
-		Uint32 offset,
-		Uint32 frameWidth,
-		Uint32 frameHeight,
+		int frame,
+		int offset,
+		int frameWidth,
+		int frameHeight,
 		std::shared_ptr<Graphics> ren);
 
 	Sprite(const char* filepath,
-		Uint32 imgWidth,
-		Uint32 imgHeight,
-		Uint32 width, 
-		Uint32 height,
-		Uint32 yOffset,
-		Uint32 xOffset, 
+		int imgWidth,
+		int imgHeight,
+		int width, 
+		int height,
+		int yOffset,
+		int xOffset, 
 		std::shared_ptr<Graphics> ren);
 
 	Sprite(const char* filepath,
-		Uint32 width,
-		Uint32 height,
+		int width,
+		int height,
 		std::shared_ptr<Graphics> g);
 
 	~Sprite();
@@ -70,8 +71,12 @@ public:
 
 	inline const char* GetFilePath() { return (const char*)filepath; }
 
-	inline Uint32 GetXOffset() { return xOffset; }
-	inline Uint32 GetYOffset() { return yOffset; }
+	inline int GetXOffset() { return xOffset; }
+	inline int GetYOffset() { return yOffset; }
+
+	inline SDL_Rect* GetSourceRect() { return &srcRect; }
+
+	inline Vector3 GetRotation() { return rotation; }
 
 	void Draw(Sprite* sprite,
 		Vector2 drawPosition,
@@ -80,10 +85,10 @@ public:
 		Vector3* rotation,
 		Vector2 flip,
 		Vector4* colorShift,
-		Uint32 frame,
-		Uint32 offset,
-		Uint32 frameWidth,
-		Uint32 frameHeight);
+		int frame,
+		int offset,
+		int frameWidth,
+		int frameHeight);
 
-	void DrawSpriteImage(Sprite* image, Vector2 position, Uint32 width, Uint32 height);
+	void DrawSpriteImage(Sprite* image, Vector2 position, int width, int height);
 };

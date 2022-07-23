@@ -7,5 +7,6 @@
  "spacing":0,
  "tilecount":4,
  "tileheight":64,
- "tilewidth":64
+ "tilewidth":64,
+ "direction":"east"
 }

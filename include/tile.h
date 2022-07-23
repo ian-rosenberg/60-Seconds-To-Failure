@@ -40,8 +40,8 @@ public:
 
 	inline void							SetBody(b2Body* b) { physicsBody = b; }
 	void								Draw();
-	std::vector<b2Vec2>					CreatePhysicsEdges();
-	void								TilePhysicsInit(b2World* world);
+	std::vector<std::vector<b2Vec2>>	CreatePhysicsEdges(int dir);
+	void								TilePhysicsInit(b2World* world, int dir);
 };
 
 class TileManager {

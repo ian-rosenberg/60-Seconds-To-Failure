@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 
-Animation::Animation(std::string n, std::string fp, Uint32 len, Uint32 width, Uint32 height, Uint32 xOffset, Uint32 yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g)
+Animation::Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g)
 {
 	name = n;
 	filepath = fp;
@@ -18,7 +18,7 @@ Animation::Animation(std::string n, std::string fp, Uint32 len, Uint32 width, Ui
 	frameRate = fr;
 }
 
-Animation::Animation(std::string n, Sprite* s, Uint32 width, Uint32 height, Uint32 xOffset, Uint32 yOffset, Vector4 color)
+Animation::Animation(std::string n, Sprite* s, int width, int height, int xOffset, int yOffset, Vector4 color)
 {
 	name = n;
 	filepath = s->GetFilePath();

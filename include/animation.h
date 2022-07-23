@@ -40,8 +40,8 @@ private:
 protected:
 	Sprite*			sprite;
 
-	Uint32			length;
-	Uint32			cellWidth, cellHeight, yOffset, xOffset;
+	int			length;
+	int			cellWidth, cellHeight, yOffset, xOffset;
 
 	Vector4			colorSpecial;
 
@@ -52,8 +52,8 @@ protected:
 	AnimationType	animType;
 
 public:
-	Animation(std::string n, std::string fp, Uint32 len, Uint32 width, Uint32 height, Uint32 xOffset, Uint32 yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g);
-	Animation(std::string n, Sprite* s, Uint32 width, Uint32 height, Uint32 xOffset, Uint32 yOffset, Vector4 color);
+	Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g);
+	Animation(std::string n, Sprite* s, int width, int height, int xOffset, int yOffset, Vector4 color);
 	~Animation();
 
 	/**
@@ -64,27 +64,31 @@ public:
 	*/
 	AnimationReturnType AnimationNextFrame(Animation* animList);
 
-	float GetCurrentFrame() {
+	inline float GetCurrentFrame() {
 		return currentFrame;
 	}
 
-	Uint32 GetYOffset() {
+	inline int GetYOffset() {
 		return yOffset;
 	}
 
-	int GetCellHeight() {
+	inline int GetXOffset() {
+		return xOffset;
+	}
+
+	inline int GetCellHeight() {
 		return cellHeight;
 	}
 
-	int GetCellWidth() {
+	inline int GetCellWidth() {
 		return cellWidth;
 	}
 
-	std::string GetName() {
+	inline std::string GetName() {
 		return name;
 	}
 
-	Sprite* GetSprite() {
+	inline Sprite* GetSprite() {
 		return sprite;
 	}
 };
