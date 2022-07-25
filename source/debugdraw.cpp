@@ -119,22 +119,21 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
 void DebugDraw::DrawChainShape(const b2Vec2* vertices, int32 vertexCount, b2Vec2 gPrev, b2Vec2 gNext)
 {
 	Vector2 a, b;
-	b2Vec2 p = bodyRef->GetWorldPoint(gPrev);
+	b2Vec2 p1;
+	b2Vec2 p2;
 	b2Vec2 bp = bodyRef->GetPosition();
 
 	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), dR, dG, dB, 255);
 
 	for (int i = 0; i < vertexCount-1; i++) {
-		p = bodyRef->GetWorldPoint( *(vertices + i));
-		p -= bp;
-		a = Vector2(p.x, p.y);
+		p1 = bodyRef->GetWorldPoint( *(vertices + i));
+		a = Vector2(p1.x, p1.y);
 		graphicsRef.get()->Vector2MetersToPixels(a);
-		p = bodyRef->GetWorldPoint(*(vertices + i + 1));
-		p -= bp;
-		b = Vector2(p.x, p.y);
+		p2 = bodyRef->GetWorldPoint(*(vertices + i + 1));
+		b = Vector2(p2.x, p2.y);
 		graphicsRef.get()->Vector2MetersToPixels(b);
 
-		SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
+		SDL_RenderDrawLineF(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
 	}
 	
 	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 0, 0, 0);
@@ -182,8 +181,6 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2
 
 void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
-	SDL_Vertex v1,
-		v2;
 	Vector2 a = {},
 		b = {};
 

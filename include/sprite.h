@@ -74,7 +74,7 @@ public:
 	inline int GetXOffset() { return xOffset; }
 	inline int GetYOffset() { return yOffset; }
 
-	inline SDL_Rect* GetSourceRect() { return &srcRect; }
+	inline SDL_Rect GetSourceRect() { return srcRect; }
 
 	inline Vector3 GetRotation() { return rotation; }
 
