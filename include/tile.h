@@ -14,6 +14,7 @@ const int MAX_EDGES = 4;
 class Tile {
 private:
 	int							id;
+	int							direction;
 
 	Vector2						pixelDimensions;
 	b2Vec2						worldDimensions;
@@ -35,13 +36,16 @@ private:
 	Uint32								GetPixel(SDL_Surface* surface, int x, int y);
 
 public:
-	Tile(Sprite* s, DebugDraw* debugDraw, Vector2 gridPosition, Vector2 pDim, std::shared_ptr<Graphics> g);
+	Tile();
+	Tile(Sprite* s, DebugDraw* debugDraw, Vector2 gridPosition, Vector2 pDim, int dir, std::shared_ptr<Graphics> g);
+	Tile(const Tile& oldTile);
+	
 	~Tile();
 
 	inline void							SetBody(b2Body* b) { physicsBody = b; }
 	void								Draw();
-	std::vector<std::vector<b2Vec2>>	CreatePhysicsEdges(int dir);
-	void								TilePhysicsInit(b2World* world, int dir);
+	std::vector<std::vector<b2Vec2>>	CreatePhysicsEdges();
+	void								TilePhysicsInit(b2World* world, Vector2 p);
 };
 
 class TileManager {

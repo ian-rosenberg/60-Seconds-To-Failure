@@ -39,8 +39,6 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 	Vector2 a = {},
 		b = {};
 
-	//std::cout << "Object: " << objName << std::endl;
-
 	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 255, 0, 255);
 
 	for (int i = 0, j = 1; j < vertexCount; i++, j++) {
@@ -48,12 +46,9 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 		a = Vector2(t.x, t.y);
 		graphicsRef.get()->Vector2MetersToPixels(a);
 
-		//std::cout << "Transform vertex " << t.x << "," << t.y << "\tto\t" << x1 << "," << y1 << std::endl;
-
 		t = bodyRef->GetWorldPoint((*(vertices + j)));
 		b = Vector2(t.x, t.y);
 		graphicsRef.get()->Vector2MetersToPixels(b);
-		//std::cout << "Transform vertex " << t.x << "," << t.y << "\tto\t" << x2 << "," << y2 << std::endl;
 
 		SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
 	}
@@ -64,9 +59,7 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 	t = bodyRef->GetWorldPoint(*vertices);
 	b = Vector2(t.x, t.y);
 	graphicsRef.get()->Vector2MetersToPixels(b);
-	//std::cout << "Transform vertex " << t.x << "," << t.y << "\tto\t" << x2 << "," << y2 << std::endl;
-
-
+	
 	SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
 
 	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 0, 0, 0);
@@ -129,6 +122,7 @@ void DebugDraw::DrawChainShape(const b2Vec2* vertices, int32 vertexCount, b2Vec2
 		p1 = bodyRef->GetWorldPoint( *(vertices + i));
 		a = Vector2(p1.x, p1.y);
 		graphicsRef.get()->Vector2MetersToPixels(a);
+
 		p2 = bodyRef->GetWorldPoint(*(vertices + i + 1));
 		b = Vector2(p2.x, p2.y);
 		graphicsRef.get()->Vector2MetersToPixels(b);

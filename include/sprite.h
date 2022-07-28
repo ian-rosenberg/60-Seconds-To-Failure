@@ -10,7 +10,7 @@
 
 class Sprite {
 protected:
-	char*						filepath;
+	std::string					filepath;
 	int							frame;
 	int							yOffset;
 	int							xOffset;
@@ -32,7 +32,7 @@ protected:
 public:
 	Sprite();
 
-	Sprite(const char* filepath,
+	Sprite(std::string filepath,
 		Vector2 drawPosition,
 		Vector2 scale,
 		Vector2 scaleCenter,
@@ -45,7 +45,7 @@ public:
 		int frameHeight,
 		std::shared_ptr<Graphics> ren);
 
-	Sprite(const char* filepath,
+	Sprite(std::string filepath,
 		int imgWidth,
 		int imgHeight,
 		int width, 
@@ -54,22 +54,22 @@ public:
 		int xOffset, 
 		std::shared_ptr<Graphics> ren);
 
-	Sprite(const char* filepath,
+	Sprite(std::string filepath,
 		int width,
 		int height,
 		std::shared_ptr<Graphics> g);
 
 	~Sprite();
 
-	Uint8 LoadPNGImage(const char* filepath);
+	Uint8 LoadPNGImage(std::string filepath);
 
-	SDL_Surface* LoadSurface(const char* filepath);
+	SDL_Surface* LoadSurface(std::string filepath);
 
 	SDL_Texture* GetTexture();
 
 	Vector2 GetPosition();
 
-	inline const char* GetFilePath() { return (const char*)filepath; }
+	inline std::string GetFilePath() { return (std::string)filepath; }
 
 	inline int GetXOffset() { return xOffset; }
 	inline int GetYOffset() { return yOffset; }

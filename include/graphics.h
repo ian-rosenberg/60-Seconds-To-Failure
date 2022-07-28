@@ -15,7 +15,7 @@ const double MS = 1000;
 
 const double DELTA_TIME = 0.01;
 
-const float MET_TO_PIX = 1.250f;
+const float MET_TO_PIX = 1.25f;
 const float PIX_TO_MET = 1 / MET_TO_PIX;
 
 class Graphics {

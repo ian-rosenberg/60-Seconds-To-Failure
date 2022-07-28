@@ -18,8 +18,8 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 		shape.m_p = b2Vec2(0, d.y/4);
 
 		fd.shape = &shape;
-		fd.friction = 0.7f;
-		fd.density = 1;
+		fd.friction = 0.5f;
+		fd.density = 10;
 		
 		player->GetBody()->CreateFixture(&fd);
 

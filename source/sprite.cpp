@@ -13,13 +13,13 @@ Sprite::Sprite()
 	rotation = { 0,0,0 };
 	color = { 0,0,0,255 };
 	graphics = NULL;
-	filepath = nullptr;
+	filepath = "";
 	srcRect = { 0,0,0,0 };
 }
 
-Sprite::Sprite(const char* fp, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, int frm, int off, int width, int height, std::shared_ptr<Graphics> ren)
+Sprite::Sprite(std::string fp, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, int frm, int off, int width, int height, std::shared_ptr<Graphics> ren)
 {
-	filepath = (char*)fp;
+	filepath = fp;
 	frame = frm;
 	yOffset = off;
 	frameWidth = width;
@@ -34,9 +34,9 @@ Sprite::Sprite(const char* fp, Vector2 drawPosition, Vector2 scle, Vector2 scleC
 	LoadPNGImage(filepath);
 }
 
-Sprite::Sprite(const char* filepath, int width, int height, std::shared_ptr<Graphics> ren)
+Sprite::Sprite(std::string fp, int width, int height, std::shared_ptr<Graphics> ren)
 {
-	this->filepath = (char*)filepath;
+	filepath = fp;
 	frame = 1.0f;
 	yOffset = 0;
 	frameWidth = width;
@@ -57,12 +57,12 @@ Sprite::~Sprite()
 	graphics = nullptr;
 }
 
-Sprite::Sprite(const char* filepath, int imgWidth, int imgHeight, int width, int height, int yOffset, int xOffset, std::shared_ptr<Graphics> ren)
+Sprite::Sprite(std::string fp, int imgWidth, int imgHeight, int width, int height, int yOff, int xOff, std::shared_ptr<Graphics> ren)
 {
 	frame = 1.0f;
-	this->filepath = (char*)filepath;
-	this->yOffset = yOffset;
-	this->xOffset = xOffset;
+	filepath = fp;
+	yOffset = yOff;
+	xOffset = xOff;
 	frameWidth = width;
 	frameHeight = height;
 	flip = {};
@@ -71,15 +71,15 @@ Sprite::Sprite(const char* filepath, int imgWidth, int imgHeight, int width, int
 	rotation = {};
 	color = {SDL_MAX_UINT8,SDL_MAX_UINT8,SDL_MAX_UINT8,SDL_MAX_UINT8 };
 	graphics = ren;
-	srcRect = { frameWidth * xOffset, frameHeight * yOffset, frameWidth, frameHeight };
+	srcRect = { xOffset * frameWidth, yOffset * frameHeight, frameWidth, frameHeight };
 	LoadPNGImage(filepath);
 }
 
-Uint8 Sprite::LoadPNGImage(const char* filepath)
+Uint8 Sprite::LoadPNGImage(std::string filepath)
 {
 	SDL_Surface* tempSurface = nullptr;
 	
-	tempSurface = IMG_Load(filepath);
+	tempSurface = IMG_Load(filepath.c_str());
 
 	texture = SDL_CreateTextureFromSurface(graphics->GetRenderer(), tempSurface);
 
@@ -96,9 +96,9 @@ Uint8 Sprite::LoadPNGImage(const char* filepath)
 	return 1;
 }
 
-SDL_Surface* Sprite::LoadSurface(const char* filepath)
+SDL_Surface* Sprite::LoadSurface(std::string filepath)
 {
-	return IMG_Load(filepath);
+	return IMG_Load(filepath.c_str());
 }
 
 SDL_Texture* Sprite::GetTexture()

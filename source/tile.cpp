@@ -1,9 +1,9 @@
 #include "tile.h"
 #include "RSJparser.tcc"
 
-std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges(int dir)
+std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges()
 {
-	std::vector<std::vector<SDL_Color>> pixels = GetPixelDataFromFile(animSprite->GetSprite()->GetFilePath());
+	std::vector<std::vector<SDL_Color>> pixels = GetPixelDataFromFile(animSprite->GetSprite()->GetFilePath().c_str());
 	std::vector<std::vector<b2Vec2>> chains;
 	std::vector<b2Vec2> c1;
 	std::vector<b2Vec2> c2;
@@ -12,18 +12,18 @@ std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges(int dir)
 	int col = 0,
 		row = 0;
 
-	if (dir == 1) {
+	if (direction == 1) {
 		//scan north -> south
 	}
-	else if (dir == 2) {
+	else if (direction == 2) {
 		//scan from west -> east
 		std::cout << "Scanning west to east" << std::endl;
 		row = r.y;
-		while (row < r.y + r.h) {
+		while (row < r.y + r.h-1) {
 			for (col = 0; col < r.w; col++)
 			{
 				if (pixels[row][col].a != 0) {
-					vert = b2Vec2(col * PIX_TO_MET, row * PIX_TO_MET);
+					vert = b2Vec2(col * PIX_TO_MET, (row - r.y )* PIX_TO_MET);
 					c1.push_back(vert);
 					row += (pixelDimensions.x /4);
 					break;
@@ -33,7 +33,7 @@ std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges(int dir)
 
 		for (col = 0, row = r.y + r.h-1; col < r.w; col++) {
 			if (pixels[row][col].a != 0) {
-				vert = b2Vec2(col * PIX_TO_MET, row * PIX_TO_MET);
+				vert = b2Vec2(col * PIX_TO_MET, (row - r.y )* PIX_TO_MET);
 				c1.push_back(vert);
 				break;
 			}
@@ -41,16 +41,15 @@ std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges(int dir)
 
 		chains.push_back(c1);
 
-
 		std::cout << "Scanning east to west" << std::endl;
 
 		//scan from east -> west
 		row = r.y;
-		while (row < r.y + r.h) {
-			for (col = r.x +  r.w - 1; col >= 0; col--)
+		while (row < r.y + r.h-1) {
+			for (col = r.w - 1; col >= 0; col--)
 			{
 				if (pixels[row][col].a != 0) {
-					vert = b2Vec2(col * PIX_TO_MET, row * PIX_TO_MET);
+					vert = b2Vec2(col * PIX_TO_MET, (row - r.y )* PIX_TO_MET);
 					c2.push_back(vert);
 					row += (pixelDimensions.x / 4);
 					break;
@@ -58,9 +57,9 @@ std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges(int dir)
 			}
 		}
 
-		for (col = r.x + r.w-1, row = r.y + r.h-1; col >= 0; col--) {
+		for (col = r.w-1, row = r.y + r.h-1; col >= 0; col--) {
 			if (pixels[row][col].a != 0) {
-				vert = b2Vec2(col * PIX_TO_MET, row * PIX_TO_MET);
+				vert = b2Vec2(col * PIX_TO_MET, (row - r.y )* PIX_TO_MET);
 				c2.push_back(vert);
 				break;
 			}
@@ -104,18 +103,16 @@ std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges(int dir)
 	return chains;
 }
 
-void Tile::TilePhysicsInit(b2World* world, int dir)
+void Tile::TilePhysicsInit(b2World* world, Vector2 p)
 {
 	b2BodyDef bd;
 
 	bd.type = b2_staticBody;
-	bd.position.Set(0, 0);
+	bd.position.Set(p.x * pixelDimensions.x * PIX_TO_MET, p.y * pixelDimensions.y * PIX_TO_MET);
 
-	physicsBody = world->CreateBody(&bd);
 
-	debugDraw->SetBodyReference(physicsBody);
 	
-	std::vector<std::vector<b2Vec2>> chains = CreatePhysicsEdges(dir);
+	std::vector<std::vector<b2Vec2>> chains = CreatePhysicsEdges();
 	for (std::vector<b2Vec2> chain : chains) {
 		b2ChainShape chainShape;
 		b2FixtureDef fd;
@@ -126,11 +123,17 @@ void Tile::TilePhysicsInit(b2World* world, int dir)
 		chainShape.m_vertices = chain.data();
 		chainShape.CreateChain(chain.data(), chain.size(), pg, ng);
 
-
 		fd.shape = &chainShape;
-
+	
+		if (!physicsBody) {
+				bd.angle = M_PI * 1.5f;
+			
+			physicsBody = world->CreateBody(&bd);
+		}
 		physicsBody->CreateFixture(&fd);
 	}
+
+	debugDraw->SetBodyReference(physicsBody);
 }
 
 std::vector<std::vector<SDL_Color>> Tile::GetPixelDataFromFile(const char* file)
@@ -139,7 +142,7 @@ std::vector<std::vector<SDL_Color>> Tile::GetPixelDataFromFile(const char* file)
 	SDL_PixelFormat* fmt;
 	SDL_Surface* surf = NULL;
 	std::vector<std::vector<SDL_Color>> pixelResults;
-	SDL_Color* pixels;
+	std::vector<SDL_Color> pixels;
 	std::vector<SDL_Color> resultLine;
 
 	int bpp;
@@ -148,8 +151,7 @@ std::vector<std::vector<SDL_Color>> Tile::GetPixelDataFromFile(const char* file)
 
 	SDL_LockSurface(surf);
 
-	pixels = (SDL_Color*)malloc(sizeof(SDL_Color) * surf->pitch * surf->h);
-	memset(pixels, 0, sizeof(SDL_Color) * surf->pitch * surf->h);
+	pixels.resize(sizeof(SDL_Color) * surf->pitch * surf->h);
 
 	fmt = surf->format;
 	bpp = surf->format->BytesPerPixel;
@@ -208,7 +210,26 @@ Uint32 Tile::GetPixel(SDL_Surface* surface, int x, int y)
 	}
 }
 
-Tile::Tile(Sprite* s, DebugDraw* dd, Vector2 gridPosition, Vector2 playerDim, std::shared_ptr<Graphics> g)
+Tile::Tile()
+{
+	id = 0;
+	direction = 1;
+	pixelDimensions = { 0,0 };
+	worldDimensions = { 0,0 };
+
+	pixelPosition = { 0,0 };
+	worldPosition = { 0,0 };
+
+	physicsBody = nullptr;
+
+	animSprite = nullptr;
+
+	graphicsRef = nullptr;
+
+	debugDraw = nullptr;
+}
+
+Tile::Tile(Sprite* s, DebugDraw* dd, Vector2 gridPosition, Vector2 dim, int dir, std::shared_ptr<Graphics> g)
 {
 	graphicsRef = g;
 	animSprite = new Animation(std::string("pipeTile-" + std::to_string((int)gridPosition.x) + "-" + std::to_string((int)gridPosition.y)),
@@ -218,10 +239,30 @@ Tile::Tile(Sprite* s, DebugDraw* dd, Vector2 gridPosition, Vector2 playerDim, st
 		s->GetXOffset(),
 		s->GetYOffset(),
 		{ SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8 });
-	pixelDimensions = playerDim;
+	pixelDimensions = dim;
 	debugDraw = dd;
 	
 	pixelPosition = { gridPosition.x * pixelDimensions.x, gridPosition.y * pixelDimensions.y };
+	direction = dir;
+}
+
+Tile::Tile(const Tile& oldTile)
+{
+	id = oldTile.id;
+	direction = oldTile.direction;
+	pixelDimensions = oldTile.pixelDimensions;
+	worldDimensions = oldTile.worldDimensions;
+	
+	pixelPosition = oldTile.pixelPosition;
+	worldPosition = oldTile.worldPosition;
+
+	physicsBody = nullptr;
+	
+	*animSprite = *(oldTile.animSprite);
+
+	graphicsRef = oldTile.graphicsRef;
+
+	*debugDraw = *(oldTile.debugDraw);
 }
 
 Tile::~Tile()
@@ -248,20 +289,18 @@ void Tile::Draw()
 	b2Vec2 wPos = physicsBody->GetPosition();
 	Vector2 worldToPixelPosition = { wPos.x, wPos.y };
 	SDL_Rect dstRect;
-	SDL_Point c = { pixelDimensions.x / 2 , pixelDimensions.y / 2 };
+	SDL_Point c = { pixelDimensions.x / 2.0 , pixelDimensions.y / 2.0 };
 
 	worldPosition = { wPos.x, wPos.y };
 	graphicsRef->Vector2MetersToPixels(worldToPixelPosition);
 
-	//vector2_add(pixelPosition, worldToPixelPosition, pixelDimensions);
-
-	dstRect = { (int)worldToPixelPosition.x, (int)worldToPixelPosition.y, (int)pixelDimensions.x, (int)pixelDimensions.y };
+	dstRect = { (int)worldToPixelPosition.x, (int)worldToPixelPosition.y - (int)pixelDimensions.y, (int)pixelDimensions.x, (int)pixelDimensions.y};
 
 	SDL_RenderCopyEx(graphicsRef->GetRenderer(),
 		tex,
 		&rect,
 		&dstRect,
-		s->GetRotation().z,
+		270,
 		&c,
 		SDL_RendererFlip::SDL_FLIP_NONE);
 
@@ -315,18 +354,16 @@ std::pair<std::string, std::vector<Tile*>> TileManager::TileParseTypesFromJSON(s
 	filepath = jsonResource["image"].as<std::string>();
 	//Maybe a loading screen for parsing tiles
 	for (int i = 0; i < tileCount; i++) {
+		spacing = i * tileHeight;
 		s = new Sprite(filepath.c_str(), imgWidth, imgHeight, tileWidth, tileHeight, i, 0, graphicsRef);
 		t = new Tile(s,
-			new DebugDraw(graphicsRef, typeName.c_str(), playerDimensions),
-			{ -1,-1 },
-			playerDimensions,
+			new DebugDraw(graphicsRef, typeName.c_str(), vector2(tileWidth, tileHeight)),
+			{0,0},
+			vector2( tileWidth, tileHeight ),
+			direction,
 			graphicsRef);
 
-		t->TilePhysicsInit(physics, direction);
-
 		tiles.push_back(t);
-
-		spacing += tileHeight;
 	}
 
 	tilesOfType = std::make_pair(typeName, tiles);
@@ -337,6 +374,8 @@ std::pair<std::string, std::vector<Tile*>> TileManager::TileParseTypesFromJSON(s
 TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDim)
 {
 	std::vector<Tile*> tileRow;
+	Tile* newTile;
+	int x = 0, y = 0;
 
 	tileTypes.clear();
 
@@ -349,7 +388,13 @@ TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphic
 	physics = world;
 
 	tileTypes.insert(TileParseTypesFromJSON("data/tilemap/factory/pipeTiles.json"));
-	tileRow.push_back(*tileTypes.at("pipeTiles").begin());
+	
+	for (auto t = tileTypes.at("pipeTiles").begin(); t != tileTypes.at("pipeTiles").end(); t++) {
+		newTile = new Tile();
+		newTile = *t;
+		newTile->TilePhysicsInit(physics, vector2(x++, y));
+		tileRow.push_back(newTile);
+	}
 
 	tileMap.push_back(tileRow);
 }
@@ -365,6 +410,17 @@ TileManager::~TileManager()
 			delete t;
 		}
 		tileMap.erase(tileMap.begin());
+	}
+
+	for (auto p : tileTypes) {
+		std::vector<Tile*> tList = p.second;
+		while (!tList.empty()) {
+			Tile* t = *tList.begin();
+		
+			tList.erase(tList.begin());
+
+			delete t;
+		}
 	}
 
 	graphicsRef.reset();
