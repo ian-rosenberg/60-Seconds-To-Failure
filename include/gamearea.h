@@ -42,7 +42,9 @@ private:
 
 	ContactListener					*listener;
 
-	const double					timeStep = 1 / 60.0f;
+	double							fixedTimestepAccum;
+	double							fixedTimestepAccumRatio;
+	const double					timeStep = 1 / 30.0f;
 	const int32						velocityIterations = 6;
 	const int32						positionIterations = 2;
 
@@ -63,7 +65,13 @@ public:
 
 	void AreaUpdate();
 
-	void PhysicsStep();
+	void PhysicsSteps(float deltaTime);
+
+	void SinglePhysicsStep(float deltaTime);
+
+	void SmoothPhysicsStates();
+
+	void ResetSmoothStates();
 
 	void AreaDraw(double accumulator);
 

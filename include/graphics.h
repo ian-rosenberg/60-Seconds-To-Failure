@@ -9,11 +9,11 @@
 
 const float RAD2DEG = 180 / M_PI;
 
-const double FRAME_DELAY = 1 / TARGET_FRAME_RATE;
+const float FRAME_DELAY = 1 / TARGET_FRAME_RATE;
 
-const double MS = 1000;
+const float MS = 1000;
 
-const double DELTA_TIME = 0.01;
+const float DELTA_TIME = 0.01;
 
 const float MET_TO_PIX = 1.25f;
 const float PIX_TO_MET = 1 / MET_TO_PIX;
@@ -23,8 +23,8 @@ private:
 	SDL_Window*		window;
 	SDL_Renderer*	renderer;
 
-	double			accumulator;
-	double			currentTime;
+	float			accumulator;
+	float			currentTime;
 
 	int				screenWidth;
 	int				screenHeight;
@@ -45,12 +45,12 @@ public:
 	inline SDL_Renderer* GetRenderer() { return renderer; }
 	inline SDL_Window* GetWindow() { return window; }
 
-	inline double GetGameTime() { return SDL_GetTicks() / MS; }
-	inline double GetCurrentTime() { return currentTime / MS; }
-	inline double GetScaledWidth() { return scaledWidth; }
-	inline double GetScaledHeight() { return scaledHeight; }
-	inline double GetAccumulatorTime() { return accumulator; }
-	inline double GetFrameDeltaTime() { return ( SDL_GetTicks() - currentTime ) / MS; }
+	inline float GetGameTime() { return SDL_GetTicks() / MS; }
+	inline float GetCurrentTime() { return currentTime / MS; }
+	inline float GetScaledWidth() { return scaledWidth; }
+	inline float GetScaledHeight() { return scaledHeight; }
+	inline float GetAccumulatorTime() { return accumulator; }
+	inline float GetFrameDeltaTime() { return GetGameTime() - GetCurrentTime(); }
 	inline Vector2 GetScreenDimensions() { return Vector2(screenWidth, screenHeight); }
 	inline Vector2 GetScaledScreenDimensions() { return Vector2(scaledWidth, scaledHeight); }
 

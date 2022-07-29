@@ -178,7 +178,7 @@ void Player::UpdateScreenPosition(double alpha)
 	Vector2 p;
 
 	prevBodyPosition = newBodyPosition;
-	newBodyPosition = body->GetPosition();
+	newBodyPosition = interpComponent->smoothedPosition;
 
 	p = { newBodyPosition.x, newBodyPosition.y };
 

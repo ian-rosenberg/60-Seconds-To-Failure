@@ -25,5 +25,5 @@ public:
 
 	void InitTestArea();
 
-	bool GameLoop(double &accumulator);
+	bool GameLoop(float & accumulator);
 };

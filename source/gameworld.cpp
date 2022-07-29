@@ -94,17 +94,17 @@ void GameWorld::InitTestArea() {
 	EnableDebugDraw();
 }
 
-bool GameWorld::GameLoop(double &accumulator) {
-	double newTime = graphicsPtr->GetGameTime();
-	double frameTime = newTime - graphicsPtr->GetCurrentTime();
+bool GameWorld::GameLoop(float & accumulator) {
 	SDL_Event currentEvent;
-
-	if (frameTime > 0.25)
-		frameTime = 0.25;
-
-	graphicsPtr->SetCurrentTime(newTime);
+	float newTime = graphicsPtr->GetGameTime();
+	float frameTime = newTime - graphicsPtr->GetCurrentTime();
+	float aStart = SDL_GetTicks64(), aEnd;
 
 	SDL_RenderClear(graphicsPtr->GetRenderer());
+
+	if (frameTime > 0.25f)
+		frameTime = 0.25f;
+	graphicsPtr->SetCurrentTime(newTime);
 
 	accumulator += frameTime;
 
@@ -116,9 +116,8 @@ bool GameWorld::GameLoop(double &accumulator) {
 	currentArea->AreaThink();
 
 	while (accumulator >= DELTA_TIME) {	
-		currentArea->AreaUpdate();
-
-		currentArea->PhysicsStep();
+		
+		currentArea->PhysicsSteps(DELTA_TIME);
 
 		accumulator -= DELTA_TIME;
 	}
@@ -128,11 +127,13 @@ bool GameWorld::GameLoop(double &accumulator) {
 		SDL_Delay(FRAME_DELAY - DELTA_TIME);
 	}
 
-	//currentArea->AreaUpdate();
-
 	currentArea->AreaDraw(accumulator / DELTA_TIME);
 
 	SDL_RenderPresent(graphicsPtr->GetRenderer());
+
+	aEnd = SDL_GetTicks64();
+
+	std::cout << "frame time " << (aEnd - aStart) << std::endl;
 
 	return false;
 }

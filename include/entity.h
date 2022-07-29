@@ -30,6 +30,15 @@ typedef enum {
 	NONE
 }InputType;
 
+typedef struct PhysicsComponent {
+	b2Vec2		prevPosition;
+	float		prevAngle;
+
+	b2Vec2		smoothedPosition;
+	float		smoothedAngle;
+
+}PhysicsComponent_S;
+
 class Entity: public Actor
 {
 protected:
@@ -51,6 +60,7 @@ protected:
 	Vector2											newDrawPosition;
 	b2Vec2											prevBodyPosition;
 	b2Vec2											newBodyPosition;
+	PhysicsComponent*								interpComponent;
 	Vector2											scale;												/**<scale to draw sprite at*/
 	Vector2											scaleCenter;										/**<where to scale sprite from*/
 	Vector3											rotation;											/**<how to rotate the sprite*/

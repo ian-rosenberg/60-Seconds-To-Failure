@@ -29,6 +29,7 @@ Entity::Entity()
 	jumpTrigger = NULL;
 	parentEntity = NULL;
 	debugDraw = NULL;
+	interpComponent = new PhysicsComponent{ {0,0}, 0.0f, {0,0}, 0.0f };
 }
 
 Entity::~Entity()
@@ -49,6 +50,9 @@ Entity::~Entity()
 	
 	if (currentSprite)
 		currentSprite = NULL;
+
+	if (interpComponent)
+		delete interpComponent;
 }
 void Entity::SetAnimationByName(const char* name)
 {
@@ -117,6 +121,7 @@ void Entity::SetBody(b2Body* b) {
 	}
 	
 	body = b;
+	body->GetUserData().pointer = reinterpret_cast<uintptr_t>(interpComponent);
 }
 
 void Entity::SetWorldDimensions(b2Vec2 dim) {
