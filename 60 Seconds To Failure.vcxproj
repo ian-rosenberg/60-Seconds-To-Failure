@@ -48,9 +48,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -87,8 +87,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>C:\Users\Ian\source\repos\60-Seconds-To-Failure\box2d-main\build\bin\Release;C:\Users\Ian\source\repos\60-Seconds-To-Failure\lib\Debug;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2-2.0.20\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_ttf-2.0.18\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_mixer-2.0.4\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
-    <IncludePath>C:\Users\Ian\source\repos\60-Seconds-To-Failure\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_image-2.0.5\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_mixer-2.0.4\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_ttf-2.0.18;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2-2.0.20\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)\box2d-main\build\bin\Release;$(SolutionDir)\lib\Debug;$(SolutionDir)\SDL2-2.0.20\lib\x64;$(SolutionDir)\SDL2_ttf-2.0.18\lib\x64;$(SolutionDir)\SDL2_mixer-2.0.4\lib\x64;$(SolutionDir)\SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(SolutionDir)\include;$(SolutionDir)\SDL2_image-2.0.5\include;$(SolutionDir)\SDL2_mixer-2.0.4\include;$(SolutionDir)\SDL2_ttf-2.0.18;$(SolutionDir)\SDL2-2.0.20\include;$(SolutionDir)\box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -141,7 +141,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -190,6 +189,9 @@
     <ClInclude Include="include\staticentity.h" />
     <ClInclude Include="include\tile.h" />
     <ClInclude Include="include\vectortypes.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="include\RSJparser.tcc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

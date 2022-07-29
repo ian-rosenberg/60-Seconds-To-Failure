@@ -10,53 +10,73 @@
 
 class Sprite {
 protected:
-	Uint32 frame;
-	Uint32 offset;
-	Uint32 frameWidth;
-	Uint32 frameHeight;
+	std::string					filepath;
+	int							frame;
+	int							yOffset;
+	int							xOffset;
+	int							frameWidth;
+	int							frameHeight;
 
-	Vector2 flip;
-	Vector2 scale;
-	Vector2 scaleCenter;
-	Vector2 position;
+	Vector2						flip;
+	Vector2						scale;
+	Vector2						scaleCenter;
 
-	Vector3 rotation;
+	Vector3						rotation;
 
-	Vector4 color;
+	Vector4						color;
 
-	SDL_Texture* texture;
-	SDL_Renderer* renderer;
+	SDL_Texture*				texture;
+	SDL_Rect					srcRect;
+	std::shared_ptr<Graphics>	graphics;
 	
 public:
 	Sprite();
 
-	Sprite(const char* filepath,
+	Sprite(std::string filepath,
 		Vector2 drawPosition,
 		Vector2 scale,
 		Vector2 scaleCenter,
 		Vector3 rotation,
 		Vector2 flip,
 		Vector4 colorShift,
-		Uint32 frame,
-		Uint32 offset,
-		Uint32 frameWidth,
-		Uint32 frameHeight,
-		SDL_Renderer* ren);
+		int frame,
+		int offset,
+		int frameWidth,
+		int frameHeight,
+		std::shared_ptr<Graphics> ren);
 
-	Sprite(const char* filepath, 
-		Uint32 width, 
-		Uint32 height, 
-		SDL_Renderer* ren);
+	Sprite(std::string filepath,
+		int imgWidth,
+		int imgHeight,
+		int width, 
+		int height,
+		int yOffset,
+		int xOffset, 
+		std::shared_ptr<Graphics> ren);
+
+	Sprite(std::string filepath,
+		int width,
+		int height,
+		std::shared_ptr<Graphics> g);
 
 	~Sprite();
 
-	Uint8 LoadPNGImage(const char* filepath);
+	Uint8 LoadPNGImage(std::string filepath);
 
-	SDL_Surface* LoadSurface(const char* filepath);
+	SDL_Surface* LoadSurface(std::string filepath);
 
 	SDL_Texture* GetTexture();
 
 	Vector2 GetPosition();
+
+	inline std::string GetFilePath() { return (std::string)filepath; }
+
+	inline int GetXOffset() { return xOffset; }
+	inline int GetYOffset() { return yOffset; }
+
+	inline SDL_Rect GetSourceRect() { return srcRect; }
+
+	inline Vector3 GetRotation() { return rotation; }
 
 	void Draw(Sprite* sprite,
 		Vector2 drawPosition,
@@ -65,10 +85,10 @@ public:
 		Vector3* rotation,
 		Vector2 flip,
 		Vector4* colorShift,
-		Uint32 frame,
-		Uint32 offset,
-		Uint32 frameWidth,
-		Uint32 frameHeight);
+		int frame,
+		int offset,
+		int frameWidth,
+		int frameHeight);
 
-	void DrawSpriteImage(Sprite* image, Vector2 position, Uint32 width, Uint32 height);
+	void DrawSpriteImage(Sprite* image, Vector2 position, int width, int height);
 };

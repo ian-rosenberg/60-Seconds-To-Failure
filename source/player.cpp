@@ -9,7 +9,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 	keys = 0;
 	controller = NULL;
 	sensitivity = 0;
-	maxSpeed = 0.5f;
+	maxSpeed = 0.25f;
 	dampening = 0.8f;
 	dimensions = { 0,0,0 };
 	enteredFrom = { 0,0 };
@@ -134,8 +134,6 @@ void Player::Think() {
 
 void Player::Draw()
 {
-	Vector2 centerScalePoint = {0};
-	Vector2 resultPos = { 0 };
 	Vector4 debugColor = vector4(.5, 1, 0, 1);
 
 	if (!this)
@@ -180,7 +178,7 @@ void Player::UpdateScreenPosition(double alpha)
 	Vector2 p;
 
 	prevBodyPosition = newBodyPosition;
-	newBodyPosition = body->GetPosition();
+	newBodyPosition = interpComponent->smoothedPosition;
 
 	p = { newBodyPosition.x, newBodyPosition.y };
 

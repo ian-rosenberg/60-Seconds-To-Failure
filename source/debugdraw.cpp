@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-DebugDraw::DebugDraw(std::shared_ptr<Graphics> gr, const char* name) {
+DebugDraw::DebugDraw(std::shared_ptr<Graphics> gr, const char* name, Vector2 pDim) {
 	graphicsRef = std::shared_ptr<Graphics>(gr);
 	bodyPosition = b2Vec2(0, 0);
 	bodyRef = nullptr;
@@ -11,6 +11,7 @@ DebugDraw::DebugDraw(std::shared_ptr<Graphics> gr, const char* name) {
 	isColliding = 0;
 	dR = dB = 0;
 	dG = 255;
+	pixelDimensions = pDim;
 }
 
 void DebugDraw::UpdateBodyPosition(b2Vec2 p)
@@ -38,8 +39,6 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 	Vector2 a = {},
 		b = {};
 
-	//std::cout << "Object: " << objName << std::endl;
-
 	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 255, 0, 255);
 
 	for (int i = 0, j = 1; j < vertexCount; i++, j++) {
@@ -47,12 +46,9 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 		a = Vector2(t.x, t.y);
 		graphicsRef.get()->Vector2MetersToPixels(a);
 
-		//std::cout << "Transform vertex " << t.x << "," << t.y << "\tto\t" << x1 << "," << y1 << std::endl;
-
 		t = bodyRef->GetWorldPoint((*(vertices + j)));
 		b = Vector2(t.x, t.y);
 		graphicsRef.get()->Vector2MetersToPixels(b);
-		//std::cout << "Transform vertex " << t.x << "," << t.y << "\tto\t" << x2 << "," << y2 << std::endl;
 
 		SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
 	}
@@ -63,9 +59,7 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 	t = bodyRef->GetWorldPoint(*vertices);
 	b = Vector2(t.x, t.y);
 	graphicsRef.get()->Vector2MetersToPixels(b);
-	//std::cout << "Transform vertex " << t.x << "," << t.y << "\tto\t" << x2 << "," << y2 << std::endl;
-
-
+	
 	SDL_RenderDrawLine(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
 
 	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 0, 0, 0);
@@ -115,6 +109,30 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
 {
 }
 
+void DebugDraw::DrawChainShape(const b2Vec2* vertices, int32 vertexCount, b2Vec2 gPrev, b2Vec2 gNext)
+{
+	Vector2 a, b;
+	b2Vec2 p1;
+	b2Vec2 p2;
+	b2Vec2 bp = bodyRef->GetPosition();
+
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), dR, dG, dB, 255);
+
+	for (int i = 0; i < vertexCount-1; i++) {
+		p1 = bodyRef->GetWorldPoint( *(vertices + i));
+		a = Vector2(p1.x, p1.y);
+		graphicsRef.get()->Vector2MetersToPixels(a);
+
+		p2 = bodyRef->GetWorldPoint(*(vertices + i + 1));
+		b = Vector2(p2.x, p2.y);
+		graphicsRef.get()->Vector2MetersToPixels(b);
+
+		SDL_RenderDrawLineF(graphicsRef.get()->GetRenderer(), a.x, a.y, b.x, b.y);
+	}
+	
+	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), 0, 0, 0, 0);
+}
+
 void DebugDraw::DrawCircle(const b2Vec2& c, float radius, const b2Color& color)
 {
 	float pih = M_PI / 2.0; //half of pi
@@ -157,8 +175,6 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2
 
 void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
-	SDL_Vertex v1,
-		v2;
 	Vector2 a = {},
 		b = {};
 

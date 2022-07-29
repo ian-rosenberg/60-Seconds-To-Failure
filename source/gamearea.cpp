@@ -5,15 +5,20 @@ void GameArea::CreateTestArea() {
 	float hDim = player->GetWorldDimensions().y;
 	float fVal = 0.9f;
 	areaPhysics = new b2World(*gravityScale);
+	areaPhysics->SetAutoClearForces(false);
 
 	listener = new ContactListener();
 	areaPhysics->SetContactListener(listener);
 	areaPhysics->SetAllowSleeping(false);
 
+	fixedTimestepAccum = 0;
+	fixedTimestepAccumRatio = 0;
+
 	// Ground
 	{
 		StaticEntity *se = new StaticEntity(graphics, graphics->GetScaledWidth(), hDim);
 		se->SetActorName("Ground");
+		se->CalculateAverageActorDimensions();
 		
 		b2BodyDef bd;
 		b2Body* ground = areaPhysics->CreateBody(&bd);
@@ -28,6 +33,7 @@ void GameArea::CreateTestArea() {
 
 		b2Fixture* f = ground->CreateFixture(&tpd);
 		se->SetStaticTriggerFixture(f);
+		se->CalculateAverageActorDimensions();
 
 		entityManager->AddEntity(se);
 	}
@@ -67,7 +73,7 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
 	testPlatformBottom = 0.0f;
 	testPlatformTop = 0.0f;
 	graphics = std::shared_ptr<Graphics>(g);
-	tileManager = new TileManager("", graphics);
+	tileManager = nullptr;
 }
 
 GameArea::~GameArea() {
@@ -88,10 +94,66 @@ void GameArea::AreaThink() {
 void GameArea::AreaUpdate() {
 	if (!active)
 		return;
-
+	tileManager->UpdateMap();
 	entityManager->InputUpdate();
 	entityManager->EntityUpdateAll(graphics->GetFrameDeltaTime());
+	
+}
+
+void GameArea::PhysicsSteps(float deltaTime) {
+	/*areaPhysics->Step(timeStep, velocityIterations, positionIterations);
+
+	SmoothPhysicsStates();*/
+
+	const int MAX_STEPS = 5;
+
+	fixedTimestepAccum += deltaTime;
+	const int nSteps = static_cast<int> (
+		std::floor(fixedTimestepAccum / timeStep)
+		);
+	// To avoid rounding errors, touches fixedTimestepAccumulator_ only
+	// if needed.
+	if (nSteps > 0)
+	{
+		fixedTimestepAccum -= nSteps * timeStep;
+	}
+
+	assert(
+		"Accumulator must have a value lesser than the fixed time step" &&
+		fixedTimestepAccum < FIXED_TIMESTEP + FLT_EPSILON
+	);
+
+	fixedTimestepAccumRatio = fixedTimestepAccum / timeStep;
+
+	// This is similar to clamp "dt":
+	deltaTime = std::min(deltaTime, (float)(MAX_STEPS * timeStep));
+	// but it allows above calculations of fixedTimestepAccumulator_ and
+	// fixedTimestepAccumulatorRatio_ to remain unchanged.
+	const int nStepsClamped = std::min(nSteps, MAX_STEPS);
+	for (int i = 0; i < nStepsClamped; ++i)
+	{
+		// In singleStep_() the CollisionManager could fire custom
+		// callbacks that uses the smoothed states. So we must be sure
+		// to reset them correctly before firing the callbacks.
+		ResetSmoothStates();
+		SinglePhysicsStep(timeStep);
+	}
+
+	areaPhysics->ClearForces();
+
+	// We "smooth" positions and orientations using
+	// fixedTimestepAccumulatorRatio_ (alpha).
+	SmoothPhysicsStates();
+}
+
+void GameArea::SinglePhysicsStep(float deltaTime)
+{
+	AreaUpdate();
+	
+	areaPhysics->Step(deltaTime, velocityIterations, positionIterations);
+	
 	player->ToggleGrounded(false);
+	
 	for (auto c = listener->_contacts.begin(); c != listener->_contacts.end(); c++) {
 		Contact contact = *c;
 
@@ -105,14 +167,46 @@ void GameArea::AreaUpdate() {
 	}
 }
 
-void GameArea::PhysicsStep() {
-	areaPhysics->Step(timeStep, velocityIterations, positionIterations);
+void GameArea::SmoothPhysicsStates()
+{
+	const float oneMinusRatio = 1.f - fixedTimestepAccumRatio;
+
+	for (b2Body* b = areaPhysics->GetBodyList(); b != NULL; b = b->GetNext())
+	{
+		if (b->GetType() == b2_staticBody)
+		{
+			continue;
+		}
+
+		PhysicsComponent* c = (PhysicsComponent*)(b->GetUserData().pointer);
+		c->smoothedPosition =
+			fixedTimestepAccumRatio * b->GetPosition() +
+			oneMinusRatio * c->prevPosition;
+		c->smoothedAngle =
+			fixedTimestepAccumRatio * b->GetAngle() +
+			oneMinusRatio * c->prevAngle;
+	}
+}
+
+void GameArea::ResetSmoothStates()
+{
+	for (b2Body* b = areaPhysics->GetBodyList(); b != NULL; b = b->GetNext())
+	{
+		if (b->GetType() == b2_staticBody)
+		{
+			continue;
+		}
+
+		PhysicsComponent* c = (PhysicsComponent*)(b->GetUserData().pointer);
+		c->smoothedPosition = c->prevPosition = b->GetPosition();
+		c->smoothedAngle = c->prevAngle = b->GetAngle();
+	}
 }
 
 void GameArea::AreaDraw(double accumulator) {
 	if (!active)
 		return;
-
+	tileManager->DrawMap(Vector2(0,0));
 	entityManager->EntityDrawAll(accumulator);
 }
 
@@ -121,11 +215,14 @@ void GameArea::AddEntity(Entity* e) {
 }
 
 void GameArea::SetPlayer(Player* p) {
+	Vector2 dim = p->GetAvgPixelDimensions();
 	player = p;
 	player->SetInputQueuePtr(entityManager->GetInputQueue());
 	player->SetEventsToFirePtr(entityManager->GetEventsToFire());
 
 	CreateTestArea();
+
+	tileManager = new TileManager("", graphics, areaPhysics, dim);
 }
 
 Uint8 GameArea::CaptureInputEvents(SDL_Event* e){

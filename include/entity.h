@@ -30,6 +30,15 @@ typedef enum {
 	NONE
 }InputType;
 
+typedef struct PhysicsComponent {
+	b2Vec2		prevPosition;
+	float		prevAngle;
+
+	b2Vec2		smoothedPosition;
+	float		smoothedAngle;
+
+}PhysicsComponent_S;
+
 class Entity: public Actor
 {
 protected:
@@ -51,6 +60,7 @@ protected:
 	Vector2											newDrawPosition;
 	b2Vec2											prevBodyPosition;
 	b2Vec2											newBodyPosition;
+	PhysicsComponent*								interpComponent;
 	Vector2											scale;												/**<scale to draw sprite at*/
 	Vector2											scaleCenter;										/**<where to scale sprite from*/
 	Vector3											rotation;											/**<how to rotate the sprite*/
@@ -92,12 +102,6 @@ public:
 		std::function<void(Entity::InputEvent*)> onPress;
 		std::function<void(Entity::InputEvent*)> onHold;
 		std::function<void(Entity::InputEvent*)> onRelease;
-
-		/*
-		void			(Entity::* onPress)(InputEvent* data);        //callback for press event
-		void			(Entity::*onHold)(InputEvent* data);         //callback for hold event
-		void			(Entity::*onRelease)(InputEvent* data);      //callback for release event
-		*/
 
 		InputEvent() {
 			prevEvent = nullptr;
@@ -204,6 +208,8 @@ public:
 	inline bool IsJumpTimeReady() { return jumpTimer <= 0; }
 
 	inline bool IsGrounded() { return grounded; }
+
+	inline Vector2 GetAvgPixelDimensions() { return avgDim; }
 };
 
 class EntityManager {

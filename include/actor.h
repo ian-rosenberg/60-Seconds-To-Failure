@@ -55,13 +55,6 @@ public:
 	void CalculateAverageActorDimensions();
 
 	/**
-	* @brief Retrieve the average width and height
-	* of the sprites across all animations
-	* @param actor The actor whose attributes we get
-	*/
-	Vector2 GetAverageActorDimensions();
-
-	/**
 	* @brief Load .anim file for a given animation, retrieving relevant Animation data
 	* @param filename The file to parse
 	*/

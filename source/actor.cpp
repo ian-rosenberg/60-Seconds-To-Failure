@@ -143,11 +143,6 @@ void Actor::CalculateAverageActorDimensions()
 	avgDim.y = dimTotal.y / animations->size();
 }
 
-Vector2 Actor::GetAverageActorDimensions()
-{
-	return avgDim;
-}
-
 Animation* Actor::ParseAnimation(const char* filename)
 {
 	Uint32 iteFlag = 0;
@@ -226,11 +221,11 @@ Animation* Actor::ParseAnimation(const char* filename)
 		{
 			if (strcmp(value.c_str(), "loop") == 0)
 			{
-				anim = new Animation(name, filepath, length, width, height, offset, color, fr, 0, AnimationType::AT_LOOP, graphics->GetRenderer());
+				anim = new Animation(name, filepath, length, width, height, 0, offset, color, fr, 0, AnimationType::AT_LOOP, graphics);
 			}
 			if (strcmp(value.c_str(), "once") == 0)
 			{
-				anim = new Animation(name, filepath, length, width, height, offset, color, fr, 0, AnimationType::AT_ONCE, graphics->GetRenderer());
+				anim = new Animation(name, filepath, length, width, height, 0, offset, color, fr, 0, AnimationType::AT_ONCE, graphics);
 			}
 
 			std::cout << "Animation " << name << " loaded!" << std::endl;

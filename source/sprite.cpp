@@ -4,63 +4,84 @@ Sprite::Sprite()
 {
 	texture = NULL;
 	frame = 0;
-	offset = 0;
+	yOffset = 0;
 	frameWidth = 0;
 	frameHeight = 0;
 	flip = { 0,0 };
 	scale = { 0,0 };
 	scaleCenter = { 0,0 };
-	position = { 0,0 };
 	rotation = { 0,0,0 };
 	color = { 0,0,0,255 };
-	renderer = NULL;
+	graphics = NULL;
+	filepath = "";
+	srcRect = { 0,0,0,0 };
 }
 
-Sprite::Sprite(const char* filepath, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, Uint32 frm, Uint32 off, Uint32 width, Uint32 height, SDL_Renderer* ren)
+Sprite::Sprite(std::string fp, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, int frm, int off, int width, int height, std::shared_ptr<Graphics> ren)
 {
+	filepath = fp;
 	frame = frm;
-	offset = off;
+	yOffset = off;
 	frameWidth = width;
 	frameHeight = height;
 	flip = flp;
 	scale = scle;
 	scaleCenter = scleCen;
-	position = drawPosition;
 	rotation = rot;
 	color = colorShift;
-	renderer = ren;
+	graphics = ren;
+	srcRect = { 0, frameHeight * off, frameWidth, frameHeight};
 	LoadPNGImage(filepath);
 }
 
-Sprite::Sprite(const char* filepath, Uint32 width, Uint32 height, SDL_Renderer* ren)
+Sprite::Sprite(std::string fp, int width, int height, std::shared_ptr<Graphics> ren)
 {
+	filepath = fp;
 	frame = 1.0f;
-	offset = 0;
+	yOffset = 0;
 	frameWidth = width;
 	frameHeight = height;
 	flip = {};
 	scale = {};
 	scaleCenter = {};
-	position = {};
 	rotation = {};
 	color = {};
-	renderer = ren;
+	graphics = ren;
+	srcRect = { 0, 0, width, height };
 	LoadPNGImage(filepath);
 }
 
 Sprite::~Sprite()
 {
 	SDL_DestroyTexture(texture);
-	renderer = nullptr;
+	graphics = nullptr;
 }
 
-Uint8 Sprite::LoadPNGImage(const char* filepath)
+Sprite::Sprite(std::string fp, int imgWidth, int imgHeight, int width, int height, int yOff, int xOff, std::shared_ptr<Graphics> ren)
+{
+	frame = 1.0f;
+	filepath = fp;
+	yOffset = yOff;
+	xOffset = xOff;
+	frameWidth = width;
+	frameHeight = height;
+	flip = {};
+	scale = {};
+	scaleCenter = {};
+	rotation = {};
+	color = {SDL_MAX_UINT8,SDL_MAX_UINT8,SDL_MAX_UINT8,SDL_MAX_UINT8 };
+	graphics = ren;
+	srcRect = { xOffset * frameWidth, yOffset * frameHeight, frameWidth, frameHeight };
+	LoadPNGImage(filepath);
+}
+
+Uint8 Sprite::LoadPNGImage(std::string filepath)
 {
 	SDL_Surface* tempSurface = nullptr;
 	
-	tempSurface = IMG_Load(filepath);
+	tempSurface = IMG_Load(filepath.c_str());
 
-	texture = SDL_CreateTextureFromSurface(renderer, tempSurface);
+	texture = SDL_CreateTextureFromSurface(graphics->GetRenderer(), tempSurface);
 
 	SDL_FreeSurface(tempSurface);
 
@@ -70,22 +91,19 @@ Uint8 Sprite::LoadPNGImage(const char* filepath)
 		return 0;
 	}
 
+	std::cout << "Image " << filepath << " was loaded!" << std::endl;
+
 	return 1;
 }
 
-SDL_Surface* Sprite::LoadSurface(const char* filepath)
+SDL_Surface* Sprite::LoadSurface(std::string filepath)
 {
-	return IMG_Load(filepath);
+	return IMG_Load(filepath.c_str());
 }
 
 SDL_Texture* Sprite::GetTexture()
 {
 	return texture;
-}
-
-Vector2 Sprite::GetPosition()
-{
-	return position;
 }
 
 void Sprite::Draw(Sprite* sprite,
@@ -95,10 +113,10 @@ void Sprite::Draw(Sprite* sprite,
 	Vector3* rotation,
 	Vector2 flip,
 	Vector4* colorShift,
-	Uint32 frame,
-	Uint32 offset,
-	Uint32 frameWidth,
-	Uint32 frameHeight)
+	int frame,
+	int offset,
+	int frameWidth,
+	int frameHeight)
 {
 	SDL_Rect cell, target;
 	SDL_RendererFlip flipFlags = SDL_FLIP_NONE;
@@ -111,14 +129,12 @@ void Sprite::Draw(Sprite* sprite,
 	{
 		return;
 	}
+
 	if (scale != NULL)
 	{
 		vector2_copy(scaleFactor, (*scale));
 	}
-	else
-	{
-		vector2_copy(scaleFactor, (vector2(1, 1)));
-	}
+
 	if (scaleCenter != NULL)
 	{
 		vector2_copy(scaleOffset, (*scaleCenter));
@@ -173,7 +189,7 @@ void Sprite::Draw(Sprite* sprite,
 		frameWidth * scaleFactor.x,
 		frameHeight * scaleFactor.y);
 
-	SDL_RenderCopyEx(renderer,
+	SDL_RenderCopyEx(graphics->GetRenderer(),
 		sprite->GetTexture(),
 		&cell,
 		&target,
@@ -193,15 +209,19 @@ void Sprite::Draw(Sprite* sprite,
 	}
 }
 
-void Sprite::DrawSpriteImage(Sprite* image, Vector2 position, Uint32 width, Uint32 height)
+void Sprite::DrawSpriteImage(Sprite* image, Vector2 position, int width, int height)
 {
+	Vector2 scale = { 1,1 };
+	Vector2 scaleCenter = { width / 2.0f, height / 2.0f };
+	Vector3 rotation = { 0,0,0 };
+	Vector4 colorShift = Vector4(SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8);
 	Draw(image,
 		position,
-		NULL,
-		NULL,
-		NULL,
+		&scale,
+		&scaleCenter,
+		&rotation,
 		{ 0,0 },
-		NULL,
+		&colorShift,
 		0,
 		0,
 		width,
