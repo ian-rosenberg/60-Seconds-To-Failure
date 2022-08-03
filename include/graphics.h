@@ -7,16 +7,12 @@
 
 #define TARGET_FRAME_RATE 60
 
-const float RAD2DEG = 180 / M_PI;
-
-const float FRAME_DELAY = 1 / TARGET_FRAME_RATE;
-
-const float MS = 1000;
-
-const float DELTA_TIME = 0.01;
-
-const float MET_TO_PIX = 1.25f;
-const float PIX_TO_MET = 1 / MET_TO_PIX;
+const double RAD2DEG = 180 / M_PI;
+const double FRAME_DELAY = 1 / TARGET_FRAME_RATE;
+const double MS = 1000;
+const double DELTA_TIME = 0.01;
+const double MET_TO_PIX = 1.25f;
+const double PIX_TO_MET = 1 / MET_TO_PIX;
 
 class Graphics {
 private:

@@ -16,6 +16,8 @@ private:
 	int							id;
 	int							direction;
 
+	SDL_RendererFlip			flipFlags;
+
 	Vector2						pixelDimensions;
 	b2Vec2						worldDimensions;
 
@@ -38,14 +40,14 @@ private:
 public:
 	Tile();
 	Tile(Sprite* s, DebugDraw* debugDraw, Vector2 gridPosition, Vector2 pDim, int dir, std::shared_ptr<Graphics> g);
-	Tile(const Tile& oldTile);
+	Tile(Tile* oldTile);
 	
 	~Tile();
 
 	inline void							SetBody(b2Body* b) { physicsBody = b; }
 	void								Draw();
 	std::vector<std::vector<b2Vec2>>	CreatePhysicsEdges();
-	void								TilePhysicsInit(b2World* world, Vector2 p);
+	void								TilePhysicsInit(b2World* world, Vector2 p, SDL_RendererFlip flip);
 };
 
 class TileManager {

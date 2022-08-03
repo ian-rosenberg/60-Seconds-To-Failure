@@ -133,7 +133,5 @@ bool GameWorld::GameLoop(float & accumulator) {
 
 	aEnd = SDL_GetTicks64();
 
-	std::cout << "frame time " << (aEnd - aStart) << std::endl;
-
 	return false;
 }

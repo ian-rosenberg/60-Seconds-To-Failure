@@ -32,6 +32,8 @@ protected:
 public:
 	Sprite();
 
+	Sprite(Sprite* oldSprite);
+
 	Sprite(std::string filepath,
 		Vector2 drawPosition,
 		Vector2 scale,

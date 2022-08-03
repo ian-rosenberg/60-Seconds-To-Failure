@@ -17,6 +17,23 @@ Sprite::Sprite()
 	srcRect = { 0,0,0,0 };
 }
 
+Sprite::Sprite(Sprite* oldSprite)
+{
+	filepath = oldSprite->filepath;
+	frame = oldSprite->frame;
+	yOffset = oldSprite->yOffset;
+	frameWidth = oldSprite->frameWidth;
+	frameHeight = oldSprite->frameHeight;
+	flip = oldSprite->flip;
+	scale = oldSprite->scale;
+	scaleCenter = oldSprite->scaleCenter;
+	rotation = oldSprite->rotation;
+	color = oldSprite->color;
+	graphics = oldSprite->graphics;
+	srcRect = { 0, frameHeight * yOffset, frameWidth, frameHeight };
+	texture = oldSprite->texture;
+}
+
 Sprite::Sprite(std::string fp, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, int frm, int off, int width, int height, std::shared_ptr<Graphics> ren)
 {
 	filepath = fp;
@@ -53,7 +70,10 @@ Sprite::Sprite(std::string fp, int width, int height, std::shared_ptr<Graphics> 
 
 Sprite::~Sprite()
 {
-	SDL_DestroyTexture(texture);
+	if(texture)
+		SDL_DestroyTexture(texture);
+	texture = nullptr;
+	graphics.reset();
 	graphics = nullptr;
 }
 

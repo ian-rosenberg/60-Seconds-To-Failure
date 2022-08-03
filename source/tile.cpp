@@ -103,35 +103,61 @@ std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges()
 	return chains;
 }
 
-void Tile::TilePhysicsInit(b2World* world, Vector2 p)
+void Tile::TilePhysicsInit(b2World* world, Vector2 p, SDL_RendererFlip flip)
 {
 	b2BodyDef bd;
+	float temp;
+
+	flipFlags = flip;
 
 	bd.type = b2_staticBody;
 	bd.position.Set(p.x * pixelDimensions.x * PIX_TO_MET, p.y * pixelDimensions.y * PIX_TO_MET);
 
-
-	
 	std::vector<std::vector<b2Vec2>> chains = CreatePhysicsEdges();
-	for (std::vector<b2Vec2> chain : chains) {
-		b2ChainShape chainShape;
+
+	bd.angle = M_PI * 1.5f;
+
+	physicsBody = world->CreateBody(&bd);
+
+	for (int i = 0; i < chains.size(); i++) {
+		std::vector<b2Vec2> chain = chains[i];
 		b2FixtureDef fd;
-		b2Vec2 pg = chain.at(0);
-		b2Vec2 ng = chain.at(chain.size() - 1);
+		b2ChainShape chainShape;
+		b2Vec2 pg = chain.front();
+		b2Vec2 ng = chain.back();
+
+		if (i - 1 >= 0)
+			pg = chains.at(i - 1).back();
+
+		if (i + 1 < chains.size())
+			ng = chains.at(i + 1).front();
+
+		switch (flip) {
+		case SDL_FLIP_VERTICAL:
+			for (int i = 0, j = chain.size()-1; i != j; i++, j--) {
+				temp = chain.at(i).y;
+				chain.at(i).y = chain.at(j).y;
+				chain.at(j).y = temp;
+			}
+			break;
+
+		case SDL_FLIP_HORIZONTAL:
+			break;
+
+		case SDL_FLIP_NONE:
+		default:
+			break;
+		}
 
 		chainShape.m_count = chain.size();
 		chainShape.m_vertices = chain.data();
 		chainShape.CreateChain(chain.data(), chain.size(), pg, ng);
 
 		fd.shape = &chainShape;
-	
-		if (!physicsBody) {
-				bd.angle = M_PI * 1.5f;
-			
-			physicsBody = world->CreateBody(&bd);
-		}
 		physicsBody->CreateFixture(&fd);
+
 	}
+
 
 	debugDraw->SetBodyReference(physicsBody);
 }
@@ -227,6 +253,8 @@ Tile::Tile()
 	graphicsRef = nullptr;
 
 	debugDraw = nullptr;
+
+	flipFlags = SDL_FLIP_NONE;
 }
 
 Tile::Tile(Sprite* s, DebugDraw* dd, Vector2 gridPosition, Vector2 dim, int dir, std::shared_ptr<Graphics> g)
@@ -246,23 +274,23 @@ Tile::Tile(Sprite* s, DebugDraw* dd, Vector2 gridPosition, Vector2 dim, int dir,
 	direction = dir;
 }
 
-Tile::Tile(const Tile& oldTile)
+Tile::Tile(Tile* oldTile)
 {
-	id = oldTile.id;
-	direction = oldTile.direction;
-	pixelDimensions = oldTile.pixelDimensions;
-	worldDimensions = oldTile.worldDimensions;
+	id = oldTile->id;
+	direction = oldTile->direction;
+	pixelDimensions = oldTile->pixelDimensions;
+	worldDimensions = oldTile->worldDimensions;
 	
-	pixelPosition = oldTile.pixelPosition;
-	worldPosition = oldTile.worldPosition;
+	pixelPosition = oldTile->pixelPosition;
+	worldPosition = oldTile->worldPosition;
 
 	physicsBody = nullptr;
 	
-	*animSprite = *(oldTile.animSprite);
+	animSprite = new Animation(oldTile->animSprite);
 
-	graphicsRef = oldTile.graphicsRef;
+	graphicsRef = oldTile->graphicsRef;
 
-	*debugDraw = *(oldTile.debugDraw);
+	debugDraw = new DebugDraw(graphicsRef, "", pixelDimensions);
 }
 
 Tile::~Tile()
@@ -302,7 +330,7 @@ void Tile::Draw()
 		&dstRect,
 		270,
 		&c,
-		SDL_RendererFlip::SDL_FLIP_NONE);
+		flipFlags);
 
 	//Debug Drawing
 	if (debugDraw) {
@@ -389,10 +417,14 @@ TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphic
 
 	tileTypes.insert(TileParseTypesFromJSON("data/tilemap/factory/pipeTiles.json"));
 	
-	for (auto t = tileTypes.at("pipeTiles").begin(); t != tileTypes.at("pipeTiles").end(); t++) {
-		newTile = new Tile();
-		newTile = *t;
-		newTile->TilePhysicsInit(physics, vector2(x++, y));
+	for (int i = 0; i < tileTypes.at("pipeTiles").size(); i++) {
+		newTile = new Tile(tileTypes.at("pipeTiles")[i]);
+		newTile->TilePhysicsInit(physics, vector2(x++, y), SDL_FLIP_NONE);
+		tileRow.push_back(newTile);
+	}
+	for (int i = tileRow.size() - 1; i >= 0; i--) {
+		newTile = new Tile(tileRow[i]);
+		newTile->TilePhysicsInit(physics, vector2(x++, y), SDL_FLIP_VERTICAL);
 		tileRow.push_back(newTile);
 	}
 
