@@ -11,6 +11,14 @@
 const int VERTICES_PER_EDGE = 2;
 const int MAX_EDGES = 4;
 
+enum TileCapping : unsigned long{
+	None = 0,
+	North = 1,
+	East = 2,
+	South = 4,
+	West = 8
+};
+
 class Tile {
 private:
 	int							id;
@@ -25,6 +33,7 @@ private:
 	b2Vec2						worldPosition;
 
 	b2Body*						physicsBody;
+	TileCapping					capDirection;
 
 	Animation*					animSprite;
 

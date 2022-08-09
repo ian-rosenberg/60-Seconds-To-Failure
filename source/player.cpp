@@ -9,7 +9,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 	keys = 0;
 	controller = NULL;
 	sensitivity = 0;
-	maxSpeed = 0.25f;
+	maxSpeed = 25.f;
 	dampening = 0.8f;
 	dimensions = { 0,0,0 };
 	enteredFrom = { 0,0 };
@@ -21,7 +21,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 	health = maxHealth;
 	maxEnergy = 50;
 	energy = maxEnergy;
-	jumpForce = .01;
+	jumpForce = .4f;
 	scale = { 1,1 };
 	prevDrawPosition = newDrawPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
@@ -176,10 +176,14 @@ void Player::Draw()
 void Player::UpdateScreenPosition(double alpha)
 {
 	Vector2 p;
+	//b2Vec2 bPos = body->GetPosition();
 
 	prevBodyPosition = newBodyPosition;
 	newBodyPosition = interpComponent->smoothedPosition;
 
+	//std::cout << "Smoothed Body Position: ( " << interpComponent->smoothedPosition.x << "," << interpComponent->smoothedPosition.y << "," << std::endl;
+	//std::cout << "Box2D Body Position: ( " << bPos.x << "," << bPos.y << ")" << std::endl << std::endl;
+	
 	p = { newBodyPosition.x, newBodyPosition.y };
 
 	prevDrawPosition = newDrawPosition;

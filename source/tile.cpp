@@ -7,6 +7,8 @@ std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges()
 	std::vector<std::vector<b2Vec2>> chains;
 	std::vector<b2Vec2> c1;
 	std::vector<b2Vec2> c2;
+	std::vector<b2Vec2> c3;
+	std::vector<b2Vec2> c4;
 	SDL_Rect r = animSprite->GetSprite()->GetSourceRect();
 	b2Vec2 vert;
 	int col = 0,
@@ -64,6 +66,8 @@ std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges()
 				break;
 			}
 		}
+
+		//if(capDirection)
 		
 		chains.push_back(c2);
 	}
@@ -133,15 +137,16 @@ void Tile::TilePhysicsInit(b2World* world, Vector2 p, SDL_RendererFlip flip)
 			ng = chains.at(i + 1).front();
 
 		switch (flip) {
-		case SDL_FLIP_VERTICAL:
+		case SDL_FLIP_VERTICAL://horizontal flip
 			for (int i = 0, j = chain.size()-1; i != j; i++, j--) {
-				temp = chain.at(i).y;
-				chain.at(i).y = chain.at(j).y;
-				chain.at(j).y = temp;
+				std::swap(chain[i].x, chain[j].x);
 			}
 			break;
 
-		case SDL_FLIP_HORIZONTAL:
+		case SDL_FLIP_HORIZONTAL://vertical flip
+			for (int i = 0, j = chain.size() - 1; i != j; i++, j--) {
+				std::swap(chain[i].y, chain[j].y);
+			}
 			break;
 
 		case SDL_FLIP_NONE:
@@ -301,7 +306,6 @@ Tile::~Tile()
 	if(debugDraw)
 		delete debugDraw;
 
-	graphicsRef.reset();
 	graphicsRef = nullptr;
 
 }
@@ -455,7 +459,6 @@ TileManager::~TileManager()
 		}
 	}
 
-	graphicsRef.reset();
 	graphicsRef = nullptr;
 }
 

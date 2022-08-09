@@ -28,7 +28,6 @@ Actor::~Actor()
 		delete a;
 	}
 
-	graphics.reset();
 	graphics = nullptr;
 }
 

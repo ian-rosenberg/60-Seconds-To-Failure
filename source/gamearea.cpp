@@ -5,11 +5,11 @@ void GameArea::CreateTestArea() {
 	float hDim = player->GetWorldDimensions().y;
 	float fVal = 0.9f;
 	areaPhysics = new b2World(*gravityScale);
+	areaPhysics->SetAllowSleeping(true);
 	areaPhysics->SetAutoClearForces(false);
 
 	listener = new ContactListener();
 	areaPhysics->SetContactListener(listener);
-	areaPhysics->SetAllowSleeping(false);
 
 	fixedTimestepAccum = 0;
 	fixedTimestepAccumRatio = 0;
@@ -99,12 +99,8 @@ void GameArea::AreaUpdate() {
 	entityManager->EntityUpdateAll(graphics->GetFrameDeltaTime());
 	
 }
-
+//https://www.unagames.com/blog/daniele/2010/06/fixed-time-step-implementation-box2d
 void GameArea::PhysicsSteps(float deltaTime) {
-	/*areaPhysics->Step(timeStep, velocityIterations, positionIterations);
-
-	SmoothPhysicsStates();*/
-
 	const int MAX_STEPS = 5;
 
 	fixedTimestepAccum += deltaTime;
@@ -120,16 +116,17 @@ void GameArea::PhysicsSteps(float deltaTime) {
 
 	assert(
 		"Accumulator must have a value lesser than the fixed time step" &&
-		fixedTimestepAccum < FIXED_TIMESTEP + FLT_EPSILON
+		fixedTimestepAccum < timeStep + FLT_EPSILON
 	);
 
 	fixedTimestepAccumRatio = fixedTimestepAccum / timeStep;
 
 	// This is similar to clamp "dt":
-	deltaTime = std::min(deltaTime, (float)(MAX_STEPS * timeStep));
+	//deltaTime = std::min(deltaTime, (float)(MAX_STEPS * timeStep));
 	// but it allows above calculations of fixedTimestepAccumulator_ and
 	// fixedTimestepAccumulatorRatio_ to remain unchanged.
 	const int nStepsClamped = std::min(nSteps, MAX_STEPS);
+
 	for (int i = 0; i < nStepsClamped; ++i)
 	{
 		// In singleStep_() the CollisionManager could fire custom
@@ -147,10 +144,8 @@ void GameArea::PhysicsSteps(float deltaTime) {
 }
 
 void GameArea::SinglePhysicsStep(float deltaTime)
-{
-	AreaUpdate();
-	
-	areaPhysics->Step(deltaTime, velocityIterations, positionIterations);
+{	
+	areaPhysics->Step(timeStep, velocityIterations, positionIterations);
 	
 	player->ToggleGrounded(false);
 	
@@ -185,6 +180,7 @@ void GameArea::SmoothPhysicsStates()
 		c->smoothedAngle =
 			fixedTimestepAccumRatio * b->GetAngle() +
 			oneMinusRatio * c->prevAngle;
+		//b->SetTransform(c->smoothedPosition, c->smoothedAngle);
 	}
 }
 
@@ -200,6 +196,7 @@ void GameArea::ResetSmoothStates()
 		PhysicsComponent* c = (PhysicsComponent*)(b->GetUserData().pointer);
 		c->smoothedPosition = c->prevPosition = b->GetPosition();
 		c->smoothedAngle = c->prevAngle = b->GetAngle();
+		//b->SetTransform(c->smoothedPosition, c->smoothedAngle);
 	}
 }
 
@@ -238,7 +235,7 @@ Uint8 GameArea::CaptureInputEvents(SDL_Event* e){
 			return 0;
 	}
 
-	keyboardState = SDL_GetKeyboardState(&keyCount);
+	keyboardState = SDL_GetKeyboardState(nullptr);
 	
 	if (keyboardState[SDL_SCANCODE_ESCAPE])
 		keyCount++;
@@ -324,19 +321,6 @@ Uint8 GameArea::CaptureInputEvents(SDL_Event* e){
 		prevEvent = newEvent;
 
 		keyCount--;
-	}
-
-	if (keyCount == 0) {
-		newEvent = new Entity::InputEvent();
-		newEvent->keyDown = 0;
-		newEvent->keyCount = keyCount;
-		newEvent->prevEvent = prevEvent;
-		newEvent->gravity = gravityEnabled;
-		newEvent->e = e;
-		newEvent->msSinceLastInput = (prevEvent != nullptr) ? SDL_GetTicks() - prevEvent->msSinceLastInput : SDL_GetTicks();
-		newEvent->repeat = 0;
-
-		entityManager->PushBackInputEvent(newEvent);
 	}
 
 	return 1;

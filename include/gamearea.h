@@ -44,7 +44,7 @@ private:
 
 	double							fixedTimestepAccum;
 	double							fixedTimestepAccumRatio;
-	const double					timeStep = 1 / 30.0f;
+	const float						timeStep = 1.f / 60.f;
 	const int32						velocityIterations = 6;
 	const int32						positionIterations = 2;
 

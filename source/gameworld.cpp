@@ -49,11 +49,11 @@ GameWorld::GameWorld() {
 	player = NULL;
 	currentArea = NULL;
 	graphicsPtr = std::make_shared<Graphics>();
-	graphicsPtr->SetCurrentTime(SDL_GetTicks());
+	graphicsPtr->SetNewTime(SDL_GetTicks());
 
 	if (!graphicsPtr->GetRenderer()) {
 		std::cerr << "Renderer is NULL!" << std::endl;
-
+		graphicsPtr = nullptr;
 		return;
 	}
 	
@@ -72,7 +72,7 @@ GameWorld::~GameWorld() {
 		}
 	}
 
-	graphicsPtr.reset();
+	graphicsPtr = nullptr;
 }
 
 void GameWorld::EnableDebugDraw() {
@@ -82,7 +82,7 @@ void GameWorld::EnableDebugDraw() {
 }
 
 void GameWorld::InitTestArea() {
-	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, 0.0025), graphicsPtr));
+	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, 9.81 * MET_TO_PIX), graphicsPtr));
 
 	currentArea = areas->at(0);
 	currentArea->SetActive(1);
@@ -96,17 +96,12 @@ void GameWorld::InitTestArea() {
 
 bool GameWorld::GameLoop(float & accumulator) {
 	SDL_Event currentEvent;
-	float newTime = graphicsPtr->GetGameTime();
-	float frameTime = newTime - graphicsPtr->GetCurrentTime();
-	float aStart = SDL_GetTicks64(), aEnd;
-
 	SDL_RenderClear(graphicsPtr->GetRenderer());
+	graphicsPtr->SetOldTime(graphicsPtr->GetNewTime());
+	graphicsPtr->SetNewTime(SDL_GetTicks64());
+	float frameTime = graphicsPtr->GetFrameDeltaTime() / 1000.0f;
 
-	if (frameTime > 0.25f)
-		frameTime = 0.25f;
-	graphicsPtr->SetCurrentTime(newTime);
-
-	accumulator += frameTime;
+	accumulator += (frameTime > 0.25f ? 0.25f : frameTime);
 
 	SDL_PumpEvents();
 
@@ -116,22 +111,20 @@ bool GameWorld::GameLoop(float & accumulator) {
 	currentArea->AreaThink();
 
 	while (accumulator >= DELTA_TIME) {	
+		currentArea->AreaUpdate();
 		
-		currentArea->PhysicsSteps(DELTA_TIME);
+		currentArea->PhysicsSteps(accumulator);
 
 		accumulator -= DELTA_TIME;
-	}
-
-	if (accumulator < FRAME_DELAY)
-	{
-		SDL_Delay(FRAME_DELAY - DELTA_TIME);
 	}
 
 	currentArea->AreaDraw(accumulator / DELTA_TIME);
 
 	SDL_RenderPresent(graphicsPtr->GetRenderer());
 
-	aEnd = SDL_GetTicks64();
+
+	/*if (graphicsPtr->GetFrameDeltaTime() < FRAME_DELAY_MS)
+		SDL_Delay(FRAME_DELAY_MS - graphicsPtr->GetFrameDeltaTime());*/
 
 	return false;
 }

@@ -184,6 +184,8 @@ public:
 
 	void SetVelocity(InputEvent* e);
 
+	void SetPreviousPhysicsState();
+
 	/** Inline Fcns -------------------------------------------------------------**/
 	inline void SetPixelVelocity(Vector2 v) { velocity = v; }
 

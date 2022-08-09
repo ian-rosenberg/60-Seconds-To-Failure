@@ -95,6 +95,12 @@ void Entity::SetVelocity(InputEvent* e)
 	body->SetLinearVelocity(v);
 }
 
+void Entity::SetPreviousPhysicsState()
+{
+	interpComponent->prevAngle = rotation.z;
+	interpComponent->prevPosition = newBodyPosition;
+}
+
 void Entity::RotateTranslate(b2Vec2& vector, const b2Vec2& center, float angle)
 {
 	b2Vec2 tmp;
@@ -271,13 +277,11 @@ void EntityManager::DebugDrawing(Entity* it)
 
 void EntityManager::EntityUpdateAll(double ticks)
 {
-	Vector2 vel;
-	b2Vec2 v;
-
 	for (std::vector<Entity*>::iterator it = entities->begin();
 		it != entities->end();
 		it++)
 	{
+		(*it)->SetPreviousPhysicsState();
 		(*it)->Update();
 	}
 }

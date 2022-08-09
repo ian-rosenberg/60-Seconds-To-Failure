@@ -16,6 +16,7 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 	scaledWidth = screenWidth * PIX_TO_MET;
 	scaledHeight = screenHeight * PIX_TO_MET;
 
+
 	std::cout << "Screen resolution: " << DM.w << "," << DM.h << std::endl;
 	
 	if (!IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) {
@@ -49,10 +50,12 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 Graphics::Graphics() {
 	renderer = NULL;
 	window = NULL;
-	currentTime = 0.0;
-	accumulator = 0.0;
+	newTime = 0.0;
+	accumulator = 0.f;
+	oldTime = 0.f;
+	newTime = SDL_GetTicks64();
 
-	if (!SDL2_Init(SDL_INIT_EVERYTHING, 1280, 720)) {
+	if (!SDL2_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER, 1280, 720)) {
 		return;
 	}
 
@@ -70,12 +73,6 @@ Graphics::~Graphics() {
 
 	std::cout << "SDL Subsystems closed successfully!" << std::endl;
 	std::cin >> r;
-}
-
-void Graphics::NextFrame() {
-
-	SDL_RenderClear(renderer);
-	SDL_RenderPresent(renderer);
 }
 
 void Graphics::Vector2PixelsToMeters(Vector2& val)
