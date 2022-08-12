@@ -33,8 +33,8 @@ public:
 
 	~Player();
 
-	inline void SetInputQueuePtr(std::vector<Entity::InputEvent*>* sp) { inputQueue = sp; }
-	inline void SetEventsToFirePtr(std::queue<Entity::InputEvent*>* q) { eventsToFire = q; }
+	void SetInputQueuePtr(std::vector<Entity::InputEvent*>* sp) { inputQueue = sp; }
+	void SetEventsToFirePtr(std::queue<Entity::InputEvent*>* q) { eventsToFire = q; }
 
 	/**
 	* @brief Handle input

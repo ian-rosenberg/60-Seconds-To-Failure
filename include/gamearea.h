@@ -53,7 +53,7 @@ public:
 
 	~GameArea();
 
-	inline b2World* GetWorldPtr() { return areaPhysics; }
+	b2World* GetWorldPtr() { return areaPhysics; }
 
 	void AddEntity(Entity* e);
 
@@ -75,11 +75,11 @@ public:
 
 	void AreaDraw(double accumulator);
 
-	inline EntityManager* GetEntityManager() { return entityManager; }
+	EntityManager* GetEntityManager() { return entityManager; }
 
-	inline Uint8 IsActive() { return active; }
+	Uint8 IsActive() { return active; }
 
-	inline void SetActive(Uint8 flag) { active = flag; }
+	void SetActive(Uint8 flag) { active = flag; }
 
-	inline b2Vec2* GetGravityScale() { return gravityScale; }
+	b2Vec2* GetGravityScale() { return gravityScale; }
 };

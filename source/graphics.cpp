@@ -11,7 +11,7 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 
 	SDL_DisplayMode DM;
 	SDL_GetCurrentDisplayMode(0, &DM);
-	screenWidth = 1280;// DM.w;
+	screenWidth = 1280;//DM.w;
 	screenHeight = 720;// DM.h;
 	scaledWidth = screenWidth * PIX_TO_MET;
 	scaledHeight = screenHeight * PIX_TO_MET;

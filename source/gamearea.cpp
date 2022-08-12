@@ -3,7 +3,7 @@
 
 void GameArea::CreateTestArea() {
 	float hDim = player->GetWorldDimensions().y;
-	float fVal = 0.9f;
+	float fVal = 1.f;
 	areaPhysics = new b2World(*gravityScale);
 	areaPhysics->SetAllowSleeping(true);
 	areaPhysics->SetAutoClearForces(false);
@@ -99,6 +99,7 @@ void GameArea::AreaUpdate() {
 	entityManager->EntityUpdateAll(graphics->GetFrameDeltaTime());
 	
 }
+
 //https://www.unagames.com/blog/daniele/2010/06/fixed-time-step-implementation-box2d
 void GameArea::PhysicsSteps(float deltaTime) {
 	const int MAX_STEPS = 5;
@@ -126,7 +127,7 @@ void GameArea::PhysicsSteps(float deltaTime) {
 	// but it allows above calculations of fixedTimestepAccumulator_ and
 	// fixedTimestepAccumulatorRatio_ to remain unchanged.
 	const int nStepsClamped = std::min(nSteps, MAX_STEPS);
-
+	//std::cout << nStepsClamped << std::endl;
 	for (int i = 0; i < nStepsClamped; ++i)
 	{
 		// In singleStep_() the CollisionManager could fire custom
@@ -180,7 +181,6 @@ void GameArea::SmoothPhysicsStates()
 		c->smoothedAngle =
 			fixedTimestepAccumRatio * b->GetAngle() +
 			oneMinusRatio * c->prevAngle;
-		//b->SetTransform(c->smoothedPosition, c->smoothedAngle);
 	}
 }
 

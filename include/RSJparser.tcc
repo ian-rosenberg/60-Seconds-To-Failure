@@ -53,7 +53,7 @@ enum RSJresourceType { RSJ_UNINITIATED, RSJ_UNKNOWN, RSJ_OBJECT, RSJ_ARRAY, RSJ_
 // ============================================================
 // Direct string manipulation functions
 
-inline 
+
 std::string to_string (RSJresourceType rt) {
     switch (rt) {
         case RSJ_UNINITIATED: return("RSJ_UNINITIATED");
@@ -66,7 +66,7 @@ std::string to_string (RSJresourceType rt) {
 
 enum StrTrimDir { STRTRIM_L=1, STRTRIM_R=2, STRTRIM_LR=3 };
 
-inline 
+
 std::string strtrim (std::string str, std::string chars=" \t\n\r", int max_count=-1, StrTrimDir dirs=STRTRIM_LR) {
     if (str.empty()) return(str);
     if (max_count<0) max_count = str.length();
@@ -88,7 +88,7 @@ std::string strtrim (std::string str, std::string chars=" \t\n\r", int max_count
     return (str);
 }
 
-inline 
+
 std::string strip_outer_quotes (std::string str, char* qq=NULL) {
     str = strtrim (str);
     
@@ -105,7 +105,7 @@ std::string strip_outer_quotes (std::string str, char* qq=NULL) {
 
 // ----------------
 
-inline 
+
 int is_bracket (char c, std::vector<char const*>& bracks, int indx=0) {
     for (int b=0; b<bracks.size(); ++b)
         if (c==bracks[b][indx]) 
@@ -113,7 +113,7 @@ int is_bracket (char c, std::vector<char const*>& bracks, int indx=0) {
     return (-1);
 }
 
-inline 
+
 std::vector<std::string> split_RSJ_array (const std::string& str) { // TODO: Make efficient. This function is speed bottleneck.
     // splits, while respecting brackets and escapes
     std::vector<std::string> ret;
@@ -204,7 +204,7 @@ std::vector<std::string> split_RSJ_array (const std::string& str) { // TODO: Mak
     return (ret);
 }
 
-inline 
+
 std::string insert_tab_after_newlines (std::string str) {
     for (int a=0; a<str.length(); ++a)
         if (str[a]=='\n') {
@@ -400,12 +400,12 @@ public:
 // ------------------------------------------------------------
 // RSJresource member functions
 
-inline 
+
 RSJresource::~RSJresource (){
     if (parsed_data_p) delete parsed_data_p;
 }
 
-inline 
+
 RSJresource::RSJresource (const RSJresource& r) {
     data=r.data;
     _exists = r._exists;
@@ -413,7 +413,7 @@ RSJresource::RSJresource (const RSJresource& r) {
     else parsed_data_p = NULL;
 }
 
-inline 
+
 RSJresource& RSJresource::operator= (const RSJresource& r) {
     data=r.data;
     _exists = r._exists;
@@ -422,21 +422,21 @@ RSJresource& RSJresource::operator= (const RSJresource& r) {
     return *this;
 }
 
-inline 
+
 int RSJresource::size (void) {
     if (!exists()) return (0);
     parse(); // parse if not parsed
     return (parsed_data_p->size());
 }
 
-inline 
+
 RSJresourceType RSJresource::type (void) {
     if (!exists()) return (RSJ_UNINITIATED);
     parse(); // parse if not parsed
     return (parsed_data_p->type);
 }
 
-inline 
+
 std::string RSJresource::as_str (bool print_comments, bool update_data) {
     if (exists()) {
         std::string ret;
@@ -477,14 +477,14 @@ std::string RSJresource::as_str (bool print_comments, bool update_data) {
 
 // Parsers
 
-inline 
+
 RSJresourceType RSJresource::parse (bool force) {
     if (!parsed_data_p)  parsed_data_p = new RSJparsedData;
     if (parsed_data_p->type==RSJ_UNKNOWN || force)  parsed_data_p->parse (data, RSJ_UNKNOWN);
     return (parsed_data_p->type);
 }
 
-inline 
+
 void RSJresource::parse_full (bool force, int max_depth, int* parse_count_for_verbose_p) { // recursive parsing (slow)
     if (max_depth==0) return;
     if (!parsed_data_p)  parsed_data_p = new RSJparsedData;
@@ -508,12 +508,12 @@ void RSJresource::parse_full (bool force, int max_depth, int* parse_count_for_ve
 // ============================================================
 // FAST PARSER (Under construction. DO NOT use the following functions in your application.)
 
-inline 
+
 int seek_next (std::string* str_p, int start_pos, char character) {
     
 }
 
-inline 
+
 void RSJresource::fast_parse (std::string* str_p, bool copy_string, int max_depth, int* parse_start_str_pos) {
     // TODO: UNDER CONSTRUCTION...
     
@@ -645,27 +645,27 @@ void RSJresource::fast_parse (std::string* str_p, bool copy_string, int max_dept
 
 // ------------------------------------------------------------
 
-inline 
+
 RSJobject& RSJresource::as_object (bool force) {
     if (!parsed_data_p)  parsed_data_p = new RSJparsedData;
     if (parsed_data_p->type==RSJ_UNKNOWN || force)  parsed_data_p->parse (data, RSJ_OBJECT);
     return (parsed_data_p->object);
 }
 
-inline 
+
 RSJresource& RSJresource::operator[] (std::string key) { // returns reference
     return ( (as_object())[key] ); // will return empty resource (with _exists==false) if 
                                             // either this resource does not exist, is not an object, or the key does not exist
 }
 
-inline 
+
 RSJarray& RSJresource::as_array (bool force) {
     if (!parsed_data_p)  parsed_data_p = new RSJparsedData;
     if (parsed_data_p->type==RSJ_UNKNOWN || force)  parsed_data_p->parse (data, RSJ_ARRAY);
     return (parsed_data_p->array);
 }
 
-inline 
+
 RSJresource& RSJresource::operator[] (int indx) { // returns reference
     as_array();
     if (indx >= parsed_data_p->array.size())
@@ -677,7 +677,7 @@ RSJresource& RSJresource::operator[] (int indx) { // returns reference
 // ------------------------------------------------------------
 // special 'as':
 
-template <class dataType, class vectorType> inline 
+template <class dataType, class vectorType> 
 vectorType RSJresource::as_vector (const vectorType& def) { // returns copy -- for being consistent with other 'as' specializations
     if (!exists()) return (def);
     vectorType ret;
@@ -687,7 +687,7 @@ vectorType RSJresource::as_vector (const vectorType& def) { // returns copy -- f
     return (ret);
 }
 
-template <class dataType, class mapType> inline 
+template <class dataType, class mapType> 
 mapType RSJresource::as_map (const mapType& def) { // returns copy -- for being consistent with other 'as' specializations
     if (!exists()) return (def);
     mapType ret;
@@ -707,14 +707,14 @@ mapType RSJresource::as_map (const mapType& def) { // returns copy -- for being 
 
 
 // RSJobject
-template <> inline 
+template <> 
 RSJobject RSJresource::as<RSJobject> (const RSJobject& def) { // returns copy -- for being consistent with other 'as' specializations
     if (!exists()) return (def);
     return (as_object());
 }
 
 // RSJarray
-template <> inline 
+template <> 
 RSJarray  RSJresource::as<RSJarray> (const RSJarray& def) { // returns copy -- for being consistent with other 'as' specializations
     if (!exists()) return (def);
     return (as_array());
@@ -724,7 +724,7 @@ RSJarray  RSJresource::as<RSJarray> (const RSJarray& def) { // returns copy -- f
 // Elementary types
 
 // String
-template <> inline 
+template <> 
 std::string  RSJresource::as<std::string> (const std::string& def) {
     if (!exists()) return (def);
     
@@ -747,21 +747,21 @@ std::string  RSJresource::as<std::string> (const std::string& def) {
 }
 
 // integer
-template <> inline 
+template <> 
 int  RSJresource::as<int> (const int& def) {
     if (!exists()) return (def);
     return (atoi (strip_outer_quotes(data).c_str() ) );
 }
 
 // double
-template <> inline 
+template <> 
 double  RSJresource::as<double> (const double& def) {
     if (!exists()) return (def);
     return (atof (strip_outer_quotes(data).c_str() ) );
 }
 
 // bool
-template <> inline 
+template <> 
 bool  RSJresource::as<bool> (const bool& def) {
     if (!exists()) return (def);
     std::string cleanData = strip_outer_quotes (data);
@@ -772,12 +772,12 @@ bool  RSJresource::as<bool> (const bool& def) {
 // ------------------------------------
 // Other types
 
-/*template <> template <dataType> inline 
+/*template <> template <dataType> 
 bool  RSJresource::as< std::vector<dataType> > (const std::vector<dataType>& def) {
     return as_vector<dataType> (def);
 }
 
-template <> template <dataType> inline 
+template <> template <dataType> 
 std::unordered_map<std::string,dataType>  RSJresource::as< std::unordered_map<std::string,dataType> > 
                                                     (const std::unordered_map<std::string,dataType>& def) {
     return as_map<dataType> (def);

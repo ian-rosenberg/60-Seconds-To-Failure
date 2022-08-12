@@ -42,5 +42,5 @@ public:
 
 	void UpdateScreenPosition(double alpha);
 
-	inline void SetStaticTriggerFixture(b2Fixture* f) { boundingVolume = f; }
+	void SetStaticTriggerFixture(b2Fixture* f) { boundingVolume = f; }
 };

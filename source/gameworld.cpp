@@ -18,7 +18,7 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 		shape.m_p = b2Vec2(0, d.y/4);
 
 		fd.shape = &shape;
-		fd.friction = 0.5f;
+		fd.friction = 1.f;
 		fd.density = 10;
 		
 		player->GetBody()->CreateFixture(&fd);
@@ -97,13 +97,9 @@ void GameWorld::InitTestArea() {
 bool GameWorld::GameLoop(float & accumulator) {
 	SDL_Event currentEvent;
 	SDL_RenderClear(graphicsPtr->GetRenderer());
-	graphicsPtr->SetOldTime(graphicsPtr->GetNewTime());
-	graphicsPtr->SetNewTime(SDL_GetTicks64());
 	float frameTime = graphicsPtr->GetFrameDeltaTime() / 1000.0f;
 
 	accumulator += (frameTime > 0.25f ? 0.25f : frameTime);
-
-	SDL_PumpEvents();
 
 	if (currentArea->CaptureInputEvents(&currentEvent) < 1)
 		return true;
@@ -113,7 +109,7 @@ bool GameWorld::GameLoop(float & accumulator) {
 	while (accumulator >= DELTA_TIME) {	
 		currentArea->AreaUpdate();
 		
-		currentArea->PhysicsSteps(accumulator);
+		currentArea->PhysicsSteps(DELTA_TIME);
 
 		accumulator -= DELTA_TIME;
 	}
@@ -122,9 +118,13 @@ bool GameWorld::GameLoop(float & accumulator) {
 
 	SDL_RenderPresent(graphicsPtr->GetRenderer());
 
+	//if (graphicsPtr->GetFrameDeltaTime() < FRAME_DELAY_MS)
+		//SDL_Delay(FRAME_DELAY_MS - graphicsPtr->GetFrameDeltaTime());
 
-	/*if (graphicsPtr->GetFrameDeltaTime() < FRAME_DELAY_MS)
-		SDL_Delay(FRAME_DELAY_MS - graphicsPtr->GetFrameDeltaTime());*/
-
+	graphicsPtr->SetOldTime(graphicsPtr->GetNewTime());
+	graphicsPtr->SetNewTime(SDL_GetTicks64());
+	
+	//std::cout << 1000.0 / MAX(SDL_GetTicks64() - graphicsPtr->GetOldTime(), 0.001) << " FPS" << std::endl;
+	
 	return false;
 }

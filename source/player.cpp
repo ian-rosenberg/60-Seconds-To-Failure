@@ -21,7 +21,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 	health = maxHealth;
 	maxEnergy = 50;
 	energy = maxEnergy;
-	jumpForce = .4f;
+	jumpForce = 10.f;
 	scale = { 1,1 };
 	prevDrawPosition = newDrawPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
@@ -203,14 +203,16 @@ void Player::UpdateScreenPosition(double alpha)
 
 void Player::Update()
 {
+	b2Vec2 bodyVelocity = body->GetLinearVelocity();
+	
 	SetLogicalState(State::State_Idle);
 
 	if (dead)
 	{
 		return;
 	}
-
-	if (abs(velocity.x) == abs(maxSpeed))
+	
+	if (abs(bodyVelocity.x) > .01f)
 	{
 		if (velocity.x < 0)
 		{

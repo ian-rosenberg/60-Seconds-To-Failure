@@ -19,7 +19,7 @@ public:
 
 	~GameWorld();
 
-	inline std::shared_ptr<Graphics> GetGraphics() { return graphicsPtr; }
+	std::shared_ptr<Graphics> GetGraphics() { return graphicsPtr; }
 
 	void EnableDebugDraw();
 

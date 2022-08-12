@@ -71,14 +71,14 @@ public:
 
 	Vector2 GetPosition();
 
-	inline std::string GetFilePath() { return (std::string)filepath; }
+	std::string GetFilePath() { return (std::string)filepath; }
 
-	inline int GetXOffset() { return xOffset; }
-	inline int GetYOffset() { return yOffset; }
+	int GetXOffset() { return xOffset; }
+	int GetYOffset() { return yOffset; }
 
-	inline SDL_Rect GetSourceRect() { return srcRect; }
+	SDL_Rect GetSourceRect() { return srcRect; }
 
-	inline Vector3 GetRotation() { return rotation; }
+	Vector3 GetRotation() { return rotation; }
 
 	void Draw(Sprite* sprite,
 		Vector2 drawPosition,

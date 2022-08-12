@@ -65,31 +65,31 @@ public:
 	*/
 	AnimationReturnType AnimationNextFrame(Animation* animList);
 
-	inline float GetCurrentFrame() {
+	float GetCurrentFrame() {
 		return currentFrame;
 	}
 
-	inline int GetYOffset() {
+	int GetYOffset() {
 		return yOffset;
 	}
 
-	inline int GetXOffset() {
+	int GetXOffset() {
 		return xOffset;
 	}
 
-	inline int GetCellHeight() {
+	int GetCellHeight() {
 		return cellHeight;
 	}
 
-	inline int GetCellWidth() {
+	int GetCellWidth() {
 		return cellWidth;
 	}
 
-	inline std::string GetName() {
+	std::string GetName() {
 		return name;
 	}
 
-	inline Sprite* GetSprite() {
+	Sprite* GetSprite() {
 		return sprite;
 	}
 };

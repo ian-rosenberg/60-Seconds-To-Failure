@@ -53,7 +53,7 @@ public:
 	
 	~Tile();
 
-	inline void							SetBody(b2Body* b) { physicsBody = b; }
+	void							SetBody(b2Body* b) { physicsBody = b; }
 	void								Draw();
 	std::vector<std::vector<b2Vec2>>	CreatePhysicsEdges();
 	void								TilePhysicsInit(b2World* world, Vector2 p, SDL_RendererFlip flip);

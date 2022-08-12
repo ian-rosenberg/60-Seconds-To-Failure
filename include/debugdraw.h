@@ -27,9 +27,9 @@ public:
 	void UpdateBodyPosition(b2Vec2 p);
 	void SetCollisionColor(Uint8 on) { isColliding = on == 1; }
 
-	inline void SetBodyReference(b2Body* ref) { bodyRef = ref; }
-	inline void SetTriggerFixture(b2Fixture* ref) { triggerFix = ref; }
-	inline b2Fixture* GetTrigger() { return triggerFix; }
+	void SetBodyReference(b2Body* ref) { bodyRef = ref; }
+	void SetTriggerFixture(b2Fixture* ref) { triggerFix = ref; }
+	b2Fixture* GetTrigger() { return triggerFix; }
 	
 	// Inherited via b2Draw
 	void DrawRect(const SDL_Rect* rect); 

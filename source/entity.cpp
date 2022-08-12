@@ -136,10 +136,10 @@ void Entity::SetWorldDimensions(b2Vec2 dim) {
 
 void Entity::Jump(InputEvent* e)
 {
-	if (!jumpTrigger)
+	if (!jumpTrigger || !grounded)
 		return;
 
- 	body->ApplyLinearImpulse(b2Vec2(0, -body->GetMass() * jumpForce), body->GetPosition(), true);
+ 	body->ApplyLinearImpulse(b2Vec2(0, -body->GetMass() * jumpForce), body->GetWorldCenter(), false);
 	this->ToggleGrounded(false);
 }
 

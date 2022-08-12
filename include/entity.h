@@ -163,17 +163,17 @@ public:
 
 	void SetId(int newId);
 
-	inline int GetId() { return id; }
+	int GetId() { return id; }
 
 	void SetBody(b2Body* b);
 
-	inline b2Body* GetBody() { return body; }
+	b2Body* GetBody() { return body; }
 
-	inline b2Fixture* GetJumpTrigger() { return jumpTrigger; }
+	b2Fixture* GetJumpTrigger() { return jumpTrigger; }
 
 	void RotateTranslate(b2Vec2& vector, const b2Vec2& center, float angle);
 
-	inline b2Vec2 GetWorldDimensions() { return worldDimensions; }
+	b2Vec2 GetWorldDimensions() { return worldDimensions; }
 
 	void SetWorldDimensions(b2Vec2 dim);
 	
@@ -186,32 +186,32 @@ public:
 
 	void SetPreviousPhysicsState();
 
-	/** Inline Fcns -------------------------------------------------------------**/
-	inline void SetPixelVelocity(Vector2 v) { velocity = v; }
+	/** Fcns -------------------------------------------------------------**/
+	void SetPixelVelocity(Vector2 v) { velocity = v; }
 
-	inline void SetGravityEnabled(Uint8 flag) { gravityEnabled = flag; }
+	void SetGravityEnabled(Uint8 flag) { gravityEnabled = flag; }
 	
-	inline Vector2 GetDrawPosition() { return newDrawPosition; }
+	Vector2 GetDrawPosition() { return newDrawPosition; }
 
-	inline void EnableDebugDraw(DebugDraw* ddPtr) { debugDraw = ddPtr; }
+	void EnableDebugDraw(DebugDraw* ddPtr) { debugDraw = ddPtr; }
 
-	inline Uint8 GetDebugDrawEnabled() { return debugDraw!=NULL;}
+	Uint8 GetDebugDrawEnabled() { return debugDraw!=NULL;}
 
-	inline DebugDraw* GetDebugDraw() { return debugDraw;}
+	DebugDraw* GetDebugDraw() { return debugDraw;}
 	
-	inline Vector2 GetScreenPosition() { return newDrawPosition; }
+	Vector2 GetScreenPosition() { return newDrawPosition; }
 
-	inline const char* GetActorName() { return name.c_str(); }
+	const char* GetActorName() { return name.c_str(); }
 
-	inline void DecrementJumpTimer(double ticks) { jumpTimer -= ticks; }
+	void DecrementJumpTimer(double ticks) { jumpTimer -= ticks; }
 
-	inline void ResetJumpTimer() { jumpTimer = jumpCooldown; }
+	void ResetJumpTimer() { jumpTimer = jumpCooldown; }
 
-	inline bool IsJumpTimeReady() { return jumpTimer <= 0; }
+	bool IsJumpTimeReady() { return jumpTimer <= 0; }
 
-	inline bool IsGrounded() { return grounded; }
+	bool IsGrounded() { return grounded; }
 
-	inline Vector2 GetAvgPixelDimensions() { return avgDim; }
+	Vector2 GetAvgPixelDimensions() { return avgDim; }
 };
 
 class EntityManager {
@@ -244,13 +244,13 @@ public:
 	/**
 	* Input driver integrated per entity manager, one active at a time
 	*/
-	inline void PushBackInputEvent(Entity::InputEvent* newEvent) { inputQueue->push_back(newEvent); }
+	void PushBackInputEvent(Entity::InputEvent* newEvent) { inputQueue->push_back(newEvent); }
 
-	inline void PushBackEventToFire(Entity::InputEvent* newEvent) { eventsToFire->push(newEvent); }
+	void PushBackEventToFire(Entity::InputEvent* newEvent) { eventsToFire->push(newEvent); }
 
-	inline std::vector<Entity::InputEvent*>* GetInputQueue() { return inputQueue; }
+	std::vector<Entity::InputEvent*>* GetInputQueue() { return inputQueue; }
 
-	inline std::queue<Entity::InputEvent*>* GetEventsToFire() { return eventsToFire; }
+	std::queue<Entity::InputEvent*>* GetEventsToFire() { return eventsToFire; }
 
 	/**
 	* @brief Render all entites to screen
