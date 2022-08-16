@@ -173,33 +173,7 @@ void Player::Draw()
 	currentAnimation->AnimationNextFrame(currentAnimation);
 }
 
-void Player::UpdateScreenPosition(double alpha)
-{
-	Vector2 p;
-	//b2Vec2 bPos = body->GetPosition();
 
-	prevBodyPosition = newBodyPosition;
-	newBodyPosition = interpComponent->smoothedPosition;
-
-	//std::cout << "Smoothed Body Position: ( " << interpComponent->smoothedPosition.x << "," << interpComponent->smoothedPosition.y << "," << std::endl;
-	//std::cout << "Box2D Body Position: ( " << bPos.x << "," << bPos.y << ")" << std::endl << std::endl;
-	
-	p = { newBodyPosition.x, newBodyPosition.y };
-
-	prevDrawPosition = newDrawPosition;
-
-	graphics->Vector2MetersToPixels(p);
-	newDrawPosition = p;
-	newDrawPosition.x = newDrawPosition.x * alpha + prevDrawPosition.x * (1.0 - alpha);
-	newDrawPosition.y = newDrawPosition.y * alpha + prevDrawPosition.y * (1.0 - alpha);
-
-	//std::cout << GetAverageActorDimensions().x / 4 << std::endl;
-
-	/*if(newBodyPosition.x != prevBodyPosition.x || newBodyPosition.y != prevBodyPosition.y)
-		std::cout << "World Position: " << newBodyPosition.x << "," << newBodyPosition.y << std::endl;
-	if (newDrawPosition.x != prevDrawPosition.x || newDrawPosition.y != prevDrawPosition.y)
-		std::cout << "Draw Position: " << newDrawPosition.x << "," << newDrawPosition.y << std::endl;*/
-}
 
 void Player::Update()
 {

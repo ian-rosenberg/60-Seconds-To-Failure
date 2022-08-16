@@ -8,8 +8,9 @@
 
 const double RAD2DEG = 180 / M_PI;
 const float DELTA_TIME = 1 / TARGET_FRAME_RATE;
+const Uint32 FRAME_DELAY_MS = 16;
 const Uint32 MS = 1000;
-const float MET_TO_PIX = 10.f;
+const float MET_TO_PIX = 12.f;
 const float PIX_TO_MET = 1 / MET_TO_PIX;
 
 class Graphics {
@@ -26,6 +27,8 @@ private:
 
 	float			scaledWidth;
 	float			scaledHeight;
+
+	float			fps;
 
 	//Used for intialization of graphics, image, audio and text subsystems
 	int SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight);
@@ -48,9 +51,11 @@ public:
 	Vector2 GetScaledScreenDimensions() { return Vector2(scaledWidth, scaledHeight); }
 
 	void SetNewTime(Uint32 val) { newTime = val; }
-	void SetOldTime(Uint32 val) { oldTime = val; }
+	void SetOldTime() { oldTime = newTime; }
 	void SetAccumulatorTime(Uint32 val) { accumulator = val; }
 
 	void Vector2PixelsToMeters(Vector2 &val);
 	void Vector2MetersToPixels(Vector2 &val);
+
+	float GetFrameRate(){return fps;}
 };

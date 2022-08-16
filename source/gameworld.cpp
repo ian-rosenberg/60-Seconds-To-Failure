@@ -49,7 +49,7 @@ GameWorld::GameWorld() {
 	player = NULL;
 	currentArea = NULL;
 	graphicsPtr = std::make_shared<Graphics>();
-	graphicsPtr->SetNewTime(SDL_GetTicks());
+	graphicsPtr->SetOldTime();
 
 	if (!graphicsPtr->GetRenderer()) {
 		std::cerr << "Renderer is NULL!" << std::endl;
@@ -97,7 +97,9 @@ void GameWorld::InitTestArea() {
 bool GameWorld::GameLoop(float & accumulator) {
 	SDL_Event currentEvent;
 	SDL_RenderClear(graphicsPtr->GetRenderer());
-	float frameTime = graphicsPtr->GetFrameDeltaTime() / 1000.0f;
+	graphicsPtr->SetOldTime();
+	graphicsPtr->SetNewTime(SDL_GetTicks64());
+	float frameTime = graphicsPtr->GetFrameDeltaTime() / MS;
 
 	accumulator += (frameTime > 0.25f ? 0.25f : frameTime);
 
@@ -117,14 +119,9 @@ bool GameWorld::GameLoop(float & accumulator) {
 	currentArea->AreaDraw(accumulator / DELTA_TIME);
 
 	SDL_RenderPresent(graphicsPtr->GetRenderer());
-
-	//if (graphicsPtr->GetFrameDeltaTime() < FRAME_DELAY_MS)
-		//SDL_Delay(FRAME_DELAY_MS - graphicsPtr->GetFrameDeltaTime());
-
-	graphicsPtr->SetOldTime(graphicsPtr->GetNewTime());
-	graphicsPtr->SetNewTime(SDL_GetTicks64());
 	
-	//std::cout << 1000.0 / MAX(SDL_GetTicks64() - graphicsPtr->GetOldTime(), 0.001) << " FPS" << std::endl;
-	
+	//if (graphicsPtr->GetFrameDeltaTime() < DELTA_TIME * MS)
+		//SDL_Delay(DELTA_TIME * MS - graphicsPtr->GetFrameDeltaTime());
+
 	return false;
 }

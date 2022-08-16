@@ -66,7 +66,7 @@ AnimationReturnType Animation::AnimationNextFrame(Animation* anim)
 		return AnimationReturnType::ART_ERROR;
 	}
 
-	currentFrame += anim->frameRate;
+	currentFrame += anim->length * frameRate;
 	if ((int)(currentFrame) >= anim->length - 1)
 	{
 		switch (anim->animType)

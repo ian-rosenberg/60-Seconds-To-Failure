@@ -143,7 +143,6 @@ public:
 	virtual void Activate(Entity* activator) = 0;						/**<some entities can be activated by others, doors opened, levels, etc*/
 	virtual int Damage(int amount, Entity* source) = 0;					/**<when this entity takes damage*/
 	virtual void Die() = 0;
-	virtual void UpdateScreenPosition(double alpha) = 0;
 	
 	/**
 	* @brief Set this actor's animation by the name of the animation
@@ -212,6 +211,8 @@ public:
 	bool IsGrounded() { return grounded; }
 
 	Vector2 GetAvgPixelDimensions() { return avgDim; }
+	
+	void UpdateScreenPosition(double alpha);
 };
 
 class EntityManager {
@@ -269,7 +270,5 @@ public:
 	*/
 	void InputUpdate();
 
-	void EntityThinkAll();
-
-	void SetAlpha(double a);
+	void EntityThinkAll(); 
 };

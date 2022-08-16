@@ -95,8 +95,8 @@ void GameArea::AreaUpdate() {
 	if (!active)
 		return;
 	tileManager->UpdateMap();
-	entityManager->InputUpdate();
 	entityManager->EntityUpdateAll(graphics->GetFrameDeltaTime());
+	entityManager->InputUpdate();
 	
 }
 
