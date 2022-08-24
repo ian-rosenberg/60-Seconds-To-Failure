@@ -139,7 +139,7 @@ void Entity::Jump(InputEvent* e)
 	if (!jumpTrigger || !grounded)
 		return;
 
- 	body->ApplyLinearImpulse(b2Vec2(0, -body->GetMass() * jumpForce), body->GetWorldCenter(), false);
+ 	body->ApplyLinearImpulse(b2Vec2(0, -body->GetMass() * jumpForce), body->GetWorldCenter(), true);
 	this->ToggleGrounded(false);
 }
 

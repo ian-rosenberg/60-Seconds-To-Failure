@@ -63,6 +63,9 @@
     <ClCompile Include="source\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\perlinnoise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\graphics.h">
@@ -105,6 +108,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\camera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\perlinnoise.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

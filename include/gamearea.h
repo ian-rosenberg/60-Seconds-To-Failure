@@ -6,11 +6,13 @@
 #include <entity.h>
 #include <player.h>
 #include <tile.h>
+#include <perlinnoise.h>
 #include <contactlistener.h>
 
 #include <box2d/box2d.h>
 #include <box2d/b2_math.h>
 #include <box2d/b2_world.h>
+
 
 class GameArea {
 private:
@@ -47,6 +49,8 @@ private:
 	const float						timeStep = 1.f / 60.f;
 	const int32						velocityIterations = 6;
 	const int32						positionIterations = 2;
+
+	PerlinNoise*					perlinNoiseMap;
 
 public:
 	GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g);

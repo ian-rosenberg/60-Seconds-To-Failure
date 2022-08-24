@@ -73,6 +73,8 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
 	testPlatformBottom = 0.0f;
 	testPlatformTop = 0.0f;
 	graphics = std::shared_ptr<Graphics>(g);
+	perlinNoiseMap = new PerlinNoise(g);
+	perlinNoiseMap->PerlinNoise2D();
 	tileManager = nullptr;
 }
 

@@ -66,8 +66,8 @@ std::vector<std::vector<b2Vec2>> Tile::CreatePhysicsEdges()
 				break;
 			}
 		}
-
-		//if(capDirection)
+		//Decide to cap north, south or both
+		if(capDirection != TileCapping::None)
 		
 		chains.push_back(c2);
 	}
@@ -470,7 +470,8 @@ void TileManager::DrawMap(Vector2 cameraOffset)
 {
 	for (int y = 0; y < tileMap.size(); y++) {
 		for (int x = 0; x < tileMap[y].size(); x++) {
-			tileMap[y][x]->Draw();
+			if(tileMap[y][x] != nullptr)
+				tileMap[y][x]->Draw();
 		}
 	}
 
