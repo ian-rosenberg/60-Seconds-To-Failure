@@ -26,13 +26,14 @@ protected:
 	Vector4						color;
 
 	SDL_Texture*				texture;
+	SDL_Texture*				rotatedTexture;
 	SDL_Rect					srcRect;
 	std::shared_ptr<Graphics>	graphics;
 	
 public:
 	Sprite();
 
-	Sprite(Sprite* oldSprite);
+	Sprite(const Sprite &oldSprite);
 
 	Sprite(std::string filepath,
 		Vector2 drawPosition,
@@ -68,6 +69,8 @@ public:
 	SDL_Surface* LoadSurface(std::string filepath);
 
 	SDL_Texture* GetTexture();
+
+	void RotateTextureZ(float theta);
 
 	Vector2 GetPosition();
 

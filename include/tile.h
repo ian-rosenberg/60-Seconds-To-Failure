@@ -11,7 +11,7 @@
 const int VERTICES_PER_EDGE = 2;
 const int MAX_EDGES = 4;
 
-enum TileCapping : unsigned long{
+enum Direction : unsigned short{
 	None = 0,
 	North = 1,
 	East = 2,
@@ -22,7 +22,7 @@ enum TileCapping : unsigned long{
 class Tile {
 private:
 	int							id;
-	int							direction;
+	Direction					direction;
 
 	SDL_RendererFlip			flipFlags;
 
@@ -33,7 +33,7 @@ private:
 	b2Vec2						worldPosition;
 
 	b2Body*						physicsBody;
-	TileCapping					capDirection;
+	Direction					capDirection;
 
 	Animation*					animSprite;
 
@@ -42,21 +42,28 @@ private:
 	//Debug Drawing, null if not enabled
 	DebugDraw*					debugDraw;
 
+	//Rotation in degrees for SDL2
+	float						zRot;
 
-	std::vector<std::vector<SDL_Color>> GetPixelDataFromFile(const char* file);
-	Uint32								GetPixel(SDL_Surface* surface, int x, int y);
+	std::vector<std::vector<SDL_Color>>						GetPixelDataFromFile(const char* file);
+	Uint32													GetPixel(SDL_Surface* surface, int x, int y);
 
 public:
 	Tile();
-	Tile(Sprite* s, DebugDraw* debugDraw, Vector2 gridPosition, Vector2 pDim, int dir, std::shared_ptr<Graphics> g);
-	Tile(Tile* oldTile);
+	Tile(Sprite* s, DebugDraw* debugDraw, Vector2 gridPosition, Vector2 pDim, Direction dir, std::shared_ptr<Graphics> g, float zRotation);
+	Tile(const Tile &oldTile);
 	
 	~Tile();
 
-	void							SetBody(b2Body* b) { physicsBody = b; }
-	void								Draw();
-	std::vector<std::vector<b2Vec2>>	CreatePhysicsEdges();
-	void								TilePhysicsInit(b2World* world, Vector2 p, SDL_RendererFlip flip);
+	void													FlipChain(std::vector<b2Vec2>& chain, SDL_RendererFlip flip);
+	void													RotateChain(std::vector<b2Vec2>& chain, float angle);
+	void													CreateDebugDraw() { debugDraw = new DebugDraw(graphicsRef, animSprite->GetName().c_str(), Vector2(animSprite->GetCellWidth(), animSprite->GetCellHeight())); }
+	void													Draw();
+	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>>		CreatePhysicsEdges();
+	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>>		DecideCapping(std::vector<b2Vec2>& c1, std::vector<b2Vec2>& c2, std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r);
+	void													TilePhysicsInit(b2World* world, Vector2 p, SDL_RendererFlip flip);
+	void													SetCappingDirection(Direction capping);
+	void													SetSpriteDirection(Direction dir) { direction = dir; }
 };
 
 class TileManager {

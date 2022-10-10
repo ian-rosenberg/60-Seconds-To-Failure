@@ -5,8 +5,8 @@ PerlinNoise::PerlinNoise(std::shared_ptr<Graphics> graphics)
 	std::vector<float> noiseSeed2DRow;
 	std::vector<float> perlin2DRow;
 	graphicsRef = graphics;
-	outputWidth = graphicsRef->GetScreenDimensions().x/64;
-	outputHeight = graphicsRef->GetScreenDimensions().y/64;
+	outputWidth = graphicsRef->GetScreenDimensions().x / 32;
+	outputHeight = graphicsRef->GetScreenDimensions().y / 32;
 
 	srand(time(nullptr));
 	for (int row = 0; row < outputHeight; row++) {
@@ -26,7 +26,7 @@ PerlinNoise::PerlinNoise(std::shared_ptr<Graphics> graphics)
 	perlin1D.resize(outputSize);
 
 	for(float val : noiseSeed1D)
-		val = (float)rand() / (float)RAND_MAX;
+		val = abs(gf2d_crandom());
 }
 
 PerlinNoise::~PerlinNoise()
@@ -79,12 +79,16 @@ std::vector<std::vector<float>> PerlinNoise::PerlinNoise2D()
 		for (int y = 0; y < outputHeight; y++)
 		{
 			float fNoise = 0.0f;
-			float fScaleAcc = 0.0f;
+			float fScaleAcc = scalingBias - 1.0 / (pow(scalingBias, octaves - 1) * (scalingBias - 1.0));
 			float fScale = 1.0f;
 
 			for (int o = 0; o < octaves; o++)
 			{
 				int nPitch = outputWidth >> o;
+
+				if (nPitch == 0)
+					break;
+
 				int nSampleX1 = (x / nPitch) * nPitch;
 				int nSampleY1 = (y / nPitch) * nPitch;
 				
@@ -112,12 +116,16 @@ std::vector<std::vector<float>> PerlinNoise::PerlinNoise2D()
 	for (int x = 0; x < outputWidth; x++) {
 		for (int y = 0; y < outputHeight; y++)
 		{
-			if (perlin2D[y][x] < avg)
+			//std::cout << perlin2D[y][x] << ", ";
+			if (perlin2D[y][x] < avg) {
+				perlin2D[y][x] = 0.f;
 				continue;
-			SDL_Rect r = { x * 64, y*64, 1*64, 1*64 };
+			}
+			SDL_Rect r = { x * 32,  y*32, 32, 32 };
 			SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, perlin2D[y][x] * 255, 0, perlin2D[y][x]*255);
 			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
 		}
+		//std::cout << std::endl;
 	}
 
 	SDL_RenderPresent(graphicsRef->GetRenderer());

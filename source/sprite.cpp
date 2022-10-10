@@ -17,21 +17,21 @@ Sprite::Sprite()
 	srcRect = { 0,0,0,0 };
 }
 
-Sprite::Sprite(Sprite* oldSprite)
+Sprite::Sprite(const Sprite &oldSprite)
 {
-	filepath = oldSprite->filepath;
-	frame = oldSprite->frame;
-	yOffset = oldSprite->yOffset;
-	frameWidth = oldSprite->frameWidth;
-	frameHeight = oldSprite->frameHeight;
-	flip = oldSprite->flip;
-	scale = oldSprite->scale;
-	scaleCenter = oldSprite->scaleCenter;
-	rotation = oldSprite->rotation;
-	color = oldSprite->color;
-	graphics = oldSprite->graphics;
+	filepath = oldSprite.filepath;
+	frame = oldSprite.frame;
+	yOffset = oldSprite.yOffset;
+	frameWidth = oldSprite.frameWidth;
+	frameHeight = oldSprite.frameHeight;
+	flip = oldSprite.flip;
+	scale = oldSprite.scale;
+	scaleCenter = oldSprite.scaleCenter;
+	rotation = oldSprite.rotation;
+	color = oldSprite.color;
+	graphics = oldSprite.graphics;
 	srcRect = { 0, frameHeight * yOffset, frameWidth, frameHeight };
-	texture = oldSprite->texture;
+	texture = oldSprite.texture;
 }
 
 Sprite::Sprite(std::string fp, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, int frm, int off, int width, int height, std::shared_ptr<Graphics> ren)
@@ -123,6 +123,16 @@ SDL_Surface* Sprite::LoadSurface(std::string filepath)
 SDL_Texture* Sprite::GetTexture()
 {
 	return texture;
+}
+
+void Sprite::RotateTextureZ(float theta)
+{
+	SDL_Renderer* ren = graphics->GetRenderer();
+	SDL_Point ctr = SDL_Point(frameWidth / 2.f, frameHeight / 2.f);
+
+	SDL_SetRenderTarget(ren, texture);
+	SDL_RenderCopyEx(ren, texture, &srcRect, NULL, theta, &ctr, SDL_FLIP_NONE);
+	SDL_SetRenderTarget(ren, NULL);
 }
 
 void Sprite::Draw(Sprite* sprite,

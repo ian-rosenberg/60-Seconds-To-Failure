@@ -6,7 +6,7 @@ Animation::Animation(Animation* old)
 {
 	name = old->name;
 	filepath = old->filepath;
-	sprite = new Sprite(old->sprite);
+	sprite = new Sprite(*old->sprite);
 	length = old->length;
 	currentFrame = old->currentFrame;
 	cellWidth = old->cellWidth;

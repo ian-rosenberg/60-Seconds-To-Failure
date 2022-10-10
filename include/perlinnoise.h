@@ -21,8 +21,8 @@ private:
 	std::vector<float>					perlin1D;
 	int									outputSize;
 
-	int									octaves = 5.f;
-	float								scalingBias = 2.5f;
+	int									octaves = 12;
+	float								scalingBias = 2.f;
 
 	std::shared_ptr<Graphics>			graphicsRef;
 

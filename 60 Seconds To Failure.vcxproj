@@ -82,8 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Ian\source\repos\60-Seconds-To-Failure\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_image-2.0.5\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_mixer-2.0.4\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_ttf-2.0.18;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2-2.0.20\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\box2d-main\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Ian\source\repos\60-Seconds-To-Failure\lib\Debug;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2-2.0.20\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_ttf-2.0.18\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_mixer-2.0.4\lib\x64;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_image-2.0.5\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\include;$(SolutionDir)\SDL2_image-2.0.5\include;$(SolutionDir)\SDL2_mixer-2.0.4\include;$(SolutionDir)\SDL2_ttf-2.0.18;$(SolutionDir)\SDL2-2.0.20\include;$(SolutionDir)\box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\sapph\source\repos\60-Seconds-To-Failure\box2d-main\build\x64\Debug;$(SolutionDir)\lib\Debug;$(SolutionDir)\SDL2-2.0.20\lib\x64;$(SolutionDir)\SDL2_ttf-2.0.18\lib\x64;$(SolutionDir)\SDL2_mixer-2.0.4\lib\x64;$(SolutionDir)\SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
