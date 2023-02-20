@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
-#include "vectortypes.h"
+#include <vectortypes.h>
 
 #define TARGET_FRAME_RATE 60.f
 
@@ -10,8 +10,8 @@ const double RAD2DEG = 180 / M_PI;
 const float DELTA_TIME = 1 / TARGET_FRAME_RATE;
 const Uint32 FRAME_DELAY_MS = 16;
 const Uint32 MS = 1000;
-const float MET_TO_PIX = 12.f;
-const float PIX_TO_MET = 1 / MET_TO_PIX;
+const float PIX_IN_MET = 10.f;//convert pixel to meter
+const float MET_IN_PIX = 1 / PIX_IN_MET;//convert meter to pixel
 
 class Graphics {
 private:
@@ -52,10 +52,11 @@ public:
 
 	void SetNewTime(Uint32 val) { newTime = val; }
 	void SetOldTime() { oldTime = newTime; }
-	void SetAccumulatorTime(Uint32 val) { accumulator = val; }
+	void SetAccumulatorTime(float val) { accumulator = val; }
 
-	void Vector2PixelsToMeters(Vector2 &val);
+	void Vector2PixelsToMeters(Vector2& val);
 	void Vector2MetersToPixels(Vector2 &val);
+	void Vector2MetersToPixels(Vector2 &val, Vector2 pixelDimensions);
 
 	float GetFrameRate(){return fps;}
 };

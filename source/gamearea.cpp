@@ -4,19 +4,16 @@
 void GameArea::CreateTestArea() {
 	float hDim = player->GetWorldDimensions().y;
 	float fVal = 1.f;
-	areaPhysics = new b2World(*gravityScale);
-	areaPhysics->SetAllowSleeping(true);
-	areaPhysics->SetAutoClearForces(false);
-
-	listener = new ContactListener();
-	areaPhysics->SetContactListener(listener);
-
-	fixedTimestepAccum = 0;
-	fixedTimestepAccumRatio = 0;
-
+	Vector2 scaledDim = graphics->GetScaledScreenDimensions();
+	Vector2 screenDim = graphics->GetScreenDimensions();
+	
 	// Ground
 	{
-		StaticEntity *se = new StaticEntity(graphics, graphics->GetScaledWidth(), hDim);
+		StaticEntity *se = new StaticEntity(graphics,
+			scaledDim.x * 2, 
+			hDim, 
+			Vector2(scaledDim.x * PIX_IN_MET, 
+				scaledDim.y * PIX_IN_MET - hDim) );
 		se->SetActorName("Ground");
 		se->CalculateAverageActorDimensions();
 		
@@ -25,7 +22,7 @@ void GameArea::CreateTestArea() {
 		se->SetBody(ground);
 
 		b2EdgeShape shape;
-		shape.SetTwoSided(b2Vec2(-graphics->GetScaledWidth(), graphics->GetScaledHeight()/2 - hDim), b2Vec2(graphics->GetScaledWidth(), graphics->GetScaledHeight() / 2 - hDim));
+		shape.SetTwoSided(b2Vec2(-scaledDim.x, scaledDim.y - hDim), b2Vec2(scaledDim.x, scaledDim.y - hDim));
 
 		b2FixtureDef tpd = {};
 		tpd.friction = fVal;
@@ -36,19 +33,23 @@ void GameArea::CreateTestArea() {
 		se->CalculateAverageActorDimensions();
 
 		entityManager->AddEntity(se);
+		debugDraw->AddEntityRef(se);
 	}
 
-	// Platform
+	//Platform
 	{
-		StaticEntity* se = new StaticEntity(graphics, graphics->GetScaledWidth() / 4.0f, 1.0f);
+		StaticEntity* se = new StaticEntity(graphics,
+			scaledDim.x / 4.0f, 
+			1.0f, 
+			Vector2(scaledDim.x / 4.0f, scaledDim.y - scaledDim.y / 6.0f));
 		se->SetActorName("Platform");
 		b2BodyDef bd;
-		bd.position.Set(-graphics->GetScaledWidth() / 8.0f, -graphics->GetScaledHeight()/4);
+		bd.position.Set(scaledDim.x / 4.0f, scaledDim.y - scaledDim.y / 6.0f);
 		b2Body* body = areaPhysics->CreateBody(&bd);
 		se->SetBody(body);
 
 		b2PolygonShape shape;
-		shape.SetAsBox(graphics->GetScaledWidth() / 8, 0.5f);
+		shape.SetAsBox(scaledDim.x / 8, 0.5f);
 
 		b2FixtureDef tpd = {};
 		tpd.friction = fVal;
@@ -58,16 +59,18 @@ void GameArea::CreateTestArea() {
 		se->SetStaticTriggerFixture(f);
 
 		entityManager->AddEntity(se);
+		debugDraw->AddEntityRef(se);
 	}
 }
 
 GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
+	Vector2 cDim;
 	id = ID;
-	player = NULL;
+	player = nullptr;
 	entityManager = new EntityManager(1, g);//enabling debug draw with parameter, renderer
 	gravityScale = new b2Vec2(grav);
 	gravityEnabled = gravityScale->y != 0 || gravityScale->x != 0;
-	areaPhysics = NULL;
+	areaPhysics = nullptr;
 	ground = {};
 	testPlatform = {};
 	testPlatformBottom = 0.0f;
@@ -76,6 +79,9 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
 	//perlinNoiseMap = new PerlinNoise(g);
 	//perlinNoiseMap->PerlinNoise2D();
 	tileManager = nullptr;
+	cDim = graphics->GetScreenDimensions();
+	camera = new Camera(SDL_Rect(0, 0, cDim.x, cDim.y), Vector4(-cDim.x*2, -cDim.y * 2, cDim.x * 2, cDim.y * 2));
+	debugDraw = new DebugDraw(graphics, camera);
 }
 
 GameArea::~GameArea() {
@@ -84,6 +90,8 @@ GameArea::~GameArea() {
 	delete entityManager;
 	delete areaPhysics;
 	delete listener;
+	delete camera;
+	delete debugDraw;
 }
 
 void GameArea::AreaThink() {
@@ -97,9 +105,8 @@ void GameArea::AreaUpdate() {
 	if (!active)
 		return;
 	tileManager->UpdateMap();
-	entityManager->EntityUpdateAll(graphics->GetFrameDeltaTime());
+	entityManager->EntityUpdateAll();
 	entityManager->InputUpdate();
-	
 }
 
 //https://www.unagames.com/blog/daniele/2010/06/fixed-time-step-implementation-box2d
@@ -169,7 +176,7 @@ void GameArea::SmoothPhysicsStates()
 {
 	const float oneMinusRatio = 1.f - fixedTimestepAccumRatio;
 
-	for (b2Body* b = areaPhysics->GetBodyList(); b != NULL; b = b->GetNext())
+	for (b2Body* b = areaPhysics->GetBodyList(); b != nullptr; b = b->GetNext())
 	{
 		if (b->GetType() == b2_staticBody)
 		{
@@ -188,7 +195,7 @@ void GameArea::SmoothPhysicsStates()
 
 void GameArea::ResetSmoothStates()
 {
-	for (b2Body* b = areaPhysics->GetBodyList(); b != NULL; b = b->GetNext())
+	for (b2Body* b = areaPhysics->GetBodyList(); b != nullptr; b = b->GetNext())
 	{
 		if (b->GetType() == b2_staticBody)
 		{
@@ -202,26 +209,46 @@ void GameArea::ResetSmoothStates()
 	}
 }
 
-void GameArea::AreaDraw(double accumulator) {
+void GameArea::AreaDraw() {
+	Vector2 pos;
+
 	if (!active)
 		return;
-	tileManager->DrawMap(Vector2(0,0));
-	entityManager->EntityDrawAll(accumulator);
+
+	pos = player->GetDrawPosition();
+	camera->Move(pos, graphics->GetAccumulatorTime());
+	tileManager->DrawMap(Vector2(camera->GetRect().x, camera->GetRect().y));
+	entityManager->EntityDrawAll(camera->GetRect());
+	debugDraw->DrawAll();
+}
+
+void GameArea::InitPhysicsWorld()
+{
+	areaPhysics = new b2World(*gravityScale);
+	areaPhysics->SetAllowSleeping(true);
+	areaPhysics->SetAutoClearForces(false);
+	listener = new ContactListener();
+	areaPhysics->SetContactListener(listener);
+
+	fixedTimestepAccum = 0;
+	fixedTimestepAccumRatio = 0;
 }
 
 void GameArea::AddEntity(Entity* e) {
 	entityManager->AddEntity(e);
+	debugDraw->AddEntityRef(e);
 }
 
 void GameArea::SetPlayer(Player* p) {
 	Vector2 dim = p->GetAvgPixelDimensions();
+	Vector2 sD = graphics->GetScreenDimensions();
 	player = p;
 	player->SetInputQueuePtr(entityManager->GetInputQueue());
 	player->SetEventsToFirePtr(entityManager->GetEventsToFire());
-
+	player->UpdateScreenPosition();
 	CreateTestArea();
 
-	tileManager = new TileManager("", graphics, areaPhysics, dim);
+	tileManager = new TileManager("SideViewTest", graphics, areaPhysics, dim);
 }
 
 Uint8 GameArea::CaptureInputEvents(SDL_Event* e){

@@ -1,15 +1,10 @@
 #include <gameworld.h>
 
 int main(int argc, char* argv[]) {
-	bool flag = false;
-	float accumulator = 0.0f;
-
+	float acc = 0.f;
 	GameWorld* gameWorld = new GameWorld();
-	gameWorld->EnableDebugDraw();
 
-	while (!flag) {	
-		flag = gameWorld->GameLoop(accumulator);
-	}
+	gameWorld->GameLoop(acc);
 
 	delete gameWorld;
 

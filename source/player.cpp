@@ -3,11 +3,11 @@
 
 const int JOYSTICK_DEAD_ZONE = 8000;
 
-Player::Player(std::shared_ptr<Graphics> g)
+Player::Player(std::shared_ptr<Graphics> g) : Entity{ -1 }
 {
-	name = "";
+	name = "Player";
 	keys = 0;
-	controller = NULL;
+	controller = nullptr;
 	sensitivity = 0;
 	maxSpeed = 25.f;
 	dampening = 0.8f;
@@ -29,7 +29,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 	punching = false;
 	graphics = g;
 	LoadActor(actorFilePath.c_str());
-	SetWorldDimensions(b2Vec2(avgDim.x * PIX_TO_MET, avgDim.y * PIX_TO_MET));
+	SetWorldDimensions(b2Vec2(avgDim.x * MET_IN_PIX, avgDim.y * MET_IN_PIX));
 	currentAnimation = GetAnimationByName("idle");
 	currentSprite = currentAnimation->GetSprite();
 }
@@ -132,17 +132,16 @@ void Player::Think() {
 	}
 }
 
-void Player::Draw()
+void Player::Draw(Vector2 cameraPosition)
 {
 	Vector4 debugColor = vector4(.5, 1, 0, 1);
+	Vector2 resultPosition = { newDrawPosition.x - cameraPosition.x,
+		newDrawPosition.y - cameraPosition.y };
 
 	if (!this)
 	{
 		return;
 	}
-	
-	if (IsGrounded())
-		debugDraw->SetCollisionColor(1);
 
 	if ((health / maxHealth) < 0.25f)
 	{
@@ -156,10 +155,8 @@ void Player::Draw()
 	scaleCenter = vector2(currentAnimation->GetCellWidth() / 2.0f,
 		currentAnimation->GetCellHeight() / 2.0f);
 
-	//vector2d_sub(resultPos, position, GetCameraPosition());
-
 	currentSprite->Draw(currentSprite,
-		newDrawPosition,
+		resultPosition,
 		&scale,
 		&scaleCenter,
 		&rotation,
@@ -171,6 +168,9 @@ void Player::Draw()
 		currentAnimation->GetCellHeight());
 
 	currentAnimation->AnimationNextFrame(currentAnimation);
+
+	//std::cout << resultPosition.x << "," << resultPosition.y << std::endl;
+	std::cout << "Player Velocity (" << velocity.x << ", " << velocity.y << ")" << std::endl;
 }
 
 
@@ -178,7 +178,7 @@ void Player::Draw()
 void Player::Update()
 {
 	b2Vec2 bodyVelocity = body->GetLinearVelocity();
-	
+		
 	SetLogicalState(State::State_Idle);
 
 	if (dead)

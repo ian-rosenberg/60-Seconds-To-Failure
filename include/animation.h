@@ -52,7 +52,7 @@ protected:
 	AnimationType	animType;
 
 public:
-	Animation(Animation* old);
+	Animation(const Animation & old);
 	Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g);
 	Animation(std::string n, Sprite* s, int width, int height, int xOffset, int yOffset, Vector4 color);
 	~Animation();

@@ -2,20 +2,20 @@
 #include <fstream>
 #include <string>
 
-Animation::Animation(Animation* old)
+Animation::Animation(const Animation & old)
 {
-	name = old->name;
-	filepath = old->filepath;
-	sprite = new Sprite(*old->sprite);
-	length = old->length;
-	currentFrame = old->currentFrame;
-	cellWidth = old->cellWidth;
-	cellHeight = old->cellHeight;
-	yOffset = old->yOffset;
-	xOffset = old->xOffset;
-	colorSpecial = old->colorSpecial;
-	animType = old->animType;
-	frameRate = old->frameRate;
+	name = old.name;
+	filepath = old.filepath;
+	sprite = new Sprite(*old.sprite);
+	length = old.length;
+	currentFrame = old.currentFrame;
+	cellWidth = old.cellWidth;
+	cellHeight = old.cellHeight;
+	yOffset = old.yOffset;
+	xOffset = old.xOffset;
+	colorSpecial = old.colorSpecial;
+	animType = old.animType;
+	frameRate = old.frameRate;
 }
 
 Animation::Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g)
@@ -52,7 +52,7 @@ Animation::Animation(std::string n, Sprite* s, int width, int height, int xOffse
 
 Animation::~Animation()
 {
-	if (sprite != NULL)
+	if (sprite != nullptr)
 		delete sprite;
 	else
 		return;

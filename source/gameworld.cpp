@@ -4,11 +4,12 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 {
 	// Actor
 	{
+		Vector2 draw;
 		b2Vec2 d = player->GetWorldDimensions();
 		b2BodyDef bd;
 		bd.type = b2_dynamicBody;
 		bd.fixedRotation = true;
-		bd.position.Set(0, -graphicsPtr->GetScaledHeight() / 2);
+		bd.position.Set(graphicsPtr->GetScaledWidth() / 2, -graphicsPtr->GetScaledHeight() / 2);
 		player->SetBody(physicsArea->CreateBody(&bd));
 
 		b2FixtureDef fd;
@@ -18,15 +19,14 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 		shape.m_p = b2Vec2(0, d.y/4);
 
 		fd.shape = &shape;
-		fd.friction = 1.f;
-		fd.density = 10;
+		fd.density = 10.f;
 		
 		player->GetBody()->CreateFixture(&fd);
 
 		b2PolygonShape jumpBox;
 		b2Vec2 verts[] = {
-			b2Vec2(-d.x * 0.25, d.y / 4),
-			b2Vec2(d.x * 0.25, d.y / 4),
+			b2Vec2(-d.x * 0.25, d.y * 0.25),
+			b2Vec2(d.x * 0.25, d.y * 0.25),
 			b2Vec2(d.x * 0.25, d.y * 0.55),
 			b2Vec2(-d.x * 0.25, d.y * 0.55)
 		};
@@ -41,18 +41,19 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 
 	player->SetGravityEnabled(currentArea->GetGravityScale()->y != 0 ? 1 : 0);
 
+
 	currentArea->AddEntity(player);
 }
 
 GameWorld::GameWorld() {
-	areas = NULL;
-	player = NULL;
-	currentArea = NULL;
+	areas = nullptr;
+	player = nullptr;
+	currentArea = nullptr;
 	graphicsPtr = std::make_shared<Graphics>();
 	graphicsPtr->SetOldTime();
 
 	if (!graphicsPtr->GetRenderer()) {
-		std::cerr << "Renderer is NULL!" << std::endl;
+		std::cerr << "Renderer is nullptr!" << std::endl;
 		graphicsPtr = nullptr;
 		return;
 	}
@@ -75,53 +76,54 @@ GameWorld::~GameWorld() {
 	graphicsPtr = nullptr;
 }
 
-void GameWorld::EnableDebugDraw() {
-	for (auto itArea = areas->begin(); itArea != areas->end(); itArea++) {
-		EntityManager* em = (*itArea)->GetEntityManager();
-	}
-}
-
 void GameWorld::InitTestArea() {
-	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, 9.81 * MET_TO_PIX), graphicsPtr));
+	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, 10.f * PIX_IN_MET), graphicsPtr));
 
 	currentArea = areas->at(0);
+
+	currentArea->InitPhysicsWorld();
+
 	currentArea->SetActive(1);
 
 	currentArea->SetPlayer(player);
 
 	PlayerPhysicsInit(currentArea->GetWorldPtr());
-	
-	EnableDebugDraw();
 }
 
-bool GameWorld::GameLoop(float & accumulator) {
+void GameWorld::GameLoop(float & accumulator) {
 	SDL_Event currentEvent;
-	SDL_RenderClear(graphicsPtr->GetRenderer());
-	graphicsPtr->SetOldTime();
-	graphicsPtr->SetNewTime(SDL_GetTicks64());
-	float frameTime = graphicsPtr->GetFrameDeltaTime() / MS;
+	float frameTime;
 
-	accumulator += (frameTime > 0.25f ? 0.25f : frameTime);
+	SDL_PollEvent(&currentEvent);
 
-	if (currentArea->CaptureInputEvents(&currentEvent) < 1)
-		return true;
+	while (currentEvent.type != SDL_QUIT) {
+		SDL_RenderClear(graphicsPtr->GetRenderer());
+		graphicsPtr->SetOldTime();
+		graphicsPtr->SetNewTime(SDL_GetTicks64());
+		frameTime = graphicsPtr->GetFrameDeltaTime() / MS;
 
-	currentArea->AreaThink();
+		accumulator += (frameTime > 0.25f ? 0.25f : frameTime);
 
-	while (accumulator >= DELTA_TIME) {	
-		currentArea->AreaUpdate();
+		if (currentArea->CaptureInputEvents(&currentEvent) < 1)
+			break;
+
+		currentArea->AreaThink();
 		
-		currentArea->PhysicsSteps(DELTA_TIME);
+		while (accumulator >= DELTA_TIME) {
+			currentArea->AreaUpdate();
 
-		accumulator -= DELTA_TIME;
+			currentArea->PhysicsSteps(DELTA_TIME);
+
+			accumulator -= DELTA_TIME;
+		}
+		graphicsPtr->SetAccumulatorTime(accumulator / DELTA_TIME);
+		currentArea->AreaDraw();
+
+		SDL_RenderPresent(graphicsPtr->GetRenderer());
+		
+		//if (graphicsPtr->GetFrameDeltaTime() < DELTA_TIME * MS)
+			//SDL_Delay(DELTA_TIME * MS - graphicsPtr->GetFrameDeltaTime());
 	}
 
-	currentArea->AreaDraw(accumulator / DELTA_TIME);
-
-	SDL_RenderPresent(graphicsPtr->GetRenderer());
-	
-	//if (graphicsPtr->GetFrameDeltaTime() < DELTA_TIME * MS)
-		//SDL_Delay(DELTA_TIME * MS - graphicsPtr->GetFrameDeltaTime());
-
-	return false;
+	return;
 }

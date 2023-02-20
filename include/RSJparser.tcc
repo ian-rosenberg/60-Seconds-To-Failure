@@ -89,7 +89,7 @@ std::string strtrim (std::string str, std::string chars=" \t\n\r", int max_count
 }
 
 
-std::string strip_outer_quotes (std::string str, char* qq=NULL) {
+std::string strip_outer_quotes (std::string str, char* qq=nullptr) {
     str = strtrim (str);
     
     std::string ret = strtrim (str, "\"");
@@ -241,9 +241,9 @@ private:
     
 public:
     // constructor
-    RSJresource () : _exists (false), parsed_data_p (NULL) { } // no data field.
+    RSJresource () : _exists (false), parsed_data_p (nullptr) { } // no data field.
     
-    RSJresource (std::string str) : data (str), _exists (true), parsed_data_p (NULL) { }
+    RSJresource (std::string str) : data (str), _exists (true), parsed_data_p (nullptr) { }
     RSJresource (const char* str) : RSJresource(std::string(str)) { }
     
     // other convertion
@@ -251,10 +251,10 @@ public:
     RSJresource (dataType d) : RSJresource(std::to_string(d)) { }
     
     // read from file and stream
-    RSJresource (std::istream& is) : _exists (true), parsed_data_p (NULL) {
+    RSJresource (std::istream& is) : _exists (true), parsed_data_p (nullptr) {
         data = std::string ( (std::istreambuf_iterator<char>(is)), (std::istreambuf_iterator<char>()) );
     }
-    RSJresource (std::ifstream& ifs) : _exists (true), parsed_data_p (NULL) {
+    RSJresource (std::ifstream& ifs) : _exists (true), parsed_data_p (nullptr) {
         std::istream& is = ifs;
         data = std::string ( (std::istreambuf_iterator<char>(is)), (std::istreambuf_iterator<char>()) );
     }
@@ -269,9 +269,9 @@ public:
     // ------------------------------------
     // parsers (old)
     RSJresourceType parse (bool force=false);
-    void parse_full (bool force=false, int max_depth=INT_MAX, int* parse_count_for_verbose_p=NULL); // recursively parse the entire JSON text
+    void parse_full (bool force=false, int max_depth=INT_MAX, int* parse_count_for_verbose_p=nullptr); // recursively parse the entire JSON text
     // parser (new)
-    void fast_parse (std::string* str_p=NULL, bool copy_string=false, int max_depth=INT_MAX, int* parse_start_str_pos=NULL); // TODO: finish.
+    void fast_parse (std::string* str_p=nullptr, bool copy_string=false, int max_depth=INT_MAX, int* parse_start_str_pos=nullptr); // TODO: finish.
     
     RSJobject& as_object (bool force=false);
     RSJarray& as_array (bool force=false);
@@ -282,7 +282,7 @@ public:
     int size(void);
     std::string& raw_data (void) { return (data); }
     bool exists (void) { return (_exists); }
-    bool is_parsed (void) { return (parsed_data_p!=NULL); }
+    bool is_parsed (void) { return (parsed_data_p!=nullptr); }
     RSJresourceType type (void);
     // emitter
     std::string as_str (bool print_comments=false, bool update_data=true);
@@ -410,7 +410,7 @@ RSJresource::RSJresource (const RSJresource& r) {
     data=r.data;
     _exists = r._exists;
     if(r.parsed_data_p) parsed_data_p = new RSJparsedData(*(r.parsed_data_p));
-    else parsed_data_p = NULL;
+    else parsed_data_p = nullptr;
 }
 
 
@@ -418,7 +418,7 @@ RSJresource& RSJresource::operator= (const RSJresource& r) {
     data=r.data;
     _exists = r._exists;
     if(r.parsed_data_p) parsed_data_p = new RSJparsedData(*(r.parsed_data_p));
-    else parsed_data_p = NULL;
+    else parsed_data_p = nullptr;
     return *this;
 }
 

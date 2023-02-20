@@ -3,8 +3,6 @@
 #include <vector>
 #include <box2d/box2d.h>
 #include <actor.h>
-#include <camera.h>
-#include <debugdraw.h>
 #include <queue>
 #include <functional>
 
@@ -72,7 +70,7 @@ protected:
 	Uint16											health;
 	Uint16											maxHealth;
 
-	const double									jumpCooldown = 2550.0;	//1.25 second jump cooldown
+	const double									jumpCooldown = 2550.0;	//2.55 second jump cooldown
 	double											jumpTimer;
 	float											jumpForce;
 	float											dampening;
@@ -84,8 +82,8 @@ protected:
 	float											maxSpeed;
 
 	//Debug Drawing, null if not enabled
-	DebugDraw										*debugDraw;
 	SDL_Rect										debugRect;
+	SDL_Color										debugColor;
 
 public:
 	struct InputEvent {
@@ -132,11 +130,12 @@ public:
 		}
 	};
 
+	Entity(int id);
 	Entity();
 
 	~Entity();
 
-	virtual void Draw() = 0;											/**<called after system entity drawing for custom effects*/
+	virtual void Draw(Vector2 cameraPosition) = 0;											/**<called after system entity drawing for custom effects*/
 	virtual void Think() = 0;											/**<called before system updates to make decisions / hand input*/
 	virtual void Update() = 0;											/**<called after system entity update*/
 	virtual int Touch(Entity* other) = 0;								/**<when this entity touches another entity*/
@@ -190,15 +189,9 @@ public:
 
 	void SetGravityEnabled(Uint8 flag) { gravityEnabled = flag; }
 	
-	Vector2 GetDrawPosition() { return newDrawPosition; }
-
-	void EnableDebugDraw(DebugDraw* ddPtr) { debugDraw = ddPtr; }
-
-	Uint8 GetDebugDrawEnabled() { return debugDraw!=NULL;}
-
-	DebugDraw* GetDebugDraw() { return debugDraw;}
+	void UpdateScreenPosition();
 	
-	Vector2 GetScreenPosition() { return newDrawPosition; }
+	Vector2 GetDrawPosition() { return newDrawPosition; }
 
 	const char* GetActorName() { return name.c_str(); }
 
@@ -211,8 +204,8 @@ public:
 	bool IsGrounded() { return grounded; }
 
 	Vector2 GetAvgPixelDimensions() { return avgDim; }
-	
-	void UpdateScreenPosition(double alpha);
+
+	SDL_Color GetDebugColor() { return debugColor; }
 };
 
 class EntityManager {
@@ -256,14 +249,12 @@ public:
 	/**
 	* @brief Render all entites to screen
 	*/
-	void EntityDrawAll(double alpha);
-
-	void DebugDrawing(Entity* it);
+	void EntityDrawAll(SDL_Rect cameraRect);
 
 	/**
 	* @brief Update all entites
 	*/
-	void EntityUpdateAll(double ticks);
+	void EntityUpdateAll();
 
 	/**
 	* @brief Let all managed entities think

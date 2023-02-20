@@ -5,6 +5,7 @@
 
 #include <entity.h>
 #include <player.h>
+#include <camera.h>
 #include <tile.h>
 #include <perlinnoise.h>
 #include <contactlistener.h>
@@ -12,6 +13,7 @@
 #include <box2d/box2d.h>
 #include <box2d/b2_math.h>
 #include <box2d/b2_world.h>
+#include <debugdraw.h>
 
 
 class GameArea {
@@ -42,7 +44,7 @@ private:
 	float							testPlatformBottom;
 	float							testPlatformTop;
 
-	ContactListener					*listener;
+	ContactListener*				listener;
 
 	double							fixedTimestepAccum;
 	double							fixedTimestepAccumRatio;
@@ -51,6 +53,10 @@ private:
 	const int32						positionIterations = 2;
 
 	PerlinNoise*					perlinNoiseMap;
+
+	Camera*							camera;
+	DebugDraw*						debugDraw;
+
 
 public:
 	GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g);
@@ -77,7 +83,7 @@ public:
 
 	void ResetSmoothStates();
 
-	void AreaDraw(double accumulator);
+	void AreaDraw();
 
 	EntityManager* GetEntityManager() { return entityManager; }
 
@@ -86,4 +92,6 @@ public:
 	void SetActive(Uint8 flag) { active = flag; }
 
 	b2Vec2* GetGravityScale() { return gravityScale; }
+
+	void InitPhysicsWorld();
 };

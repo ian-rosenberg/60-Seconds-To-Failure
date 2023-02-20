@@ -46,7 +46,20 @@ public:
 		int offset,
 		int frameWidth,
 		int frameHeight,
-		std::shared_ptr<Graphics> ren);
+		std::shared_ptr<Graphics> ren);		
+	
+	Sprite(SDL_Texture* tex,
+
+		SDL_Rect* sourceRect,
+
+		Vector2 drawPosition,
+
+		Vector3 rotation,
+
+		Vector2 flip,
+
+		Vector4 colorShift,
+		std::shared_ptr<Graphics> ren, std::string fp);
 
 	Sprite(std::string filepath,
 		int imgWidth,
@@ -72,14 +85,20 @@ public:
 
 	void RotateTextureZ(float theta);
 
-	Vector2 GetPosition();
-
 	std::string GetFilePath() { return (std::string)filepath; }
+
+	std::vector<std::vector<SDL_Color>> GetPixelData();
+
+	SDL_Color translate_color(Uint32 int_color);
+
+	Uint32 GetPixel(SDL_Surface* surface, int x, int y);
 
 	int GetXOffset() { return xOffset; }
 	int GetYOffset() { return yOffset; }
 
 	SDL_Rect GetSourceRect() { return srcRect; }
+
+	void SetSourceRectLocation(Vector2 pos);
 
 	Vector3 GetRotation() { return rotation; }
 
@@ -96,4 +115,8 @@ public:
 		int frameHeight);
 
 	void DrawSpriteImage(Sprite* image, Vector2 position, int width, int height);
+
+	void FlipTexture(SDL_RendererFlip flip);
+
+	bool CheckIfViableTexture(SDL_Rect sR);
 };

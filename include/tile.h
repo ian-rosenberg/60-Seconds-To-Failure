@@ -19,56 +19,78 @@ enum Direction : unsigned short{
 	West = 8
 };
 
+typedef struct TileSpriteSheet_S {
+	std::string name;
+	std::string filepath;
+	Sprite* sheet;
+	Uint8 margin;
+	Uint8 spacing;
+	Uint8 columns;
+	Uint8 tileCount;
+	Uint16 tileWidth;
+	Uint16 tileHeight;
+	Uint32 imageWidth;
+	Uint32 imageHeight;
+	Direction direction;
+}TileSpriteSheet;
+
 class Tile {
 private:
-	int							id;
-	Direction					direction;
+	int														id;
+	Direction												direction;
 
-	SDL_RendererFlip			flipFlags;
+	SDL_RendererFlip										flipFlags;
 
-	Vector2						pixelDimensions;
-	b2Vec2						worldDimensions;
+	Vector2													pixelDimensions;
+	b2Vec2													worldDimensions;
 
-	Vector2						pixelPosition;
-	b2Vec2						worldPosition;
+	Vector2													pixelPosition;
+	b2Vec2													worldPosition;
 
-	b2Body*						physicsBody;
-	Direction					capDirection;
+	b2Vec2													worldCenter;
+	Vector2													pixelCenter;
 
-	Animation*					animSprite;
+	b2Body*													physicsBody;
+	Direction												capDirection;
 
-	std::shared_ptr<Graphics>	graphicsRef;
+	Animation*												animSprite;
 
-	//Debug Drawing, null if not enabled
-	DebugDraw*					debugDraw;
+	std::shared_ptr<Graphics>								graphicsRef;
+
+	//Debug Drawing, null if not enabled					
+	DebugDraw*												debugDraw;
 
 	//Rotation in degrees for SDL2
-	float						zRot;
+	float													zRot;
 
-	std::vector<std::vector<SDL_Color>>						GetPixelDataFromFile(const char* file);
-	Uint32													GetPixel(SDL_Surface* surface, int x, int y);
+	//Deferring chain and body creation til post rotation and flipping
+	std::vector<std::pair<std::vector<b2Vec2>, bool>>		chainsAndCaps;
 
 public:
 	Tile();
-	Tile(Sprite* s, DebugDraw* debugDraw, Vector2 gridPosition, Vector2 pDim, Direction dir, std::shared_ptr<Graphics> g, float zRotation);
+	Tile(int id, Sprite* s, DebugDraw* debugDraw, Vector2 gridPosition, Vector2 pDim, Direction dir, std::shared_ptr<Graphics> g, float zRotation);
 	Tile(const Tile &oldTile);
 	
 	~Tile();
 
-	void													FlipChain(std::vector<b2Vec2>& chain, SDL_RendererFlip flip);
+	void													FlipChain(std::vector<b2Vec2>& chain);
 	void													RotateChain(std::vector<b2Vec2>& chain, float angle);
-	void													CreateDebugDraw() { debugDraw = new DebugDraw(graphicsRef, animSprite->GetName().c_str(), Vector2(animSprite->GetCellWidth(), animSprite->GetCellHeight())); }
-	void													Draw();
+	void													Draw(Vector2 cameraOffset);
 	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>>		CreatePhysicsEdges();
 	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>>		DecideCapping(std::vector<b2Vec2>& c1, std::vector<b2Vec2>& c2, std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r);
-	void													TilePhysicsInit(b2World* world, Vector2 p, SDL_RendererFlip flip);
+	void													TilePhysicsInit(b2World* world, Vector2 p);
+	void													TileCreateBody(b2World* world);
 	void													SetCappingDirection(Direction capping);
 	void													SetSpriteDirection(Direction dir) { direction = dir; }
+	void													SetSDL_RendererFlipFlags(SDL_RendererFlip flip) { flipFlags = flip; }
+	void													FlipTileSprite();
 };
 
 class TileManager {
 private:
 	std::unordered_map<std::string, std::vector<Tile*>>	tileTypes;
+	std::unordered_map<std::string, Sprite*>			typeSheets;
+
 	std::vector<std::vector<Tile*>>						tileMap;
 
 	std::shared_ptr<Graphics>							graphicsRef;
@@ -76,9 +98,8 @@ private:
 	b2World*											physics;
 	
 	Vector2												playerDimensions;
-
-
-	std::pair<std::string, std::vector<Tile*>>			TileParseTypesFromJSON(std::string json);
+								
+	void												TileParseTypesFromJSON(std::string json);
 	
 public:
 	TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDimensions);

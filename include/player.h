@@ -44,7 +44,7 @@ public:
 	/**
 	* @brief Draw the player to screen
 	*/
-	void Draw();
+	void Draw(Vector2 cameraPosition);
 
 	/**
 	* @brief Update the player's state

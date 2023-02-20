@@ -13,8 +13,8 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 	SDL_GetCurrentDisplayMode(0, &DM);
 	screenWidth = 1280;//DM.w;
 	screenHeight = 720;// DM.h;
-	scaledWidth = screenWidth * PIX_TO_MET;
-	scaledHeight = screenHeight * PIX_TO_MET;
+	scaledWidth = screenWidth / PIX_IN_MET;
+	scaledHeight = screenHeight / PIX_IN_MET;
 
 
 	std::cout << "Screen resolution: " << DM.w << "," << DM.h << std::endl;
@@ -72,17 +72,24 @@ Graphics::~Graphics() {
 	SDL_Quit();
 
 	std::cout << "SDL Subsystems closed successfully!" << std::endl;
-	std::cin >> r;
+	std::cout << "Press any key to quit..." << std::endl;
+	getchar();
 }
 
 void Graphics::Vector2PixelsToMeters(Vector2& val)
 {
-	val.x *= PIX_TO_MET;
-	val.y *= PIX_TO_MET;
+	val.x *= MET_IN_PIX;
+	val.y *= MET_IN_PIX;
 }
 
 void Graphics::Vector2MetersToPixels(Vector2& val)
 {
-	val.x = ((scaledWidth / 2.0f) + val.x) * MET_TO_PIX;
-	val.y = ((scaledHeight / 2.0f) + val.y) * MET_TO_PIX;
+	val.x = val.x * PIX_IN_MET;//((scaledWidth / 2.0f) + val.x) * PIX_IN_MET;
+	val.y = val.y * PIX_IN_MET;//((scaledHeight / 2.0f) + val.y) * PIX_IN_MET;
+}
+
+void Graphics::Vector2MetersToPixels(Vector2& val, Vector2 dimensions)
+{
+	val.x = val.x * PIX_IN_MET;// ((scaledWidth / 2.0f) + val.x)* PIX_IN_MET - dimensions.x / 2;
+	val.y = val.y * PIX_IN_MET;// ((scaledHeight / 2.0f) + val.y) * PIX_IN_MET - dimensions.y / 2;
 }

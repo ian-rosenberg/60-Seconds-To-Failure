@@ -1,7 +1,6 @@
 #pragma once
 #include <gamearea.h>
 #include <player.h>
-#include <debugdraw.h>
 
 class GameWorld {
 private:
@@ -21,9 +20,7 @@ public:
 
 	std::shared_ptr<Graphics> GetGraphics() { return graphicsPtr; }
 
-	void EnableDebugDraw();
-
 	void InitTestArea();
 
-	bool GameLoop(float & accumulator);
+	void GameLoop(float & accumulator);
 };
