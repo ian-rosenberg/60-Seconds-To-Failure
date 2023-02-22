@@ -20,6 +20,7 @@ void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
 
 		fd.shape = &shape;
 		fd.density = 10.f;
+		fd.friction = .9f;
 		
 		player->GetBody()->CreateFixture(&fd);
 

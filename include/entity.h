@@ -82,8 +82,8 @@ protected:
 	float											maxSpeed;
 
 	//Debug Drawing, null if not enabled
-	SDL_Rect										debugRect;
 	SDL_Color										debugColor;
+	SDL_Rect										debugRect;
 
 public:
 	struct InputEvent {

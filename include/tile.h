@@ -2,10 +2,9 @@
 #include <unordered_map>
 #include <utility>
 
-#include "vectortypes.h"
+#include <vectortypes.h>
 #include <box2d/box2d.h>
-#include "animation.h"
-#include "debugdraw.h"
+#include <animation.h>
 
 
 const int VERTICES_PER_EDGE = 2;
@@ -39,6 +38,8 @@ private:
 	int														id;
 	Direction												direction;
 
+	SDL_Color												debugColor;
+
 	SDL_RendererFlip										flipFlags;
 
 	Vector2													pixelDimensions;
@@ -53,12 +54,12 @@ private:
 	b2Body*													physicsBody;
 	Direction												capDirection;
 
-	Animation*												animSprite;
-
 	std::shared_ptr<Graphics>								graphicsRef;
 
-	//Debug Drawing, null if not enabled					
-	DebugDraw*												debugDraw;
+	std::shared_ptr<Sprite>									spriteSheet;
+
+	SDL_Rect												sourceRect;
+
 
 	//Rotation in degrees for SDL2
 	float													zRot;
@@ -68,7 +69,7 @@ private:
 
 public:
 	Tile();
-	Tile(int id, Sprite* s, DebugDraw* debugDraw, Vector2 gridPosition, Vector2 pDim, Direction dir, std::shared_ptr<Graphics> g, float zRotation);
+	Tile(int id, std::shared_ptr<Sprite> s, Vector2 gridPosition, Vector2 pDim, Direction dir, std::shared_ptr<Graphics> g, float zRotation, SDL_Rect srcRect);
 	Tile(const Tile &oldTile);
 	
 	~Tile();
@@ -76,14 +77,18 @@ public:
 	void													FlipChain(std::vector<b2Vec2>& chain);
 	void													RotateChain(std::vector<b2Vec2>& chain, float angle);
 	void													Draw(Vector2 cameraOffset);
-	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>>		CreatePhysicsEdges();
+	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>>		CreatePhysicsEdges(Vector2 playerDim);
 	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>>		DecideCapping(std::vector<b2Vec2>& c1, std::vector<b2Vec2>& c2, std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r);
-	void													TilePhysicsInit(b2World* world, Vector2 p);
+	void													TilePhysicsInit(b2World* world, Vector2 p, Vector2 playerDim);
 	void													TileCreateBody(b2World* world);
 	void													SetCappingDirection(Direction capping);
 	void													SetSpriteDirection(Direction dir) { direction = dir; }
 	void													SetSDL_RendererFlipFlags(SDL_RendererFlip flip) { flipFlags = flip; }
-	void													FlipTileSprite();
+	Vector2													GetPixelDimensions() { return pixelDimensions; }
+
+	b2Body*													GetBodyReference() { return physicsBody; }
+
+	SDL_Color												GetDebugColor() { return debugColor; }
 };
 
 class TileManager {
@@ -100,7 +105,7 @@ private:
 	Vector2												playerDimensions;
 								
 	void												TileParseTypesFromJSON(std::string json);
-	
+					
 public:
 	TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDimensions);
 	
@@ -109,4 +114,6 @@ public:
 	void UpdateMap();
 
 	void DrawMap(Vector2 cameraOffset);
+
+	std::vector<std::vector<Tile*>>* CreateTileMap();
 };

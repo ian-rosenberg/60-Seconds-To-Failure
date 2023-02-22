@@ -8,13 +8,15 @@
 #include <memory>
 #include <entity.h>
 #include <camera.h>
+#include <tile.h>
 
 class DebugDraw {
 private:
-	std::shared_ptr<Graphics> graphicsRef;
-	std::unordered_map<int, Entity*> entityRefs;
-	Camera* camera;
-	int32 worldWidth, worldHeight;
+	std::shared_ptr<Graphics>			graphicsRef;
+	std::unordered_map<int, Entity*>	entityRefs;
+	std::vector<Tile*>					tileRefs;
+	Camera*								camera;
+	int32								worldWidth, worldHeight;
 		
 	// Inherited via b2Draw
 	void DrawRect(b2Body* bodyRef, const SDL_Rect* rect, const SDL_Color& color);
@@ -38,6 +40,7 @@ public:
 	void SetWorldDimensions(b2Vec2 dim);
 	void UpdateCameraRect(SDL_Rect p);
 	void AddEntityRef(Entity* entityRef);
+	void AddTileRef(Tile* tile) { tileRefs.push_back(tile); }
 
 	void DrawAll();
 };

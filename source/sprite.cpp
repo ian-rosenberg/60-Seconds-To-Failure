@@ -34,6 +34,7 @@ Sprite::Sprite()
 	graphics = nullptr;
 	filepath = "";
 	srcRect = { 0,0,0,0 };
+	surf = nullptr;
 }
 
 Sprite::Sprite(const Sprite &oldSprite)
@@ -51,6 +52,7 @@ Sprite::Sprite(const Sprite &oldSprite)
 	graphics = oldSprite.graphics;
 	srcRect = oldSprite.srcRect;
 	texture = oldSprite.texture;
+	surf = oldSprite.surf;
 }
 
 Sprite::Sprite(std::string fp, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, int frm, int off, int width, int height, std::shared_ptr<Graphics> ren)
@@ -67,6 +69,7 @@ Sprite::Sprite(std::string fp, Vector2 drawPosition, Vector2 scle, Vector2 scleC
 	color = colorShift;
 	graphics = ren;
 	srcRect = { 0, frameHeight * off, frameWidth, frameHeight};
+	surf = nullptr;
 	LoadPNGImage(filepath);
 }
 
@@ -106,8 +109,13 @@ Sprite::~Sprite()
 {
 	if(texture)
 		SDL_DestroyTexture(texture);
+
+	if(surf)
+		SDL_FreeSurface(surf);
+
 	texture = nullptr;
 	graphics = nullptr;
+	surf = nullptr;
 }
 
 Sprite::Sprite(std::string fp, int imgWidth, int imgHeight, int width, int height, int yOff, int xOff, std::shared_ptr<Graphics> ren)
@@ -130,13 +138,9 @@ Sprite::Sprite(std::string fp, int imgWidth, int imgHeight, int width, int heigh
 
 Uint8 Sprite::LoadPNGImage(std::string filepath)
 {
-	SDL_Surface* tempSurface = nullptr;
-	
-	tempSurface = IMG_Load(filepath.c_str());
+	surf = IMG_Load(filepath.c_str());
 
-	texture = SDL_CreateTextureFromSurface(graphics->GetRenderer(), tempSurface);
-
-	SDL_FreeSurface(tempSurface);
+	texture = SDL_CreateTextureFromSurface(graphics->GetRenderer(), surf);
 
 	if (!texture) {
 		std::cout << "Image " << filepath << " could not be loaded!" << std::endl;
@@ -166,7 +170,6 @@ std::vector<std::vector<SDL_Color>> Sprite::GetPixelData()
 	std::vector<std::vector<SDL_Color>> pixelResults;
 	SDL_Color pixel;
 	std::vector<SDL_Color> resultLine;
-	SDL_Surface* surf = IMG_Load(filepath.c_str());
 	int bpp;
 
 	SDL_LockSurface(surf);
@@ -193,8 +196,6 @@ std::vector<std::vector<SDL_Color>> Sprite::GetPixelData()
 	}
 
 	SDL_UnlockSurface(surf);
-	SDL_FreeSurface(surf);
-	surf = nullptr;
 
 	return pixelResults;
 }
@@ -222,7 +223,6 @@ void Sprite::FlipTexture(SDL_RendererFlip flip)
 
 bool Sprite::CheckIfViableTexture(SDL_Rect sR)
 {
-	SDL_Surface* surf = IMG_Load(filepath.c_str());
 	Uint32  pix;
 
 
@@ -242,9 +242,6 @@ bool Sprite::CheckIfViableTexture(SDL_Rect sR)
 
 		if (p.a > 0) {
 			SDL_UnlockSurface(surf);
-			SDL_FreeSurface(surf);
-
-			surf = nullptr;
 
 			return true;
 		}
@@ -265,19 +262,12 @@ bool Sprite::CheckIfViableTexture(SDL_Rect sR)
 
 		if (p.a > 0) {
 			SDL_UnlockSurface(surf);
-			SDL_FreeSurface(surf);
-
-			surf = nullptr;
 		
 			return true;
 		}
 	}
 
-
 	SDL_UnlockSurface(surf);
-	SDL_FreeSurface(surf);
-
-	surf = nullptr;
 
 	return false;
 }
@@ -432,6 +422,24 @@ void Sprite::Draw(Sprite* sprite,
 			sprite->GetTexture(),
 			255);
 	}
+}
+
+void Sprite::Draw(Vector2 drawPosition, SDL_Rect srcRect, Vector2* scale, Vector2* scaleCenter, Vector4* colorShift)
+{
+	SDL_Rect targetRect = {
+		drawPosition.x,
+		drawPosition.y,
+		srcRect.w,
+		srcRect.h
+	};
+
+	SDL_RenderCopyEx(graphics->GetRenderer(),
+		texture,
+		&srcRect,
+		&targetRect,
+		0.f,
+		nullptr,
+		SDL_FLIP_NONE);
 }
 
 void Sprite::DrawSpriteImage(Sprite* image, Vector2 position, int width, int height)

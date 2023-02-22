@@ -110,7 +110,6 @@ void DebugDraw::DrawChainShape(b2Body* bodyRef, const b2Vec2* vertices, int32 ve
 	Vector2 a, b;
 	b2Vec2 p1;
 	b2Vec2 p2;
-	b2Vec2 bp = bodyRef->GetPosition();
 	int camX = camera->GetRect().x, camY = camera->GetRect().y;
 
 	SDL_SetRenderDrawColor(graphicsRef.get()->GetRenderer(), color.r, color.g, color.b, 255);
@@ -150,19 +149,66 @@ void DebugDraw::DrawRect(b2Body* body, const b2Vec2* vertices, int32 vertexCount
 DebugDraw::~DebugDraw()
 {
 	camera = nullptr;
+	entityRefs.clear();
+	tileRefs.clear();
 }
 
 void DebugDraw::DrawAll()
 {
+	for (auto tile : tileRefs) {
+		Tile* thisTile = tile;
+		b2Body* body = thisTile->GetBodyReference();
+		SDL_Color debugColor = thisTile->GetDebugColor();
+		if (!body)
+			continue;
+
+
+		for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
+			b2Shape::Type shapeType = f->GetType();
+
+			if (shapeType == b2Shape::e_polygon) {
+				b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
+
+				DrawPolygon(body, poly->m_vertices, poly->m_count, debugColor);
+
+				continue;
+			}
+
+			else if (shapeType == b2Shape::e_edge) {
+				b2EdgeShape* edge = (b2EdgeShape*)f->GetShape();
+
+				DrawSegment(body, edge->m_vertex1, edge->m_vertex2, debugColor);
+
+				continue;
+			}
+
+			else if (shapeType == b2Shape::e_chain) {
+				b2ChainShape* chain = (b2ChainShape*)f->GetShape();
+
+				DrawChainShape(body, chain->m_vertices, chain->m_count, *(chain->m_vertices), *(chain->m_vertices + chain->m_count - 1), debugColor);
+
+				continue;
+			}
+
+			else if (shapeType == b2Shape::e_circle) {
+				b2CircleShape* poly = (b2CircleShape*)f->GetShape();
+
+				DrawCircle(body, poly->m_p, poly->m_radius * PIX_IN_MET, debugColor);
+				continue;
+			}
+		}
+
+	}
+
 	for (auto entity : entityRefs) {
 		Entity* thisEntity = entity.second;
 		b2Body* body = thisEntity->GetBody();
-		SDL_Color debugColor = thisEntity->GetDebugColor();
 		if (!body)
 			continue;
 
 		
 		for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
+			SDL_Color debugColor = thisEntity->GetDebugColor();
 			b2Shape::Type shapeType = f->GetType();
 
 			if (shapeType == b2Shape::e_polygon) {

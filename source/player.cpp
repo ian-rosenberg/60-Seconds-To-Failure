@@ -170,7 +170,7 @@ void Player::Draw(Vector2 cameraPosition)
 	currentAnimation->AnimationNextFrame(currentAnimation);
 
 	//std::cout << resultPosition.x << "," << resultPosition.y << std::endl;
-	std::cout << "Player Velocity (" << velocity.x << ", " << velocity.y << ")" << std::endl;
+	//std::cout << "Player Velocity (" << velocity.x << ", " << velocity.y << ")" << std::endl;
 }
 
 

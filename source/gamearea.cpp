@@ -32,8 +32,7 @@ void GameArea::CreateTestArea() {
 		se->SetStaticTriggerFixture(f);
 		se->CalculateAverageActorDimensions();
 
-		entityManager->AddEntity(se);
-		debugDraw->AddEntityRef(se);
+		AddEntity(se);
 	}
 
 	//Platform
@@ -58,8 +57,7 @@ void GameArea::CreateTestArea() {
 		b2Fixture* f = body->CreateFixture(&tpd);
 		se->SetStaticTriggerFixture(f);
 
-		entityManager->AddEntity(se);
-		debugDraw->AddEntityRef(se);
+		AddEntity(se);
 	}
 }
 
@@ -242,6 +240,8 @@ void GameArea::AddEntity(Entity* e) {
 void GameArea::SetPlayer(Player* p) {
 	Vector2 dim = p->GetAvgPixelDimensions();
 	Vector2 sD = graphics->GetScreenDimensions();
+	std::vector<std::vector<Tile*>>* tilemap = nullptr;
+
 	player = p;
 	player->SetInputQueuePtr(entityManager->GetInputQueue());
 	player->SetEventsToFirePtr(entityManager->GetEventsToFire());
@@ -249,6 +249,14 @@ void GameArea::SetPlayer(Player* p) {
 	CreateTestArea();
 
 	tileManager = new TileManager("SideViewTest", graphics, areaPhysics, dim);
+
+	tilemap = tileManager->CreateTileMap();
+
+	for (std::vector<Tile*> row : *tilemap) {
+		for (Tile* tile : row) {
+			debugDraw->AddTileRef(tile);
+		}
+	}
 }
 
 Uint8 GameArea::CaptureInputEvents(SDL_Event* e){

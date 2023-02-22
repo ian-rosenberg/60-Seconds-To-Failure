@@ -26,7 +26,7 @@ protected:
 	Vector4						color;
 
 	SDL_Texture*				texture;
-	SDL_Texture*				rotatedTexture;
+	SDL_Surface*				surf;
 	SDL_Rect					srcRect;
 	std::shared_ptr<Graphics>	graphics;
 	
@@ -113,6 +113,12 @@ public:
 		int offset,
 		int frameWidth,
 		int frameHeight);
+
+	void Draw(Vector2 drawPosition,
+		SDL_Rect srcRect,
+		Vector2* scale,
+		Vector2* scaleCenter,
+		Vector4* colorShift);
 
 	void DrawSpriteImage(Sprite* image, Vector2 position, int width, int height);
 
