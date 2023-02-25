@@ -4,13 +4,9 @@
 #define EDGE_COUNT 2
 #define MAX_CAPS 2
 
-std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vector2 playerDimensions)
+void Tile::CreatePhysicsEdges(Vector2 playerDimensions)
 {
-	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> chainPair;
-	//std::vector<std::vector<SDL_Color>> pixels = GetPixelDataFromFile(animSprite->GetSprite()->GetFilePath().c_str());
 	std::vector<std::vector<SDL_Color>> pixels = spriteSheet->GetPixelData();
-	std::vector<b2Vec2> c1;
-	std::vector<b2Vec2> c2;
 	SDL_Rect boundingRect = {INT_MAX, INT_MAX, -1, -1};
 	SDL_Rect r = sourceRect;
 	b2Vec2 vert;
@@ -25,7 +21,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 			{
 				if (pixels[row][col].a != 0) {
 					vert = b2Vec2((col - r.x) * MET_IN_PIX, (row - r.y) * MET_IN_PIX );
-					c1.push_back(vert);
+					topChain.push_back(vert);
 					col += (playerDimensions.x / 2);
 					break;
 				}
@@ -35,7 +31,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 		for (col = r.x+r.w-1, row = r.y; row < r.y+r.h; row++) {
 			if (pixels[row][col].a != 0) {
 				vert = b2Vec2((col - r.x) * MET_IN_PIX, (row - r.y) * MET_IN_PIX);
-				c1.push_back(vert);
+				topChain.push_back(vert);
 				break;
 			}
 		}
@@ -48,7 +44,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 			{
 				if (pixels[row][col].a != 0) {
 					vert = b2Vec2((col - r.x) * MET_IN_PIX, (row - r.y) * MET_IN_PIX);
-					c2.push_back(vert);
+					bottomChain.push_back(vert);
 					col += (playerDimensions.x/ 2);
 					break;
 				}
@@ -58,7 +54,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 		for (col = r.x + r.w - 1, row = r.y + r.h - 1; row >= r.y; row--) {
 			if (pixels[row][col].a != 0) {
 				vert = b2Vec2((col - r.x) * MET_IN_PIX, (row - r.y) * MET_IN_PIX);
-				c2.push_back(vert);
+				bottomChain.push_back(vert);
 				break;
 			}
 		}
@@ -72,7 +68,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 			{
 				if (pixels[row][col].a != 0) {
 					vert = b2Vec2(col, (row - r.y));
-					c1.push_back(vert);
+					topChain.push_back(vert);
 					row += (playerDimensions.x/ 2);
 					break;
 				}
@@ -82,7 +78,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 		for (col = 0, row = r.y + r.h - 1; col < r.w; col++) {
 			if (pixels[row][col].a != 0) {
 				vert = b2Vec2(col, (row - r.y));
-				c1.push_back(vert);
+				topChain.push_back(vert);
 				break;
 			}
 		}
@@ -95,7 +91,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 			{
 				if (pixels[row][col].a != 0) {
 					vert = b2Vec2(col, (row - r.y));
-					c2.push_back(vert);
+					bottomChain.push_back(vert);
 					row += (playerDimensions.x/ 2);
 					break;
 				}
@@ -105,7 +101,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 		for (col = r.w - 1, row = r.y + r.h - 1; col >= 0; col--) {
 			if (pixels[row][col].a != 0) {
 				vert = b2Vec2(col, (row - r.y));
-				c2.push_back(vert);
+				bottomChain.push_back(vert);
 				break;
 			}
 		}
@@ -135,7 +131,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 			{
 				if (pixels[row][col].a != 0) {
 					vert = b2Vec2(col, (row - r.y));
-					c1.push_back(vert);
+					topChain.push_back(vert);
 					row += (playerDimensions.x/ 2);
 					break;
 				}
@@ -145,7 +141,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 		for (col = 0, row = r.y + r.h - 1; col < r.w; col++) {
 			if (pixels[row][col].a != 0) {
 				vert = b2Vec2(col, (row - r.y));
-				c1.push_back(vert);
+				topChain.push_back(vert);
 				break;
 			}
 		}
@@ -158,7 +154,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 			{
 				if (pixels[row][col].a != 0) {
 					vert = b2Vec2(col, (row - r.y));
-					c2.push_back(vert);
+					bottomChain.push_back(vert);
 					row += (playerDimensions.x/ 2);
 					break;
 				}
@@ -168,7 +164,7 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 		for (col = r.w - 1, row = r.y + r.h - 1; col >= 0; col--) {
 			if (pixels[row][col].a != 0) {
 				vert = b2Vec2(col, (row - r.y));
-				c2.push_back(vert);
+				bottomChain.push_back(vert);
 				break;
 			}
 		}
@@ -177,39 +173,32 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::CreatePhysicsEdges(Vec
 
 	switch (flipFlags) {
 	case SDL_FLIP_VERTICAL:
-		for (auto vert = c1.begin(), vertEnd = c1.end() - 1; vert != vertEnd; vert++, vertEnd--) {
+		for (auto vert = topChain.begin(), vertEnd = topChain.end() - 1; vert != vertEnd; vert++, vertEnd--) {
 			std::swap(vert->x, vertEnd->x);
 		}
-		for (auto vert = c2.begin(), vertEnd = c2.end() - 1; vert != vertEnd; vert++, vertEnd--) {
+		for (auto vert = bottomChain.begin(), vertEnd = bottomChain.end() - 1; vert != vertEnd; vert++, vertEnd--) {
 			std::swap(vert->x, vertEnd->x);
 		}
 		break;
 	case SDL_FLIP_HORIZONTAL:
-		for (auto vert = c1.begin(), vertEnd = c1.end() - 1; vert != vertEnd; vert++, vertEnd--) {
+		for (auto vert = topChain.begin(), vertEnd = topChain.end() - 1; vert != vertEnd; vert++, vertEnd--) {
 			std::swap(vert->y, vertEnd->y);
 		}
-		for (auto vert = c2.begin(), vertEnd = c2.end() - 1; vert != vertEnd; vert++, vertEnd--) {
+		for (auto vert = bottomChain.begin(), vertEnd = bottomChain.end() - 1; vert != vertEnd; vert++, vertEnd--) {
 			std::swap(vert->y, vertEnd->y);
 		}
 
-		std::reverse(c1.begin(), c1.end());
-		std::reverse(c2.begin(), c2.end());
+		std::reverse(topChain.begin(), topChain.end());
+		std::reverse(bottomChain.begin(), bottomChain.end());
 
 		break;
 	default:
 		break;
 	}
-
-	chainPair.first = c1;
-	chainPair.second = c2;
-
-	return chainPair;
 }
 
-std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::DecideCapping(std::vector<b2Vec2>& c1, std::vector<b2Vec2>& c2, std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r)
+void Tile::DecideCapping(std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r)
 {
-	std::vector<b2Vec2> c3;
-	std::vector<b2Vec2> c4;
 	b2Vec2 vert;
 	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> cappings;
 	int row, col;
@@ -217,76 +206,66 @@ std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> Tile::DecideCapping(std::vec
 	//Decide to cap cardinal direction(s)
 	if (capDirection != Direction::None) {
 		if (capDirection & Direction::East) {
-			c3.push_back(c1.back());
+			eastCap.push_back(topChain.back());
 
-			for (col = c1.back().x + (pixelDimensions.x/ 2.f); col < c2.back().x;) {
-				for (row = c1.back().x; pixels[row][col].a != 0; row++)
+			for (col = topChain.back().x + (pixelDimensions.x/ 2.f); col < bottomChain.back().x;) {
+				for (row = topChain.back().x; pixels[row][col].a != 0; row++)
 					continue;
 
 				col -= (pixelDimensions.y/ 2.f);
 				vert = b2Vec2(col * MET_IN_PIX, (row - r.y) * MET_IN_PIX);
-				c3.push_back(vert);
+				eastCap.push_back(vert);
 			}
 
 
-			c3.push_back(c2.back());
-
-			cappings.first = c3;
+			eastCap.push_back(bottomChain.back());
 		}
 
 		if (capDirection & Direction::West) {
-			c4.push_back(c1.front());
+			westCap.push_back(topChain.front());
 
-			for (col = c1.front().x + (pixelDimensions.x/ 2.f); col < c2.front().x;) {
+			for (col = topChain.front().x + (pixelDimensions.x/ 2.f); col < bottomChain.front().x;) {
 				for (row = 0; pixels[row][col].a != 0; row--)
 					continue;
 
 				col += (pixelDimensions.y/ 2.f);
 				vert = b2Vec2(col * MET_IN_PIX, (row - r.y) * MET_IN_PIX);
-				c4.push_back(vert);
+				westCap.push_back(vert);
 			}
 
 
-			c4.push_back(c2.front());
-
-			cappings.second = c4;
+			westCap.push_back(bottomChain.front());
 		}
 	}
-
-	return cappings;
 }
 
 void Tile::TilePhysicsInit(b2World* world, Vector2 p, Vector2 playerDim)
 {
-	float temp;
-	b2Vec2 pg;
-	b2Vec2 ng;
-	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> chains = {};
-	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> cappings;
 	std::vector<std::vector<SDL_Color>> pixels = spriteSheet->GetPixelData();
-
-	chains = CreatePhysicsEdges(playerDim);
+	Vector2 tmp;
 
 	pixelPosition = {
 		p.x * pixelDimensions.x,
 		p.y * pixelDimensions.y
 	};
 
+	tmp = pixelPosition;
+
+	graphicsRef->Vector2PixelsToMeters(tmp);
+
+	worldPosition = {
+		(float)tmp.x,
+		(float)tmp.y
+	};
+
+	CreatePhysicsEdges(playerDim);
+
 	//Logic for ghost vertices ( previous and next ) goes here!!!
 
-	cappings = DecideCapping(chains.first, chains.second, pixels, spriteSheet->GetSourceRect());
-
-	if (!chains.first.empty())
-		chainsAndCaps.push_back(std::make_pair(chains.first, true));
-	if (!chains.second.empty())
-		chainsAndCaps.push_back(std::make_pair(chains.second, true));
-	if (!cappings.first.empty())
-		chainsAndCaps.push_back(std::make_pair(cappings.first, false));
-	if (!cappings.second.empty())
-		chainsAndCaps.push_back(std::make_pair(cappings.second, false));
+	DecideCapping(pixels, spriteSheet->GetSourceRect());
 }
 
-void Tile::TileCreateBody(b2World* world)
+void Tile::CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2Vec2 bng)
 {
 	b2BodyDef bd;
 	b2FixtureDef fd;
@@ -295,7 +274,7 @@ void Tile::TileCreateBody(b2World* world)
 
 	bd.type = b2_staticBody;
 
-	bd.position.Set(pixelPosition.x * MET_IN_PIX, pixelPosition.y * MET_IN_PIX);
+	bd.position.Set(worldPosition.x, worldPosition.y);
 	
 	switch (direction) {
 	case North:
@@ -320,25 +299,41 @@ void Tile::TileCreateBody(b2World* world)
 
 	physicsBody = world->CreateBody(&bd);
 
-	for (std::pair<std::vector<b2Vec2>, bool> chain : chainsAndCaps) {
-		b2ChainShape chainShape;
-		/*for (auto& vertex : chain.first) {
-			float x = cos(bd.angle) * (vertex.x - center.x) - sin(bd.angle) * (vertex.y - center.y) + center.x;
-			float y = sin(bd.angle) * (vertex.x - center.x) + cos(bd.angle) * (vertex.y - center.y) + center.y;
-			vertex.x = x;
-			vertex.y = y;
-		}*/
+	b2ChainShape c1, c2, c3, c4;
+	/*for (auto& vertex : chain.first) {
+		float x = cos(bd.angle) * (vertex.x - center.x) - sin(bd.angle) * (vertex.y - center.y) + center.x;
+		float y = sin(bd.angle) * (vertex.x - center.x) + cos(bd.angle) * (vertex.y - center.y) + center.y;
+		vertex.x = x;
+		vertex.y = y;
+	}*/
 		
 
-		//Need to add prev and next ghost vertices
-		chainShape.CreateChain(static_cast<b2Vec2*>(chain.first.data()), chain.first.size(), chain.first.front(), chain.first.back());
+	//Need to add prev and next ghost vertices
+	c1.CreateChain(static_cast<b2Vec2*>(topChain.data()), topChain.size(), tpg, tng);
 
-		fd.shape = &chainShape;
-		fd.friction = 0.9f;
+	fd.shape = &c1;
+	fd.friction = 0.7f;
+	physicsBody->CreateFixture(&fd);
+
+	c2.CreateChain(static_cast<b2Vec2*>(bottomChain.data()), bottomChain.size(), bpg, bng);
+
+	fd.shape = &c2;
+	fd.friction = 0.7f;
+	physicsBody->CreateFixture(&fd);
+
+	if (eastCap.size() > 0) {
+		c3.CreateChain(static_cast<b2Vec2*>(eastCap.data()), eastCap.size(), *(topChain.begin()), *(bottomChain.begin()));
+		fd.shape = &c3;
+		fd.friction = 0.7f;
 		physicsBody->CreateFixture(&fd);
 	}
 
-	chainsAndCaps.clear();
+	if (westCap.size() > 0) {
+		c4.CreateChain(static_cast<b2Vec2*>(westCap.data()), westCap.size(), *(topChain.end()-1), *(bottomChain.end()-1));
+		fd.shape = &c4;
+		fd.friction = 0.7f;
+		physicsBody->CreateFixture(&fd);
+	}
 }
 
 void Tile::SetCappingDirection(Direction capping)
@@ -680,12 +675,42 @@ std::vector<std::vector<Tile*>>* TileManager::CreateTileMap()
 		newTile->SetSDL_RendererFlipFlags(SDL_FLIP_NONE);
 		//newTile->FlipTileSprite();
 		newTile->TilePhysicsInit(physics, vector2(i, 2), playerDim);
-		newTile->TileCreateBody(physics);
 		tileRow.push_back(newTile);
 	}
 
 	tileMap.push_back(tileRow);
 
 	return &tileMap;
+}
+
+void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap)
+{
+	int x, y;
+
+	y = 0;
+	
+	for (std::vector<Tile*> row : *tilemap) {
+		x = 0;
+		for (Tile* tile : row) {
+			Tile* prev = (x > 0) ? (*tilemap)[y][x - 1] : nullptr;
+			Tile* next = (x + 1 < row.size()) ? (*tilemap)[y][x + 1] : nullptr;
+
+			b2Vec2 tpg = (prev ? prev->GetTopChainLastVertex() + prev->GetWorldPosition(): tile->GetTopChainFirstVertex() + tile->GetWorldPosition());
+			b2Vec2 tng = (next ? next->GetTopChainFirstVertex() + next->GetWorldPosition(): tile->GetTopChainLastVertex() + tile->GetWorldPosition());
+			b2Vec2 bpg = (prev ? prev->GetBottomChainLastVertex() + prev->GetWorldPosition(): tile->GetBottomChainFirstVertex() + tile->GetWorldPosition());
+			b2Vec2 bng = (next ? next->GetTopChainFirstVertex() + next->GetWorldPosition(): tile->GetBottomChainLastVertex() + tile->GetWorldPosition());
+
+
+			tile->CreateTileBody(
+				physics,
+				tpg, 
+				tng,
+				bpg,
+				bng
+			);
+			x++;
+		}
+		y++;
+	}
 }
 

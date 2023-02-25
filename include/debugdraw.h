@@ -41,6 +41,7 @@ public:
 	void UpdateCameraRect(SDL_Rect p);
 	void AddEntityRef(Entity* entityRef);
 	void AddTileRef(Tile* tile) { tileRefs.push_back(tile); }
+	void AddTileMapRef(std::vector<std::vector<Tile*>>* tilemapRef);
 
 	void DrawAll();
 };

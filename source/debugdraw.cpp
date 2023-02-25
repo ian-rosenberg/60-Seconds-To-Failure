@@ -142,6 +142,14 @@ void DebugDraw::AddEntityRef(Entity* entityRef)
 	entityRefs.insert_or_assign(id, entityRef);
 }
 
+void DebugDraw::AddTileMapRef(std::vector<std::vector<Tile*>>* tilemapRef)
+{
+	for (auto row : *tilemapRef) {
+		for (Tile* tile : row)
+			AddTileRef(tile);
+	}
+}
+
 void DebugDraw::DrawRect(b2Body* body, const b2Vec2* vertices, int32 vertexCount, const SDL_Color& color)
 {
 }

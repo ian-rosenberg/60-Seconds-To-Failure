@@ -60,12 +60,20 @@ private:
 
 	SDL_Rect												sourceRect;
 
+	std::vector<b2Vec2>										topChain;
+	std::vector<b2Vec2>										bottomChain;
+	std::vector<b2Vec2>										eastCap;
+	std::vector<b2Vec2>										westCap;
+
+	b2Fixture*												topFix;
+	b2Fixture*												bottomFix;
+	b2Fixture*												eastFix;
+	b2Fixture*												westFix;
+
 
 	//Rotation in degrees for SDL2
 	float													zRot;
 
-	//Deferring chain and body creation til post rotation and flipping
-	std::vector<std::pair<std::vector<b2Vec2>, bool>>		chainsAndCaps;
 
 public:
 	Tile();
@@ -77,11 +85,11 @@ public:
 	void													FlipChain(std::vector<b2Vec2>& chain);
 	void													RotateChain(std::vector<b2Vec2>& chain, float angle);
 	void													Draw(Vector2 cameraOffset);
-	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>>		CreatePhysicsEdges(Vector2 playerDim);
-	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>>		DecideCapping(std::vector<b2Vec2>& c1, std::vector<b2Vec2>& c2, std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r);
-	void													TilePhysicsInit(b2World* world, Vector2 p, Vector2 playerDim);
-	void													TileCreateBody(b2World* world);
+	void													CreatePhysicsEdges(Vector2 playerDim);
+	void													CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2Vec2 bng);
 	void													SetCappingDirection(Direction capping);
+	void													DecideCapping(std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r);
+	void													TilePhysicsInit(b2World* world, Vector2 p, Vector2 playerDim);
 	void													SetSpriteDirection(Direction dir) { direction = dir; }
 	void													SetSDL_RendererFlipFlags(SDL_RendererFlip flip) { flipFlags = flip; }
 	Vector2													GetPixelDimensions() { return pixelDimensions; }
@@ -89,6 +97,13 @@ public:
 	b2Body*													GetBodyReference() { return physicsBody; }
 
 	SDL_Color												GetDebugColor() { return debugColor; }
+
+	b2Vec2													GetTopChainFirstVertex() { return topChain.front(); }
+	b2Vec2													GetTopChainLastVertex() { return topChain.back(); }
+	b2Vec2													GetBottomChainFirstVertex() { return bottomChain.front(); }
+	b2Vec2													GetBottomChainLastVertex() { return bottomChain.back(); }
+
+	b2Vec2													GetWorldPosition() { return worldPosition; }
 };
 
 class TileManager {
@@ -116,4 +131,6 @@ public:
 	void DrawMap(Vector2 cameraOffset);
 
 	std::vector<std::vector<Tile*>>* CreateTileMap();
+
+	void LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap);
 };
