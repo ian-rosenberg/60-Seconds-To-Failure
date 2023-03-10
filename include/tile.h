@@ -10,13 +10,29 @@
 const int VERTICES_PER_EDGE = 2;
 const int MAX_EDGES = 4;
 
+
 enum Direction : unsigned short{
-	None = 0,
-	North = 1,
-	East = 2,
-	South = 4,
-	West = 8
+	North = 0,
+	East = 1,
+	South = 2,
+	West = 4,
+	None = 8
 };
+
+enum TileLayer : unsigned short{
+	Ground = 0,
+	Hill = 1,
+	Wall = 2,
+	Platform = 4,
+	Empty = 8
+};
+
+typedef struct TileConnection_S {
+	int			xConnect;
+	int			yConnect;
+	TileLayer	layer;
+	Direction	hillDirection;
+}TileConnection;
 
 typedef struct TileSpriteSheet_S {
 	std::string name;
@@ -70,6 +86,8 @@ private:
 	b2Fixture*												eastFix;
 	b2Fixture*												westFix;
 
+	std::vector<TileConnection*>							possibleConnections;
+
 
 	//Rotation in degrees for SDL2
 	float													zRot;
@@ -82,7 +100,7 @@ public:
 	
 	~Tile();
 
-	void													FlipChain(std::vector<b2Vec2>& chain);
+	void													AddPossibleConnection(Vector2 v, TileLayer layer, Direction hillDir);
 	void													RotateChain(std::vector<b2Vec2>& chain, float angle);
 	void													Draw(Vector2 cameraOffset);
 	void													CreatePhysicsEdges(Vector2 playerDim);

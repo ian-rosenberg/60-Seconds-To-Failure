@@ -270,11 +270,15 @@ void Tile::CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2
 	b2BodyDef bd;
 	b2FixtureDef fd;
 	Vector2 tV;
+	b2ChainShape c1, c2, c3, c4;
 	b2Vec2 center;
 
 	bd.type = b2_staticBody;
 
 	bd.position.Set(worldPosition.x, worldPosition.y);
+
+	center = { (float)(worldPosition.x + pixelDimensions.x * MET_IN_PIX / 2),
+		(float)(worldPosition.y + pixelDimensions.y * MET_IN_PIX / 2)};
 	
 	switch (direction) {
 	case North:
@@ -298,14 +302,10 @@ void Tile::CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2
 	}
 
 	physicsBody = world->CreateBody(&bd);
-
-	b2ChainShape c1, c2, c3, c4;
-	/*for (auto& vertex : chain.first) {
-		float x = cos(bd.angle) * (vertex.x - center.x) - sin(bd.angle) * (vertex.y - center.y) + center.x;
-		float y = sin(bd.angle) * (vertex.x - center.x) + cos(bd.angle) * (vertex.y - center.y) + center.y;
-		vertex.x = x;
-		vertex.y = y;
-	}*/
+	RotateChain(topChain, bd.angle);
+	RotateChain(bottomChain, bd.angle);
+	RotateChain(westCap, bd.angle);
+	RotateChain(eastCap, bd.angle);
 		
 
 	//Need to add prev and next ghost vertices
@@ -417,21 +417,41 @@ Tile::~Tile()
 	spriteSheet = nullptr;
 	graphicsRef = nullptr;
 	physicsBody = nullptr;
+
+	while (!possibleConnections.empty()) {
+		TileConnection* tc = *(possibleConnections.end()-1);
+		possibleConnections.pop_back();
+		delete tc;
+	}
+
+}
+
+void Tile::AddPossibleConnection(Vector2 v, TileLayer layer, Direction hillDir)
+{
+	possibleConnections.push_back(new TileConnection{
+		(int)v.x,
+		(int)v.y,
+		layer,
+		hillDir
+		});
 }
 
 void Tile::RotateChain(std::vector<b2Vec2>& chain, float theta)
 {
 	float c = 0, s = 0, cx = 0, cy = 0;
 	float xNew, yNew;
-	Vector2 ctr = {pixelPosition.x + pixelDimensions.x/2, pixelPosition.y + pixelDimensions.y / 2 };
+	Vector2 ctr;
+
+	worldPosition = physicsBody->GetPosition();
+	
+	ctr = { (float)worldPosition.x + worldDimensions.x / 2,
+		(float)worldPosition.y + worldDimensions.y / 2 };
 
 	c = cos(-theta);
 	s = sin(-theta);
 
-	worldPosition = physicsBody->GetPosition();
-
-	cx = pixelPosition.x;// +worldPosition.x;
-	cy = pixelPosition.y;// +worldPosition.y;
+	cx = worldPosition.x;
+	cy = worldPosition.y;
 
 	for (b2Vec2 p : chain) {
 
@@ -479,6 +499,9 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 	SDL_Rect srcRect;
 	std::ifstream fileInputstream(json);
 	RSJresource jsonResource(fileInputstream);
+	std::ifstream fileInputstreamDescription(jsonResource["generationDescription"].as_str());
+	RSJresource genDesc(fileInputstreamDescription);
+	RSJarray genDescList = genDesc.as_array();
 	Tile* t;
 	TileSpriteSheet* tss = new TileSpriteSheet();
 	std::shared_ptr<Sprite> spriteSheet;
@@ -509,7 +532,7 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 	//LOADED SPRITE SHEET
 
 	//Maybe a loading screen for parsing tiles
-	for (Uint8 i = 0; i < tss->columns * tss->columns; i++) {
+	for (Uint16 i = 0; i < tss->columns * tss->columns; i++) {
 		SDL_Rect sR = {
 			tss->tileWidth * (i % tss->columns) + tss->spacing * (i % tss->columns) + tss->margin,
 			tss->tileHeight * (i / tss->columns) + tss->spacing * (i / tss->columns) + tss->margin,
@@ -542,7 +565,7 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			break;
 		}
 
-		//zRot = (int)(-1 * zRot + 180) % 360;
+		zRot = (int)(-1 * zRot + 180) % 360;
 
 		//s->RotateTextureZ(zRot);
 
@@ -555,6 +578,107 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			zRot,
 			sR);
 
+		for (RSJresource coordInfo : genDesc[i]["possibleConnects"].as_vector<RSJresource>()) {
+			Tile* xMirrorHillTile = nullptr;
+			Tile* yMirrorHillTile = nullptr;
+			TileLayer layers = TileLayer::Empty;
+			Direction hillOrient;
+			std::string o = genDesc[i]["hillOrientation"].as_str();
+
+			for (RSJresource layerName : coordInfo["layers"].as<RSJarray>()) {
+				if (layerName.as_str().compare("ground") == 0 ) 
+					layers = (TileLayer)(layers | TileLayer::Ground);
+				
+				if (layerName.as_str().compare("wall") == 0) 
+					layers = (TileLayer)(layers | TileLayer::Wall);
+									
+				if (layerName.as_str().compare("hill") == 0) 
+					layers = (TileLayer)(layers | TileLayer::Hill);
+				
+				if (layerName.as_str().compare("platform") == 0) 
+					layers = (TileLayer)(layers | TileLayer::Platform);
+				
+			}
+
+			if (o.compare("Northeast") == 0) {
+				xMirrorHillTile = new Tile(*t);
+				yMirrorHillTile = new Tile(*t);
+
+				xMirrorHillTile->SetSpriteDirection((Direction)(Direction::North | Direction::West));
+				xMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
+
+				yMirrorHillTile->SetSpriteDirection((Direction)(Direction::South | Direction::East));
+				yMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
+
+				xMirrorHillTile->AddPossibleConnection(
+					Vector2(coordInfo["x"].as<int>() * -1,
+						coordInfo["y"].as<int>()
+					),
+					layers,
+					(Direction)(Direction::North | Direction::West));
+
+				yMirrorHillTile->AddPossibleConnection(
+					Vector2(coordInfo["x"].as<int>(),
+						coordInfo["y"].as<int>() * -1
+					),
+					layers,
+					(Direction)(Direction::South | Direction::East));
+
+				t->AddPossibleConnection(
+					Vector2(coordInfo["x"].as<int>(),
+						coordInfo["y"].as<int>()
+					),
+					layers,
+					(Direction)(Direction::North | Direction::East));
+
+				tiles.push_back(xMirrorHillTile);
+				tiles.push_back(yMirrorHillTile);
+			}
+			else if (o.compare("SouthEast") == 0) {
+				xMirrorHillTile = new Tile(*t);
+				yMirrorHillTile = new Tile(*t);
+
+				xMirrorHillTile->SetSpriteDirection((Direction)(Direction::South | Direction::West));
+				xMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
+
+				yMirrorHillTile->SetSpriteDirection((Direction)(Direction::North | Direction::East));
+				yMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
+
+				xMirrorHillTile->AddPossibleConnection(
+					Vector2(coordInfo["x"].as<int>() * -1,
+						coordInfo["y"].as<int>()
+					),
+					layers,
+					(Direction)(Direction::South | Direction::East));
+
+				yMirrorHillTile->AddPossibleConnection(
+					Vector2(coordInfo["x"].as<int>(),
+						coordInfo["y"].as<int>() * -1
+					),
+					layers,
+					(Direction)(Direction::South | Direction::West));
+
+				t->AddPossibleConnection(
+					Vector2(coordInfo["x"].as<int>() * -1,
+						coordInfo["y"].as<int>()
+					),
+					layers,
+					(Direction)(Direction::South | Direction::East));
+
+				tiles.push_back(xMirrorHillTile);
+				tiles.push_back(yMirrorHillTile);
+			}
+			else {
+				t->AddPossibleConnection(
+					Vector2(coordInfo["x"].as<int>(),
+						coordInfo["y"].as<int>()
+					),
+					layers,
+					Direction::None);
+			}
+
+
+		}
 		tiles.push_back(t);
 	}
 
@@ -564,6 +688,9 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 	tss->sheet = nullptr;
 
 	delete tss;
+
+	fileInputstreamDescription.close();
+	fileInputstream.close();
 }
 
 TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDim)

@@ -35,6 +35,8 @@
 #include <climits>
 #include <fstream>
 
+#include <vectortypes.h>
+
 
 static char const* RSJobjectbrackets = "{}";
 static char const* RSJarraybrackets = "[]";

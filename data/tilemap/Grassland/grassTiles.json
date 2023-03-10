@@ -1,12 +1,15 @@
-{ "columns":9,
- "image":"images/Grassland/spritesheet.png",
- "imageheight":1242,
- "imagewidth":1242,
- "margin":5,
- "name":"Grassland",
- "spacing":10,
- "tilecount": 79,
- "tileheight":128,
- "tilewidth":128,
- "direction":"north"
+{
+  "columns": 9,
+  "image": "images/Grassland/spritesheet.png",
+  "imageForGeneration": "images/Grassland/spritesheet.png",
+  "generationDescription": "images/Grassland/grassTiles_description.json",
+  "imageheight": 1242,
+  "imagewidth": 1242,
+  "margin": 5,
+  "name": "Grassland",
+  "spacing": 10,
+  "tilecount": 79,
+  "tileheight": 128,
+  "tilewidth": 128,
+  "direction": "north"
 }
