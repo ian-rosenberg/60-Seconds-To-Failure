@@ -10,8 +10,6 @@ private:
 
 	std::vector<GameArea*>*		areas;
 	GameArea*					currentArea;
-	
-	void						PlayerPhysicsInit(b2World* physicsArea);
 
 public:
 	GameWorld();

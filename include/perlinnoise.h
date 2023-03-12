@@ -31,7 +31,7 @@ public:
 
 	~PerlinNoise();
 
-	std::vector<float> PerlinNoise1D();
+	std::vector<float> PerlinNoise1D(SDL_Color color);
 
-	std::vector<std::vector<float>> PerlinNoise2D();
+	std::vector<std::vector<float>> PerlinNoise2D(SDL_Color color);
 };

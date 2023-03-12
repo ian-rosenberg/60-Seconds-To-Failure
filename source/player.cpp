@@ -37,7 +37,7 @@ Player::Player(std::shared_ptr<Graphics> g) : Entity{ -1 }
 Player::~Player()
 {
 	InputEvent* e;
-	while (!inputQueue->empty()) {
+	while (inputQueue != nullptr && !inputQueue->empty()) {
 		e = inputQueue->front();
 		inputQueue->erase(inputQueue->begin());
 

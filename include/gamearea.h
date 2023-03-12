@@ -34,7 +34,6 @@ private:
 
 	TileManager*					tileManager;
 
-	void							CreateTestArea();
 	//Test ground vars
 	b2Body*							ground;
 	b2BodyDef						groundBD;
@@ -57,9 +56,11 @@ private:
 	Camera*							camera;
 	DebugDraw*						debugDraw;
 
+	void InitPhysicsWorld();
+
 
 public:
-	GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g);
+	GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g, Vector2 playerDim);
 
 	~GameArea();
 
@@ -92,6 +93,4 @@ public:
 	void SetActive(Uint8 flag) { active = flag; }
 
 	b2Vec2* GetGravityScale() { return gravityScale; }
-
-	void InitPhysicsWorld();
 };

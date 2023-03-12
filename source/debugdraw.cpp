@@ -2,7 +2,7 @@
 #include <iostream>
 
 DebugDraw::DebugDraw(std::shared_ptr<Graphics> gr, Camera* cam) {
-	graphicsRef = std::shared_ptr<Graphics>(gr);
+	graphicsRef = gr;
 	camera = cam;
 }
 

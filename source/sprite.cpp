@@ -114,6 +114,7 @@ Sprite::~Sprite()
 		SDL_FreeSurface(surf);
 
 	texture = nullptr;
+
 	graphics = nullptr;
 	surf = nullptr;
 }

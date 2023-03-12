@@ -1,95 +1,68 @@
 #include "gamearea.h"
 #include "staticentity.h"
 
-void GameArea::CreateTestArea() {
-	float hDim = player->GetWorldDimensions().y;
-	float fVal = 1.f;
-	Vector2 scaledDim = graphics->GetScaledScreenDimensions();
-	Vector2 screenDim = graphics->GetScreenDimensions();
-	
-	// Ground
-	{
-		StaticEntity *se = new StaticEntity(graphics,
-			scaledDim.x * 2, 
-			hDim, 
-			Vector2(scaledDim.x * PIX_IN_MET, 
-				scaledDim.y * PIX_IN_MET - hDim) );
-		se->SetActorName("Ground");
-		se->CalculateAverageActorDimensions();
-		
-		b2BodyDef bd;
-		b2Body* ground = areaPhysics->CreateBody(&bd);
-		se->SetBody(ground);
-
-		b2EdgeShape shape;
-		shape.SetTwoSided(b2Vec2(-scaledDim.x, scaledDim.y - hDim), b2Vec2(scaledDim.x, scaledDim.y - hDim));
-
-		b2FixtureDef tpd = {};
-		tpd.friction = fVal;
-		tpd.shape = new b2EdgeShape(shape);
-
-		b2Fixture* f = ground->CreateFixture(&tpd);
-		se->SetStaticTriggerFixture(f);
-		se->CalculateAverageActorDimensions();
-
-		AddEntity(se);
-	}
-
-	//Platform
-	{
-		StaticEntity* se = new StaticEntity(graphics,
-			scaledDim.x / 4.0f, 
-			1.0f, 
-			Vector2(scaledDim.x / 4.0f, scaledDim.y - scaledDim.y / 6.0f));
-		se->SetActorName("Platform");
-		b2BodyDef bd;
-		bd.position.Set(scaledDim.x / 4.0f, scaledDim.y - scaledDim.y / 6.0f);
-		b2Body* body = areaPhysics->CreateBody(&bd);
-		se->SetBody(body);
-
-		b2PolygonShape shape;
-		shape.SetAsBox(scaledDim.x / 8, 0.5f);
-
-		b2FixtureDef tpd = {};
-		tpd.friction = fVal;
-		tpd.shape =  new b2PolygonShape(shape);
-
-		b2Fixture* f = body->CreateFixture(&tpd);
-		se->SetStaticTriggerFixture(f);
-
-		AddEntity(se);
-	}
-}
-
-GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
-	Vector2 cDim;
+GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g, Vector2 playerDim) {
+	Vector2 screenDim;
 	id = ID;
 	player = nullptr;
 	entityManager = new EntityManager(1, g);//enabling debug draw with parameter, renderer
 	gravityScale = new b2Vec2(grav);
 	gravityEnabled = gravityScale->y != 0 || gravityScale->x != 0;
-	areaPhysics = nullptr;
 	ground = {};
 	testPlatform = {};
 	testPlatformBottom = 0.0f;
 	testPlatformTop = 0.0f;
-	graphics = std::shared_ptr<Graphics>(g);
-	//perlinNoiseMap = new PerlinNoise(g);
-	//perlinNoiseMap->PerlinNoise2D();
-	tileManager = nullptr;
-	cDim = graphics->GetScreenDimensions();
-	camera = new Camera(SDL_Rect(0, 0, cDim.x, cDim.y), Vector4(-cDim.x*2, -cDim.y * 2, cDim.x * 2, cDim.y * 2));
-	debugDraw = new DebugDraw(graphics, camera);
+	graphics = g;
+	
+	screenDim = graphics->GetScreenDimensions();
+	camera = new Camera(
+		SDL_Rect(0, 
+			0, 
+			screenDim.x,
+			screenDim.y), 
+		Vector4(-screenDim.x*2, 
+			-screenDim.y * 2, 
+			screenDim.x * 2, 
+			screenDim.y * 2));
+
+	debugDraw = new DebugDraw(graphics, camera);	
+
+	perlinNoiseMap = new PerlinNoise(g);
+	perlinNoiseMap->PerlinNoise2D(SDL_Color(0, 0, 255, 255));
+	perlinNoiseMap->PerlinNoise2D(SDL_Color(0, 255, 0, 255));
+	perlinNoiseMap->PerlinNoise2D(SDL_Color(255, 0, 0, 255));
+
+	delete perlinNoiseMap;
+	perlinNoiseMap = nullptr;
+
+	InitPhysicsWorld();
+
+	tileManager = new TileManager("SideViewTest", 
+		graphics, 
+		areaPhysics, 
+		playerDim);
+
+	std::vector<std::vector<Tile*>>* tilemap = tileManager->CreateTileMap();
+
+	tileManager->LinkTilemapGhostVertices(tilemap);
+
+	debugDraw->AddTileMapRef(tilemap);
 }
 
 GameArea::~GameArea() {
-	graphics = nullptr;
 	delete gravityScale;
 	delete entityManager;
 	delete areaPhysics;
 	delete listener;
 	delete camera;
 	delete debugDraw;
+	delete tileManager;
+	player = nullptr;
+
+	if (perlinNoiseMap)
+		delete perlinNoiseMap;
+
+	graphics = nullptr;
 }
 
 void GameArea::AreaThink() {
@@ -238,26 +211,13 @@ void GameArea::AddEntity(Entity* e) {
 }
 
 void GameArea::SetPlayer(Player* p) {
-	int x, y;
 	Vector2 dim = p->GetAvgPixelDimensions();
 	Vector2 sD = graphics->GetScreenDimensions();
-	std::vector<std::vector<Tile*>>* tilemap = nullptr;
-
-	y = 0;
 
 	player = p;
 	player->SetInputQueuePtr(entityManager->GetInputQueue());
 	player->SetEventsToFirePtr(entityManager->GetEventsToFire());
 	player->UpdateScreenPosition();
-	CreateTestArea();
-
-	tileManager = new TileManager("SideViewTest", graphics, areaPhysics, dim);
-
-	tilemap = tileManager->CreateTileMap();
-
-	tileManager->LinkTilemapGhostVertices(tilemap);
-
-	debugDraw->AddTileMapRef(tilemap);
 }
 
 Uint8 GameArea::CaptureInputEvents(SDL_Event* e){

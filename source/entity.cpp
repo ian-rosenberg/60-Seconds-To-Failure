@@ -235,7 +235,7 @@ EntityManager::EntityManager(Uint8 debugFlag, std::shared_ptr<Graphics> g)
 	inputQueue = new std::vector<Entity::InputEvent*>();
 	eventsToFire = new std::queue<Entity::InputEvent*>();
 	debugDraw = debugFlag;
-	graphics = std::shared_ptr<Graphics>(g);
+	graphics = g;
 }
 
 EntityManager::~EntityManager()
@@ -253,10 +253,14 @@ EntityManager::~EntityManager()
 
 	delete inputQueue;
 
+	inputQueue = nullptr;
+
 	if (!eventsToFire->empty())
 		ClearEventsToFireQueue();
 
 	delete eventsToFire;
+
+	eventsToFire = nullptr;
 }
 
 void EntityManager::AddEntity(Entity* ent)

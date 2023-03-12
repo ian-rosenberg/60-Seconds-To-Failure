@@ -415,6 +415,7 @@ Tile::Tile(const Tile &oldTile)
 Tile::~Tile()
 {
 	spriteSheet = nullptr;
+
 	graphicsRef = nullptr;
 	physicsBody = nullptr;
 
@@ -799,8 +800,6 @@ std::vector<std::vector<Tile*>>* TileManager::CreateTileMap()
 		if (i == 0)
 			newTile->SetCappingDirection((Direction)(Direction::West | Direction::East));
 
-		newTile->SetSDL_RendererFlipFlags(SDL_FLIP_NONE);
-		//newTile->FlipTileSprite();
 		newTile->TilePhysicsInit(physics, vector2(i, 2), playerDim);
 		tileRow.push_back(newTile);
 	}

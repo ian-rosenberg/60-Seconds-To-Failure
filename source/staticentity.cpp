@@ -2,7 +2,6 @@
 
 StaticEntity::StaticEntity() {
 	boundingVolume = nullptr;
-	graphics = nullptr;
 	body = nullptr;
 	debugColor = SDL_Color(0, 255, 255, 255);
 }
@@ -28,6 +27,8 @@ StaticEntity::~StaticEntity()
 {
 	body = nullptr;
 	boundingVolume = nullptr;
+
+	std::cout << "Graphics pointer ref count: " << graphics.use_count() << std::endl;
 	graphics = nullptr;
 }
 
