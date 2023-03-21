@@ -27,9 +27,7 @@ StaticEntity::~StaticEntity()
 {
 	body = nullptr;
 	boundingVolume = nullptr;
-
-	std::cout << "Graphics pointer ref count: " << graphics.use_count() << std::endl;
-	graphics = nullptr;
+	graphics.reset();
 }
 
 void StaticEntity::Draw(Vector2 cameraPosition) {

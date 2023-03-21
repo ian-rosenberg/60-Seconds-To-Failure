@@ -2,9 +2,9 @@
 #include <unordered_map>
 #include <utility>
 
-#include <vectortypes.h>
 #include <box2d/box2d.h>
 #include <animation.h>
+#include <perlinnoise.h>
 
 
 const int VERTICES_PER_EDGE = 2;
@@ -35,17 +35,17 @@ typedef struct TileConnection_S {
 }TileConnection;
 
 typedef struct TileSpriteSheet_S {
-	std::string name;
-	std::string filepath;
+	const char* name;
+	const char* filepath;
 	Sprite* sheet;
-	Uint8 margin;
-	Uint8 spacing;
-	Uint8 columns;
-	Uint8 tileCount;
-	Uint16 tileWidth;
-	Uint16 tileHeight;
-	Uint32 imageWidth;
-	Uint32 imageHeight;
+	uint8_t margin;
+	uint8_t spacing;
+	uint8_t columns;
+	uint8_t tileCount;
+	uint32_t tileWidth;
+	uint32_t tileHeight;
+	uint32_t imageWidth;
+	uint32_t imageHeight;
 	Direction direction;
 }TileSpriteSheet;
 
@@ -86,7 +86,8 @@ private:
 	b2Fixture*												eastFix;
 	b2Fixture*												westFix;
 
-	std::vector<TileConnection*>							possibleConnections;
+	std::vector<TileConnection>								possibleConnections;
+	TileLayer												tileLayers;
 
 
 	//Rotation in degrees for SDL2
@@ -107,9 +108,12 @@ public:
 	void													CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2Vec2 bng);
 	void													SetCappingDirection(Direction capping);
 	void													DecideCapping(std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r);
-	void													TilePhysicsInit(b2World* world, Vector2 p, Vector2 playerDim);
+	void													TilePhysicsInit(b2World* world, Vector2 playerDim);
 	void													SetSpriteDirection(Direction dir) { direction = dir; }
 	void													SetSDL_RendererFlipFlags(SDL_RendererFlip flip) { flipFlags = flip; }
+	void													SetTileLayer(TileLayer layers) { tileLayers = layers; }
+	void													SetGridPosition(int col, int row);
+
 	Vector2													GetPixelDimensions() { return pixelDimensions; }
 
 	b2Body*													GetBodyReference() { return physicsBody; }
@@ -122,22 +126,27 @@ public:
 	b2Vec2													GetBottomChainLastVertex() { return bottomChain.back(); }
 
 	b2Vec2													GetWorldPosition() { return worldPosition; }
+
+	TileLayer												GetTileLayer() { return tileLayers; }
 };
 
 class TileManager {
 private:
-	std::unordered_map<std::string, std::vector<Tile*>>	tileTypes;
-	std::unordered_map<std::string, Sprite*>			typeSheets;
+	std::vector<Tile*>*										groundTiles;
+	std::vector<Tile*>*										hillTiles;
+	std::vector<Tile*>*										platformTiles;
+	std::vector<Tile*>*										wallTiles;
+	std::shared_ptr<Sprite>									spriteSheet;
+	std::vector<std::vector<Tile*>>							tileMap;
 
-	std::vector<std::vector<Tile*>>						tileMap;
-
-	std::shared_ptr<Graphics>							graphicsRef;
-
-	b2World*											physics;
+	std::shared_ptr<Graphics>								graphicsRef;
+		
+	b2World*												physics;
 	
-	Vector2												playerDimensions;
+	Vector2													playerDimensions;
+	Vector2													worldSize;
 								
-	void												TileParseTypesFromJSON(std::string json);
+	void													TileParseTypesFromJSON(std::string json);
 					
 public:
 	TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDimensions);
@@ -148,7 +157,11 @@ public:
 
 	void DrawMap(Vector2 cameraOffset);
 
-	std::vector<std::vector<Tile*>>* CreateTileMap();
+	std::vector<std::vector<Tile*>>* GenerateTileMap(PerlinNoise* perlin, b2World* physicsWorld, Vector2 pDim);
 
 	void LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap);
+
+	Vector2 GetTileDimensions() { return groundTiles->at(0)->GetPixelDimensions(); }
+
+	std::vector<std::vector<Tile*>>* GetTileMap() { return &tileMap; }
 };

@@ -25,7 +25,7 @@ protected:
 
 	State						animState;
 
-	std::shared_ptr<Graphics>	graphics;
+	std::shared_ptr<Graphics>		graphics;
 
 public:
 	/**

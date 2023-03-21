@@ -31,7 +31,7 @@ Sprite::Sprite()
 	scaleCenter = { 0,0 };
 	rotation = { 0,0,0 };
 	color = { 0,0,0,255 };
-	graphics = nullptr;
+	graphics.reset();
 	filepath = "";
 	srcRect = { 0,0,0,0 };
 	surf = nullptr;
@@ -52,7 +52,7 @@ Sprite::Sprite(const Sprite &oldSprite)
 	graphics = oldSprite.graphics;
 	srcRect = oldSprite.srcRect;
 	texture = oldSprite.texture;
-	surf = oldSprite.surf;
+	surf =  oldSprite.surf;
 }
 
 Sprite::Sprite(std::string fp, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, int frm, int off, int width, int height, std::shared_ptr<Graphics> ren)
@@ -73,7 +73,7 @@ Sprite::Sprite(std::string fp, Vector2 drawPosition, Vector2 scle, Vector2 scleC
 	LoadPNGImage(filepath);
 }
 
-Sprite::Sprite(SDL_Texture* tex, SDL_Rect* sourceRect, Vector2 drawPosition, Vector3 rotation, Vector2 flip, Vector4 colorShift, std::shared_ptr<Graphics> ren, std::string fp)
+Sprite::Sprite(std::shared_ptr<SDL_Texture> tex, SDL_Rect* sourceRect, Vector2 drawPosition, Vector3 rotation, Vector2 flip, Vector4 colorShift, std::shared_ptr<Graphics> ren, std::string fp)
 {
 	filepath = fp;
 	texture = tex;
@@ -107,16 +107,10 @@ Sprite::Sprite(std::string fp, int width, int height, std::shared_ptr<Graphics> 
 
 Sprite::~Sprite()
 {
-	if(texture)
-		SDL_DestroyTexture(texture);
+	texture.reset();
+	surf.reset();
 
-	if(surf)
-		SDL_FreeSurface(surf);
-
-	texture = nullptr;
-
-	graphics = nullptr;
-	surf = nullptr;
+	graphics.reset();
 }
 
 Sprite::Sprite(std::string fp, int imgWidth, int imgHeight, int width, int height, int yOff, int xOff, std::shared_ptr<Graphics> ren)
@@ -139,9 +133,10 @@ Sprite::Sprite(std::string fp, int imgWidth, int imgHeight, int width, int heigh
 
 Uint8 Sprite::LoadPNGImage(std::string filepath)
 {
-	surf = IMG_Load(filepath.c_str());
+	surf = std::shared_ptr<SDL_Surface>(IMG_Load(filepath.c_str()), [](SDL_Surface* ptr) { SDL_FreeSurface(ptr); });
 
-	texture = SDL_CreateTextureFromSurface(graphics->GetRenderer(), surf);
+	texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(graphics->GetRenderer(), surf.get()), 
+		[](SDL_Texture* ptr) { SDL_DestroyTexture(ptr); });
 
 	if (!texture) {
 		std::cout << "Image " << filepath << " could not be loaded!" << std::endl;
@@ -154,12 +149,12 @@ Uint8 Sprite::LoadPNGImage(std::string filepath)
 	return 1;
 }
 
-SDL_Surface* Sprite::LoadSurface(std::string filepath)
+std::shared_ptr<SDL_Surface> Sprite::LoadSurface(std::string filepath)
 {
-	return IMG_Load(filepath.c_str());
+	return std::shared_ptr<SDL_Surface>(IMG_Load(filepath.c_str()));
 }
 
-SDL_Texture* Sprite::GetTexture()
+std::shared_ptr<SDL_Texture> Sprite::GetTexture()
 {
 	return texture;
 }
@@ -173,15 +168,15 @@ std::vector<std::vector<SDL_Color>> Sprite::GetPixelData()
 	std::vector<SDL_Color> resultLine;
 	int bpp;
 
-	SDL_LockSurface(surf);
+	SDL_LockSurface(surf.get());
 
-	fmt = surf->format;
-	bpp = surf->format->BytesPerPixel;
+	fmt = surf.get()->format;
+	bpp = surf.get()->format->BytesPerPixel;
 	//cols then rows
-	for (y = 0; y < surf->h; y++)
+	for (y = 0; y < surf.get()->h; y++)
 	{
 		resultLine.clear();
-		for (x = 0; x < surf->w; x++)
+		for (x = 0; x < surf.get()->w; x++)
 		{
 			Uint32 p = GetPixel(surf, x, y);
 
@@ -196,7 +191,7 @@ std::vector<std::vector<SDL_Color>> Sprite::GetPixelData()
 		pixelResults.push_back(resultLine);
 	}
 
-	SDL_UnlockSurface(surf);
+	SDL_UnlockSurface(surf.get());
 
 	return pixelResults;
 }
@@ -207,8 +202,8 @@ void Sprite::RotateTextureZ(float theta)
 	SDL_Renderer* ren = graphics->GetRenderer();
 	SDL_Point ctr = SDL_Point(frameWidth / 2.f, frameHeight / 2.f);
 
-	SDL_SetRenderTarget(ren, texture);
-	SDL_RenderCopyEx(ren, texture, &srcRect, nullptr, theta, &ctr, SDL_FLIP_NONE);
+	SDL_SetRenderTarget(ren, texture.get());
+	SDL_RenderCopyEx(ren, texture.get(), &srcRect, nullptr, theta, &ctr, SDL_FLIP_NONE);
 	SDL_SetRenderTarget(ren, nullptr);
 }
 
@@ -217,8 +212,8 @@ void Sprite::FlipTexture(SDL_RendererFlip flip)
 	SDL_Renderer* ren = graphics->GetRenderer();
 	SDL_Point ctr = SDL_Point(frameWidth / 2.f, frameHeight / 2.f);
 
-	SDL_SetRenderTarget(ren, texture);
-	SDL_RenderCopyEx(ren, texture, &srcRect, nullptr, 0.f, &ctr, flip);
+	SDL_SetRenderTarget(ren, texture.get());
+	SDL_RenderCopyEx(ren, texture.get(), &srcRect, nullptr, 0.f, &ctr, flip);
 	SDL_SetRenderTarget(ren, nullptr);
 }
 
@@ -227,7 +222,7 @@ bool Sprite::CheckIfViableTexture(SDL_Rect sR)
 	Uint32  pix;
 
 
-	SDL_LockSurface(surf);
+	SDL_LockSurface(surf.get());
 	
 	for (int y = sR.y, x = sR.x; y < sR.h+sR.y && x < sR.w+sR.x; x++, y++) {
 		SDL_Color p(0);
@@ -235,14 +230,14 @@ bool Sprite::CheckIfViableTexture(SDL_Rect sR)
 		pix = GetPixel(surf, x, y);
 
 		SDL_GetRGBA(pix, 
-			surf->format,
+			surf.get()->format,
 			&p.r,
 			&p.g,
 			&p.b,
 			&p.a);
 
 		if (p.a > 0) {
-			SDL_UnlockSurface(surf);
+			SDL_UnlockSurface(surf.get());
 
 			return true;
 		}
@@ -254,7 +249,7 @@ bool Sprite::CheckIfViableTexture(SDL_Rect sR)
 		pix = GetPixel(surf, x, y);
 
 		SDL_GetRGBA(pix,
-			surf->format,
+			surf.get()->format,
 			&p.r,
 			&p.g,
 			&p.b,
@@ -262,13 +257,13 @@ bool Sprite::CheckIfViableTexture(SDL_Rect sR)
 
 
 		if (p.a > 0) {
-			SDL_UnlockSurface(surf);
+			SDL_UnlockSurface(surf.get());
 		
 			return true;
 		}
 	}
 
-	SDL_UnlockSurface(surf);
+	SDL_UnlockSurface(surf.get());
 
 	return false;
 }
@@ -285,7 +280,7 @@ SDL_Color Sprite::translate_color(Uint32 int_color)
 }
 
 //from SDL docs
-Uint32 Sprite::GetPixel(SDL_Surface* surface, int x, int y)
+Uint32 Sprite::GetPixel(std::shared_ptr<SDL_Surface> surface, int x, int y)
 {
 	int bpp = surface->format->BytesPerPixel;
 	/* Here p is the address to the pixel we want to retrieve */
@@ -383,12 +378,12 @@ void Sprite::Draw(Sprite* sprite,
 	if (colorShift)
 	{
 		SDL_SetTextureColorMod(
-			sprite->GetTexture(),
+			sprite->GetTexture().get(),
 			colorShift->x,
 			colorShift->y,
 			colorShift->z);
 		SDL_SetTextureAlphaMod(
-			sprite->GetTexture(),
+			sprite->GetTexture().get(),
 			colorShift->w);
 	}
 
@@ -406,7 +401,7 @@ void Sprite::Draw(Sprite* sprite,
 		frameHeight * scaleFactor.y);
 
 	SDL_RenderCopyEx(graphics->GetRenderer(),
-		sprite->GetTexture(),
+		sprite->GetTexture().get(),
 		&cell,
 		&target,
 		rotation->z,
@@ -415,12 +410,12 @@ void Sprite::Draw(Sprite* sprite,
 	if (colorShift)
 	{
 		SDL_SetTextureColorMod(
-			sprite->GetTexture(),
+			sprite->GetTexture().get(),
 			255,
 			255,
 			255);
 		SDL_SetTextureAlphaMod(
-			sprite->GetTexture(),
+			sprite->GetTexture().get(),
 			255);
 	}
 }
@@ -435,7 +430,7 @@ void Sprite::Draw(Vector2 drawPosition, SDL_Rect srcRect, Vector2* scale, Vector
 	};
 
 	SDL_RenderCopyEx(graphics->GetRenderer(),
-		texture,
+		texture.get(),
 		&srcRect,
 		&targetRect,
 		0.f,

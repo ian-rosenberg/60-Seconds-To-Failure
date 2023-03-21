@@ -4,7 +4,7 @@ GameWorld::GameWorld() {
 	areas = nullptr;
 	player = nullptr;
 	currentArea = nullptr;
-	graphicsPtr = std::make_shared<Graphics>();
+	graphicsPtr = std::shared_ptr<Graphics>(new Graphics());
 	graphicsPtr->SetOldTime();
 
 	if (!graphicsPtr->GetRenderer()) {
@@ -45,12 +45,12 @@ void GameWorld::InitTestArea() {
 
 	// Actor
 	{
-		Vector2 draw;
+		b2Vec2 pos = currentArea->FindSpawnPointFromLeft();
 		b2Vec2 d = player->GetWorldDimensions();
 		b2BodyDef bd;
 		bd.type = b2_dynamicBody;
 		bd.fixedRotation = true;
-		bd.position.Set(graphicsPtr->GetScaledWidth() / 2, -graphicsPtr->GetScaledHeight() / 2);
+		bd.position.Set(pos.x,pos.y);
 		player->SetBody(currentArea->GetWorldPtr()->CreateBody(&bd));
 
 		b2FixtureDef fd;
@@ -81,7 +81,7 @@ void GameWorld::InitTestArea() {
 		player->SetJumpTrigger(player->GetBody()->CreateFixture(&jd));
 	}
 
-	player->SetGravityEnabled(currentArea->GetGravityScale()->y != 0 ? 1 : 0);
+	player->SetGravityEnabled(currentArea->GetGravityScale().y != 0 ? 1 : 0);
 
 	currentArea->SetActive(1);
 

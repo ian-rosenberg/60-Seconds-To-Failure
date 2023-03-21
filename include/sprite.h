@@ -10,25 +10,25 @@
 
 class Sprite {
 protected:
-	std::string					filepath;
-	int							frame;
-	int							yOffset;
-	int							xOffset;
-	int							frameWidth;
-	int							frameHeight;
+	std::string						filepath;
+	int								frame;
+	int								yOffset;
+	int								xOffset;
+	int								frameWidth;
+	int								frameHeight;
 
-	Vector2						flip;
-	Vector2						scale;
-	Vector2						scaleCenter;
+	Vector2							flip;
+	Vector2							scale;
+	Vector2							scaleCenter;
 
-	Vector3						rotation;
+	Vector3							rotation;
 
-	Vector4						color;
+	Vector4							color;
 
-	SDL_Texture*				texture;
-	SDL_Surface*				surf;
-	SDL_Rect					srcRect;
-	std::shared_ptr<Graphics>	graphics;
+	std::shared_ptr<SDL_Texture>	texture;
+	std::shared_ptr<SDL_Surface>	surf;
+	SDL_Rect						srcRect;
+	std::shared_ptr<Graphics>		graphics;
 	
 public:
 	Sprite();
@@ -48,7 +48,7 @@ public:
 		int frameHeight,
 		std::shared_ptr<Graphics> ren);		
 	
-	Sprite(SDL_Texture* tex,
+	Sprite(std::shared_ptr<SDL_Texture> tex,
 
 		SDL_Rect* sourceRect,
 
@@ -79,9 +79,9 @@ public:
 
 	Uint8 LoadPNGImage(std::string filepath);
 
-	SDL_Surface* LoadSurface(std::string filepath);
+	std::shared_ptr<SDL_Surface> LoadSurface(std::string filepath);
 
-	SDL_Texture* GetTexture();
+	std::shared_ptr<SDL_Texture> GetTexture();
 
 	void RotateTextureZ(float theta);
 
@@ -91,7 +91,7 @@ public:
 
 	SDL_Color translate_color(Uint32 int_color);
 
-	Uint32 GetPixel(SDL_Surface* surface, int x, int y);
+	Uint32 GetPixel(std::shared_ptr<SDL_Surface> surface, int x, int y);
 
 	int GetXOffset() { return xOffset; }
 	int GetYOffset() { return yOffset; }

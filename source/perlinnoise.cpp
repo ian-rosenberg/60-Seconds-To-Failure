@@ -1,31 +1,26 @@
 #include "perlinnoise.h"
 
-PerlinNoise::PerlinNoise(std::shared_ptr<Graphics> graphics)
+PerlinNoise::PerlinNoise(Vector2 dimensions)
 {
-	graphicsRef = graphics;
-	outputWidth = graphicsRef->GetScreenDimensions().x;
-	outputHeight = graphicsRef->GetScreenDimensions().y;
+	outputWidth = dimensions.x;
+	outputHeight = dimensions.y;
 
 	outputSize = outputWidth;
-
-	noiseSeed1D.resize(outputSize);
-	perlin1D.resize(outputSize);
 
 	srand(time(nullptr));
 }
 
 PerlinNoise::~PerlinNoise()
 {
-	graphicsRef = nullptr;
 }
 
-std::vector<float> PerlinNoise::PerlinNoise1D(SDL_Color color)
+std::vector<float> PerlinNoise::PerlinNoise1D()
 {
 	noiseSeed1D.clear();
 	perlin1D.clear();
 
-	noiseSeed1D.resize(outputSize);
-	perlin1D.resize(outputSize);
+	noiseSeed1D.assign(outputSize, 0.0f);
+	perlin1D.assign(outputSize, 0.0f);
 
 	for (int col = 0; col < outputSize; col++) {
 		noiseSeed1D[col] = abs(gf2d_crandom());
@@ -55,22 +50,11 @@ std::vector<float> PerlinNoise::PerlinNoise1D(SDL_Color color)
 			// Scale to seed range
 			perlin1D[x] = fNoise / fScaleAcc;
 	}
-
-	for (int x = 0; x < outputWidth; x++) {
-		
-			//std::cout << perlin2D[y][x] << ", ";
-			SDL_Rect r = { x, floor(outputHeight * perlin1D[x]), 1, 1};
-			SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), color.r, color.g, color.b, color.a);
-			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
-		//std::cout << std::endl;
-	}
-
-	SDL_RenderPresent(graphicsRef->GetRenderer());
-
+	
 	return perlin1D;
 }
 
-std::vector<std::vector<float>> PerlinNoise::PerlinNoise2D(SDL_Color color)
+std::vector<std::vector<float>> PerlinNoise::PerlinNoise2D()
 {
 	std::vector<float> noiseSeed2DRow;
 	std::vector<float> perlin2DRow; 
@@ -127,24 +111,6 @@ std::vector<std::vector<float>> PerlinNoise::PerlinNoise2D(SDL_Color color)
 			avg += fNoise / fScaleAcc;
 		}
 	}
-
-	avg /= (outputWidth * outputHeight);
-
-	for (int x = 0; x < outputWidth; x++) {
-		for (int y = 0; y < outputHeight; y++)
-		{
-
-			if (perlin2D[y][x] < avg)
-				continue;
-
-			SDL_Rect r = { x,  y, 1, 1 };
-			SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), color.r, color.g, color.b, perlin2D[y][x] * 255);
-			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
-		}
-		//std::cout << std::endl;
-	}
-
-	SDL_RenderPresent(graphicsRef->GetRenderer());
 
 	return perlin2D;
 }

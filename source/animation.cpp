@@ -6,7 +6,7 @@ Animation::Animation(const Animation & old)
 {
 	name = old.name;
 	filepath = old.filepath;
-	sprite = new Sprite(*old.sprite);
+	sprite = old.sprite;
 	length = old.length;
 	currentFrame = old.currentFrame;
 	cellWidth = old.cellWidth;

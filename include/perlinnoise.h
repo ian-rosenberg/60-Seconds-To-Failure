@@ -2,7 +2,8 @@
 
 #include <algorithm>
 #include <vector>
-#include "tile.h"
+#include <time.h>
+#include <vectortypes.h>
 
 /*
 Using OneLoneCoder's implementation
@@ -21,17 +22,15 @@ private:
 	std::vector<float>					perlin1D;
 	int									outputSize;
 
-	int									octaves = 12;
-	float								scalingBias = 2.f;
-
-	std::shared_ptr<Graphics>			graphicsRef;
+	int									octaves = 5;
+	float								scalingBias = 4.f;
 
 public:
-	PerlinNoise(std::shared_ptr<Graphics> graphics);
+	PerlinNoise(Vector2 dimensions);
 
 	~PerlinNoise();
 
-	std::vector<float> PerlinNoise1D(SDL_Color color);
+	std::vector<float>					PerlinNoise1D();
 
-	std::vector<std::vector<float>> PerlinNoise2D(SDL_Color color);
+	std::vector<std::vector<float>>		PerlinNoise2D();
 };

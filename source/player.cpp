@@ -53,7 +53,7 @@ Player::~Player()
 	}
 	delete eventsToFire;
 
-	graphics = nullptr;
+	graphics.reset();
 }
 
 void Player::Think() {

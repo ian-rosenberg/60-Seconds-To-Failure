@@ -24,7 +24,7 @@ if len(sys.argv) <= 1:
 
 infoFile = open(sys.argv[1], "r")
 ssInfo = json.loads(infoFile.read())
-img = cv.imread(ssInfo["imageForGeneration"], cv.IMREAD_UNCHANGED)
+img = cv.imread(ssInfo["imageForDescription"], cv.IMREAD_UNCHANGED)
 margin = (int)(ssInfo["margin"])
 spacing = (int)(ssInfo["spacing"])
 tileHeight = (int)(ssInfo["tileheight"])
@@ -32,7 +32,8 @@ tileWidth = (int)(ssInfo["tilewidth"])
 orient = ssInfo["direction"]
 cols = (int)(ssInfo["columns"])
 tileCount = (int)(ssInfo["tilecount"])
-outFileName = str(ssInfo["generationDescription"])
+outFileName = str(ssInfo["generationDescriptionOut"])
+name = str(ssInfo["name"])
 infoFile.close()
 
 jsonList = []
@@ -40,10 +41,12 @@ jsonList = []
 
 for i in range(1, tileCount + 1):
     jsonObj =  {
-                "hillOrientation" : None,
+                "hillOrientation" : "None",
                 "possibleConnects": [],
                 "layers" : [],
-                "tileIndex" : i-1
+                "tileIndex" : i-1,
+                "xLocation": (int)(tileWidth * (i % cols) + spacing * (i % cols) + margin),                        
+                "yLocation": (int)(tileHeight * int(i / cols) + spacing * int(i / cols) + margin)                          
                 }
 
     layers = []
@@ -826,6 +829,6 @@ for i in range(1, tileCount + 1):
 
 
 with open(outFileName, 'w', encoding='utf-8') as outfile:
-    json.dump(jsonList, outfile, ensure_ascii=False, indent=4, sort_keys=True)
+    json.dump({name: jsonList}, outfile, ensure_ascii=False, indent=4, sort_keys=True)
 
 print("Done")

@@ -27,10 +27,8 @@ Actor::~Actor()
 		animations->erase(animations->begin());
 		delete a;
 	}
-	
-	std::cout << "Graphics pointer ref count: " << graphics.use_count() << std::endl;
 
-	graphics = nullptr;
+	graphics.reset();
 }
 
 Actor* Actor::LoadActor(const char* filename)

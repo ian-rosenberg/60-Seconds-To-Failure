@@ -6,8 +6,8 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g, Vector2 pla
 	id = ID;
 	player = nullptr;
 	entityManager = new EntityManager(1, g);//enabling debug draw with parameter, renderer
-	gravityScale = new b2Vec2(grav);
-	gravityEnabled = gravityScale->y != 0 || gravityScale->x != 0;
+	gravityScale = grav;
+	gravityEnabled = gravityScale.y != 0 || gravityScale.x != 0;
 	ground = {};
 	testPlatform = {};
 	testPlatformBottom = 0.0f;
@@ -25,15 +25,7 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g, Vector2 pla
 			screenDim.x * 2, 
 			screenDim.y * 2));
 
-	debugDraw = new DebugDraw(graphics, camera);	
-
-	perlinNoiseMap = new PerlinNoise(g);
-	perlinNoiseMap->PerlinNoise2D(SDL_Color(0, 0, 255, 255));
-	perlinNoiseMap->PerlinNoise2D(SDL_Color(0, 255, 0, 255));
-	perlinNoiseMap->PerlinNoise2D(SDL_Color(255, 0, 0, 255));
-
-	delete perlinNoiseMap;
-	perlinNoiseMap = nullptr;
+	debugDraw = new DebugDraw(graphics, camera);
 
 	InitPhysicsWorld();
 
@@ -42,7 +34,9 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g, Vector2 pla
 		areaPhysics, 
 		playerDim);
 
-	std::vector<std::vector<Tile*>>* tilemap = tileManager->CreateTileMap();
+	perlinNoiseMap = new PerlinNoise(Vector2(100, 20));
+
+	std::vector<std::vector<Tile*>>* tilemap = tileManager->GenerateTileMap(perlinNoiseMap, areaPhysics, playerDim);
 
 	tileManager->LinkTilemapGhostVertices(tilemap);
 
@@ -50,19 +44,16 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g, Vector2 pla
 }
 
 GameArea::~GameArea() {
-	delete gravityScale;
 	delete entityManager;
-	delete areaPhysics;
-	delete listener;
-	delete camera;
 	delete debugDraw;
+	delete listener;
+    delete camera;
 	delete tileManager;
+
+	delete areaPhysics;
 	player = nullptr;
 
-	if (perlinNoiseMap)
-		delete perlinNoiseMap;
-
-	graphics = nullptr;
+	graphics.reset();
 }
 
 void GameArea::AreaThink() {
@@ -193,9 +184,28 @@ void GameArea::AreaDraw() {
 	debugDraw->DrawAll();
 }
 
+b2Vec2 GameArea::FindSpawnPointFromLeft()
+{
+	std::vector<std::vector<Tile*>>* tilemap = tileManager->GetTileMap();
+	Vector2 tileDim = tileManager->GetTileDimensions();
+	int col = 0;
+
+	for (int row = 0; col < tilemap->at(row).size(); row++) {
+		if (row >= tilemap->size()-1) {
+			row = 0;
+			col++;
+		}
+
+		if (tilemap->at(row).at(col) != nullptr) {
+			return b2Vec2(tilemap->at(row).at(col)->GetBodyReference()->GetPosition()) 
+				- b2Vec2(0, tilemap->at(row).at(col)->GetPixelDimensions().y * MET_IN_PIX);
+		}
+	}
+}
+
 void GameArea::InitPhysicsWorld()
 {
-	areaPhysics = new b2World(*gravityScale);
+	areaPhysics = new b2World(gravityScale);
 	areaPhysics->SetAllowSleeping(true);
 	areaPhysics->SetAutoClearForces(false);
 	listener = new ContactListener();

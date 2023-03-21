@@ -226,7 +226,7 @@ EntityManager::EntityManager() {
 	inputQueue = new std::vector<Entity::InputEvent*>();
 	eventsToFire = new std::queue<Entity::InputEvent*>();
 	debugDraw = 0;
-	graphics = nullptr;
+	graphics.reset();
 }
 
 EntityManager::EntityManager(Uint8 debugFlag, std::shared_ptr<Graphics> g)

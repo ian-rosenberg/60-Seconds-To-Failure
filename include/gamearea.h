@@ -29,7 +29,7 @@ private:
 
 	EntityManager*					entityManager;
 
-	b2Vec2*							gravityScale;
+	b2Vec2							gravityScale;
 	b2World*						areaPhysics;
 
 	TileManager*					tileManager;
@@ -92,5 +92,7 @@ public:
 
 	void SetActive(Uint8 flag) { active = flag; }
 
-	b2Vec2* GetGravityScale() { return gravityScale; }
+	b2Vec2 GetGravityScale() { return gravityScale; }
+
+	b2Vec2 FindSpawnPointFromLeft();
 };
