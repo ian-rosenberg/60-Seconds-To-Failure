@@ -28,6 +28,8 @@ GameWorld::~GameWorld() {
 		}
 	}
 
+	delete areas;
+
 	graphicsPtr.reset();
 	graphicsPtr = nullptr;
 }

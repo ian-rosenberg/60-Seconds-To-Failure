@@ -12,7 +12,7 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g, Vector2 pla
 	testPlatform = {};
 	testPlatformBottom = 0.0f;
 	testPlatformTop = 0.0f;
-	graphics = g;
+	graphics = std::shared_ptr<Graphics>(g);
 	
 	screenDim = graphics->GetScreenDimensions();
 	camera = new Camera(
@@ -34,9 +34,9 @@ GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g, Vector2 pla
 		areaPhysics, 
 		playerDim);
 
-	perlinNoiseMap = new PerlinNoise(Vector2(100, 20));
+	perlinNoiseMap = new PerlinNoise(Vector2(screenDim.x / tileManager->GetTileDimensions().x * 2, screenDim.y / tileManager->GetTileDimensions().y * 2));
 
-	std::vector<std::vector<Tile*>>* tilemap = tileManager->GenerateTileMap(perlinNoiseMap, areaPhysics, playerDim);
+	std::vector<std::vector<Tile*>>* tilemap = tileManager->GenerateTileMap(perlinNoiseMap);
 
 	tileManager->LinkTilemapGhostVertices(tilemap);
 

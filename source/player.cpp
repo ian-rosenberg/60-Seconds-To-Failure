@@ -27,7 +27,7 @@ Player::Player(std::shared_ptr<Graphics> g) : Entity{ -1 }
 	prevBodyPosition = newBodyPosition = { 0,0 };
 
 	punching = false;
-	graphics = g;
+	graphics = std::shared_ptr<Graphics>(g);
 	LoadActor(actorFilePath.c_str());
 	SetWorldDimensions(b2Vec2(avgDim.x * MET_IN_PIX, avgDim.y * MET_IN_PIX));
 	currentAnimation = GetAnimationByName("idle");

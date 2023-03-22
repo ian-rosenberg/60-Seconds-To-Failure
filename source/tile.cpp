@@ -173,6 +173,9 @@ void Tile::CreatePhysicsEdges(Vector2 playerDimensions)
 		}
 	}
 
+	//flip bottom chain for clock wise winding
+	std::reverse(bottomChain.begin(), bottomChain.end());
+
 
 	switch (flipFlags) {
 	case SDL_FLIP_VERTICAL:
@@ -220,9 +223,17 @@ void Tile::DecideCapping(std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r
 				eastCap.push_back(vert);
 			}
 
-
 			eastCap.push_back(bottomChain.back());
 		}
+
+		for (int i = 0; i < eastCap.size(); i++) {
+			for (int j = i + 1; j < eastCap.size(); j++) {
+				if (eastCap[i].x == eastCap[j].x && eastCap[i].y == eastCap[j].y)
+					eastCap.clear();
+			}
+		}
+
+
 
 		if (capDirection & Direction::West) {
 			westCap.push_back(topChain.front());
@@ -238,6 +249,16 @@ void Tile::DecideCapping(std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r
 
 
 			westCap.push_back(bottomChain.front());
+
+		}
+
+		std::reverse(westCap.begin(), westCap.end());
+
+		for (int i = 0; i < westCap.size(); i++) {
+			for (int j = i + 1; j < westCap.size(); j++) {
+				if (westCap[i].x == westCap[j].x && westCap[i].y == westCap[j].y)
+					westCap.clear();
+			}
 		}
 	}
 }
@@ -315,32 +336,30 @@ void Tile::CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2
 	RotateChain(westCap, bd.angle);
 	RotateChain(eastCap, bd.angle);
 		
-
-	//Need to add prev and next ghost vertices
 	c1.CreateChain(static_cast<b2Vec2*>(topChain.data()), topChain.size(), tpg, tng);
 
 	fd.shape = &c1;
 	fd.friction = 0.7f;
-	physicsBody->CreateFixture(&fd);
+	topFix = physicsBody->CreateFixture(&fd);
 
 	c2.CreateChain(static_cast<b2Vec2*>(bottomChain.data()), bottomChain.size(), bpg, bng);
 
 	fd.shape = &c2;
 	fd.friction = 0.7f;
-	physicsBody->CreateFixture(&fd);
+	bottomFix = physicsBody->CreateFixture(&fd);
 
 	if (eastCap.size() > 0) {
-		c3.CreateChain(static_cast<b2Vec2*>(eastCap.data()), eastCap.size(), *(topChain.begin()), *(bottomChain.begin()));
+		c3.CreateChain(static_cast<b2Vec2*>(eastCap.data()), eastCap.size(), topChain.front(), *(bottomChain.begin()));
 		fd.shape = &c3;
 		fd.friction = 0.7f;
-		physicsBody->CreateFixture(&fd);
+		eastFix = physicsBody->CreateFixture(&fd);
 	}
 
 	if (westCap.size() > 0) {
-		c4.CreateChain(static_cast<b2Vec2*>(westCap.data()), westCap.size(), *(topChain.end()-1), *(bottomChain.end()-1));
+		c4.CreateChain(static_cast<b2Vec2*>(westCap.data()), westCap.size(), topChain.back(), bottomChain.back());
 		fd.shape = &c4;
 		fd.friction = 0.7f;
-		physicsBody->CreateFixture(&fd);
+		westFix = physicsBody->CreateFixture(&fd);
 	}
 }
 
@@ -351,7 +370,6 @@ void Tile::SetCappingDirection(Direction capping)
 
 Tile::Tile()
 {
-	id = 0;
 	direction = Direction::North;
 	pixelDimensions = { 0,0 };
 	worldDimensions = { 0,0 };
@@ -374,7 +392,7 @@ Tile::Tile()
 	debugColor = SDL_Color(0, 255, 0, 255);
 }
 
-Tile::Tile(int id, std::shared_ptr<Sprite> s, Vector2 gridPosition, Vector2 dim, Direction dir, std::shared_ptr<Graphics> g, float zRotation, SDL_Rect srcRect)
+Tile::Tile(std::shared_ptr<Sprite> s, Vector2 gridPosition, Vector2 dim, Direction dir, std::shared_ptr<Graphics> g, float zRotation, SDL_Rect srcRect)
 {
 	this->id = id;
 
@@ -412,9 +430,9 @@ Tile::Tile(const Tile &oldTile)
 
 	this->physicsBody = nullptr;
 
-	this->graphicsRef = oldTile.graphicsRef;
+	this->graphicsRef = std::shared_ptr<Graphics>(oldTile.graphicsRef);
 
-	this->spriteSheet = oldTile.spriteSheet;
+	this->spriteSheet = std::shared_ptr<Sprite>(oldTile.spriteSheet);
 
 	for (auto connect : oldTile.possibleConnections) {
 		this->possibleConnections.push_back(TileConnection(connect));
@@ -438,8 +456,8 @@ Tile::~Tile()
 {
 	possibleConnections.clear();
 
-	spriteSheet.reset();
-	graphicsRef.reset();
+	spriteSheet = nullptr;
+	graphicsRef = nullptr;
 	topFix = nullptr;
 	bottomFix = nullptr;
 	eastFix = nullptr;
@@ -521,7 +539,6 @@ void Tile::Draw(Vector2 cameraOffset)
 void TileManager::TileParseTypesFromJSON(std::string json)
 {
 	const char* dirStr;
-	std::vector<Tile*>* tiles = new std::vector<Tile*>();
 	float zRot;
 	Direction direction;
 	SDL_Rect srcRect;
@@ -625,8 +642,7 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 
 		//s->RotateTextureZ(zRot);
 
-		t = new Tile(tiles->size()+1,
-			spriteSheet,
+		t = new Tile(spriteSheet,
 			{ INT32_MIN,INT32_MIN },
 			Vector2(tss->tileWidth, tss->tileHeight),
 			direction,
@@ -828,24 +844,32 @@ TileManager::~TileManager()
 	while (!groundTiles->empty()) {
 		Tile* t = groundTiles->back();
 		groundTiles->pop_back();
+		if (t)
+			delete t;
 	}
 	delete groundTiles;
 
 	while (!hillTiles->empty()) {
 		Tile* t = hillTiles->back();
 		hillTiles->pop_back();
+		if(t)
+			delete t;
 	}
 	delete hillTiles;
 
 	while (!platformTiles->empty()) {
 		Tile* t = platformTiles->back();
 		platformTiles->pop_back();
+		if (t)
+			delete t;
 	}
 	delete platformTiles;
 
 	while (!wallTiles->empty()) {
 		Tile* t = wallTiles->back();
 		wallTiles->pop_back();
+		if (t)
+			delete t;
 	}
 	delete wallTiles;
 
@@ -869,9 +893,10 @@ void TileManager::DrawMap(Vector2 cameraOffset)
 
 }
 
-std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(PerlinNoise* perlin, b2World* physicsWorld, Vector2 pDim)
+std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(PerlinNoise* perlin)
 {
 	std::vector<float> perlin1D = perlin->PerlinNoise1D();
+	Direction capDir = Direction::None;
 
 	Vector2 dim = groundTiles->at(0)->GetPixelDimensions();
 	Tile* tmp = groundTiles->at(rand() % groundTiles->size());
@@ -887,9 +912,10 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(PerlinNoise* perli
 	for (int x = 0; x < perlin1D.size(); x++) {
 		int yIndex = (int)(perlin1D[x] * graphicsRef->GetScreenDimensions().y) % rowCount;
 			
-		tileMap.at(yIndex).at(x) = new Tile(*groundTiles->at(rand() % groundTiles->size()));
-		tileMap.at(yIndex).at(x)->SetGridPosition(x, yIndex);
-		tileMap.at(yIndex).at(x)->TilePhysicsInit(physicsWorld, pDim);
+		tileMap[yIndex][x] = new Tile(*groundTiles->at(rand() % groundTiles->size()));
+		tileMap[yIndex][x]->SetCappingDirection((Direction)(Direction::East | Direction::West));
+		tileMap[yIndex][x]->SetGridPosition(x, yIndex);
+		tileMap[yIndex][x]->TilePhysicsInit(physics, playerDimensions);
 	}
 
 	delete perlin;
@@ -921,43 +947,25 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 			Tile* next = nullptr;
 
 			//Check if there are adjacent tiles EXCEPT NORTH AND SOUTH of tile
-			if (x - 1 >= 0 && y - 1 >= 0 && tileMap.at(y - 1).at(x - 1) != nullptr) {
-				prev = tileMap.at(y - 1).at(x - 1);
-			}
-			else if (x - 1 >= 0 && tileMap.at(y).at(x - 1) != nullptr) {
+			if (x - 1 >= 0 && tileMap.at(y).at(x - 1) != nullptr) {
 				prev = tileMap.at(y).at(x - 1);
-			}
-			else if (x - 1 >= 0 && y + 1 < tileMap.size() && tileMap.at(y + 1).at(x - 1) != nullptr) {
-				prev = tileMap.at(y + 1).at(x - 1);
-			}
-
-			if (!prev) {
-				tpg = tile->GetTopChainLastVertex();
-				bpg = tile->GetBottomChainLastVertex();
-			}
-			else{
 				tpg = prev->GetTopChainLastVertex();
 				bpg = prev->GetBottomChainLastVertex();
 			}
-
-
-			if (x + 1 < tileMap.at(y).size() && y - 1 >= 0 && tileMap.at(y - 1).at(x + 1) != nullptr) {
-				next = tileMap.at(y - 1).at(x + 1);
-			}
-			else if (x + 1 < tileMap.at(y).size() && tileMap.at(y).at(x + 1) != nullptr) {
-				next = tileMap.at(y).at(x + 1);
-			}
-			else if (x + 1 < tileMap.at(y).size() && y + 1 < tileMap.size() && tileMap.at(y + 1).at(x + 1) != nullptr) {
-				next = tileMap.at(y + 1).at(x + 1);
-			}
-
-			if(!next) {
+			else{
 				tpg = tile->GetTopChainFirstVertex();
 				bpg = tile->GetBottomChainFirstVertex();
 			}
-			else {
+
+
+			if (x + 1 < tileMap.at(y).size() && tileMap.at(y).at(x + 1) != nullptr) {
+				next = tileMap.at(y).at(x + 1);
 				tpg = next->GetTopChainFirstVertex();
 				bpg = next->GetBottomChainFirstVertex();
+			}	
+			else {
+				tpg = tile->GetTopChainLastVertex();
+				bpg = tile->GetBottomChainFirstVertex();
 			}
 
 			tile->CreateTileBody(

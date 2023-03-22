@@ -15,7 +15,7 @@ StaticEntity::StaticEntity(std::shared_ptr<Graphics> g) {
 
 StaticEntity::StaticEntity(std::shared_ptr<Graphics> g, float w, float h, Vector2 startPos)
 {
-	graphics = g;
+	graphics = std::shared_ptr<Graphics>(g);
 	boundingVolume = nullptr;
 	SetWorldDimensions(b2Vec2(w, h));
 	newDrawPosition = startPos;

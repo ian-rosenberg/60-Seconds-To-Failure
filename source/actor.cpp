@@ -28,7 +28,7 @@ Actor::~Actor()
 		delete a;
 	}
 
-	graphics.reset();
+	graphics = nullptr;
 }
 
 Actor* Actor::LoadActor(const char* filename)
