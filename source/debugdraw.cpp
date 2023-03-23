@@ -2,7 +2,7 @@
 #include <iostream>
 
 DebugDraw::DebugDraw(std::shared_ptr<Graphics> gr, Camera* cam) {
-	graphicsRef = std::shared_ptr<Graphics>(gr);
+	graphicsRef = gr;
 	camera = cam;
 }
 
@@ -160,7 +160,7 @@ DebugDraw::~DebugDraw()
 	entityRefs.clear();
 	tileRefs.clear();
 
-	graphicsRef = nullptr;
+	graphicsRef.reset();
 }
 
 void DebugDraw::DrawAll()

@@ -318,7 +318,9 @@ for i in range(1, tileCount + 1):
         #   -
         #
         if topSlope.y2 - topSlope.y1 < 0:
-            layers = ["hill"];
+            layers.append("hill")
+            if "wall" in layers:
+                layers.remove("wall")
             jsonObj["hillOrientation"] = "Northeast"
             #
             # * /
@@ -395,7 +397,9 @@ for i in range(1, tileCount + 1):
         #   -
         #
         elif topSlope.y2 - topSlope.y1 > 0:
-            layers = ["hill"]
+            layers.append("hill")
+            if "wall" in layers:
+                layers.remove("wall")
             jsonObj["hillOrientation"] = "Southeast"
             
             #
@@ -754,6 +758,7 @@ for i in range(1, tileCount + 1):
     #   -
     #   
     elif leftSlope.x2 - leftSlope.x1 > 0:
+        jsonObj["hillOrientation"] = "Northeast"
         jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     ],
@@ -795,6 +800,7 @@ for i in range(1, tileCount + 1):
     #   -
     #   
     elif leftSlope.x2 - leftSlope.x1 > 0:
+        jsonObj["hillOrientation"] = "Southeast"
         jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     ],

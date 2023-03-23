@@ -96,7 +96,7 @@ private:
 
 public:
 	Tile();
-	Tile(std::shared_ptr<Sprite> s, Vector2 gridPosition, Vector2 pDim, Direction dir, std::shared_ptr<Graphics> g, float zRotation, SDL_Rect srcRect);
+	Tile(int id, std::shared_ptr<Sprite> s, Vector2 gridPosition, Vector2 pDim, Direction dir, std::shared_ptr<Graphics> g, float zRotation, SDL_Rect srcRect);
 	Tile(const Tile &oldTile);
 	
 	~Tile();
@@ -128,8 +128,6 @@ public:
 	b2Vec2													GetWorldPosition() { return worldPosition; }
 
 	TileLayer												GetTileLayer() { return tileLayers; }
-
-	Direction												GetDirection() { return direction; }
 };
 
 class TileManager {
@@ -159,7 +157,7 @@ public:
 
 	void DrawMap(Vector2 cameraOffset);
 
-	std::vector<std::vector<Tile*>>* GenerateTileMap(PerlinNoise* perlin);
+	std::vector<std::vector<Tile*>>* GenerateTileMap(PerlinNoise* perlin, b2World* physicsWorld, Vector2 pDim);
 
 	void LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap);
 

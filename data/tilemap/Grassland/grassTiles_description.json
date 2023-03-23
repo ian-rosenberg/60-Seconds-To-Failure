@@ -82,7 +82,7 @@
             "yLocation": 5
         },
         {
-            "hillOrientation": "None",
+            "hillOrientation": "Southeast",
             "layers": [
                 "ground",
                 "platform",
@@ -795,7 +795,7 @@
             "yLocation": 143
         },
         {
-            "hillOrientation": "None",
+            "hillOrientation": "Southeast",
             "layers": [
                 "ground",
                 "platform",
@@ -1022,7 +1022,7 @@
             "yLocation": 143
         },
         {
-            "hillOrientation": "None",
+            "hillOrientation": "Southeast",
             "layers": [
                 "ground",
                 "platform",
@@ -1158,7 +1158,7 @@
             "yLocation": 143
         },
         {
-            "hillOrientation": "None",
+            "hillOrientation": "Southeast",
             "layers": [
                 "ground",
                 "platform",
