@@ -88,6 +88,7 @@ private:
 
 	std::vector<TileConnection>								possibleConnections;
 	TileLayer												tileLayers;
+	Direction												hillOrientation;
 
 
 	//Rotation in degrees for SDL2
@@ -98,19 +99,20 @@ public:
 	Tile();
 	Tile(int id, std::shared_ptr<Sprite> s, Vector2 gridPosition, Vector2 pDim, Direction dir, std::shared_ptr<Graphics> g, float zRotation, SDL_Rect srcRect);
 	Tile(const Tile &oldTile);
-	
+	Tile& operator= (const Tile& other);
+
 	~Tile();
 
 	void													AddPossibleConnection(Vector2 v, TileLayer layer, Direction hillDir);
 	void													RotateChain(std::vector<b2Vec2>& chain, float angle);
 	void													Draw(Vector2 cameraOffset);
-	void													CreatePhysicsEdges(Vector2 playerDim);
+	void													CreatePhysicsEdges(std::vector<std::vector<SDL_Color>>& pixels, Vector2 playerDim);
 	void													CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2Vec2 bng);
 	void													SetCappingDirection(Direction capping);
-	void													DecideCapping(std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r);
-	void													TilePhysicsInit(b2World* world, Vector2 playerDim);
+	void													DecideCapping(std::vector<std::vector<SDL_Color>>& pixels);
+	void													TilePhysicsInit(b2World* world, Vector2 playerDim, std::vector<std::vector<SDL_Color>>& pixels);
 	void													SetSpriteDirection(Direction dir) { direction = dir; }
-	void													SetSDL_RendererFlipFlags(SDL_RendererFlip flip) { flipFlags = flip; }
+	void													SetSDL_RendererFlipFlags(SDL_RendererFlip flip);
 	void													SetTileLayer(TileLayer layers) { tileLayers = layers; }
 	void													SetGridPosition(int col, int row);
 
@@ -128,6 +130,8 @@ public:
 	b2Vec2													GetWorldPosition() { return worldPosition; }
 
 	TileLayer												GetTileLayer() { return tileLayers; }
+
+	void													SetHillOrientation(Direction hillOrient) { hillOrientation = hillOrient; }
 };
 
 class TileManager {
@@ -138,6 +142,8 @@ private:
 	std::vector<Tile*>*										wallTiles;
 	std::shared_ptr<Sprite>									spriteSheet;
 	std::vector<std::vector<Tile*>>							tileMap;
+
+	std::vector<std::vector<SDL_Color>>						spriteSheetPixels;
 
 	std::shared_ptr<Graphics>								graphicsRef;
 		

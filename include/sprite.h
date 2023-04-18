@@ -24,7 +24,6 @@ protected:
 	Vector3							rotation;
 
 	Vector4							color;
-
 	std::shared_ptr<SDL_Texture>	texture;
 	std::shared_ptr<SDL_Surface>	surf;
 	SDL_Rect						srcRect;
@@ -118,11 +117,11 @@ public:
 		SDL_Rect srcRect,
 		Vector2* scale,
 		Vector2* scaleCenter,
-		Vector4* colorShift);
+		Vector4* colorShift, SDL_RendererFlip flipFlags);
 
 	void DrawSpriteImage(Sprite* image, Vector2 position, int width, int height);
 
-	void FlipTexture(SDL_RendererFlip flip);
+	Sprite* MakeFlippedTexture(SDL_RendererFlip flip);
 
 	bool CheckIfViableTexture(SDL_Rect sR);
 };

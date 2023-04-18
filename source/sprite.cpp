@@ -52,7 +52,10 @@ Sprite::Sprite(const Sprite &oldSprite)
 	graphics = oldSprite.graphics;
 	srcRect = oldSprite.srcRect;
 	texture = oldSprite.texture;
-	surf =  oldSprite.surf;
+	if (oldSprite.surf)
+		surf = oldSprite.surf;
+	else
+		surf = nullptr;
 }
 
 Sprite::Sprite(std::string fp, Vector2 drawPosition, Vector2 scle, Vector2 scleCen, Vector3 rot, Vector2 flp, Vector4 colorShift, int frm, int off, int width, int height, std::shared_ptr<Graphics> ren)
@@ -207,14 +210,23 @@ void Sprite::RotateTextureZ(float theta)
 	SDL_SetRenderTarget(ren, nullptr);
 }
 
-void Sprite::FlipTexture(SDL_RendererFlip flip)
+Sprite* Sprite::MakeFlippedTexture(SDL_RendererFlip flip)
 {
+	Sprite* flippedCopy = new Sprite(*this);
 	SDL_Renderer* ren = graphics->GetRenderer();
+	Uint32 fmt;
 	SDL_Point ctr = SDL_Point(frameWidth / 2.f, frameHeight / 2.f);
 
-	SDL_SetRenderTarget(ren, texture.get());
-	SDL_RenderCopyEx(ren, texture.get(), &srcRect, nullptr, 0.f, &ctr, flip);
+	SDL_QueryTexture(texture.get(), &fmt, nullptr, nullptr, nullptr);
+
+	flippedCopy->texture = std::shared_ptr<SDL_Texture>(SDL_CreateTexture(ren, fmt, SDL_TEXTUREACCESS_TARGET, frameWidth, frameHeight), 
+		[](SDL_Texture* ptr) { SDL_DestroyTexture(ptr); });
+
+	SDL_SetRenderTarget(ren, flippedCopy->texture.get());
+	SDL_RenderCopyEx(ren, flippedCopy->texture.get(), &srcRect, nullptr, 0.f, &ctr, flip);
 	SDL_SetRenderTarget(ren, nullptr);
+
+	return flippedCopy;
 }
 
 bool Sprite::CheckIfViableTexture(SDL_Rect sR)
@@ -420,7 +432,7 @@ void Sprite::Draw(Sprite* sprite,
 	}
 }
 
-void Sprite::Draw(Vector2 drawPosition, SDL_Rect srcRect, Vector2* scale, Vector2* scaleCenter, Vector4* colorShift)
+void Sprite::Draw(Vector2 drawPosition, SDL_Rect srcRect, Vector2* scale, Vector2* scaleCenter, Vector4* colorShift, SDL_RendererFlip flipFlags)
 {
 	SDL_Rect targetRect = {
 		drawPosition.x,
@@ -435,7 +447,7 @@ void Sprite::Draw(Vector2 drawPosition, SDL_Rect srcRect, Vector2* scale, Vector
 		&targetRect,
 		0.f,
 		nullptr,
-		SDL_FLIP_NONE);
+		flipFlags);
 }
 
 void Sprite::DrawSpriteImage(Sprite* image, Vector2 position, int width, int height)

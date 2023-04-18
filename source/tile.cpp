@@ -7,14 +7,16 @@ extern "C" {
 #define EDGE_COUNT 2
 #define MAX_CAPS 2
 
-void Tile::CreatePhysicsEdges(Vector2 playerDimensions)
+void Tile::CreatePhysicsEdges(std::vector<std::vector<SDL_Color>>& pixels, Vector2 playerDimensions)
 {
-	std::vector<std::vector<SDL_Color>> pixels = spriteSheet->GetPixelData();
 	SDL_Rect boundingRect = {INT_MAX, INT_MAX, -1, -1};
 	SDL_Rect r = sourceRect;
 	b2Vec2 vert;
 	int col = 0,
 		row = 0;
+
+	if (topChain.size() > 0 && bottomChain.size() > 0)
+		return;
 
 	if (direction == Direction::North) {
 		//scan north -> south
@@ -175,19 +177,35 @@ void Tile::CreatePhysicsEdges(Vector2 playerDimensions)
 
 
 	switch (flipFlags) {
-	case SDL_FLIP_VERTICAL:
-		for (auto vert = topChain.begin(), vertEnd = topChain.end() - 1; vert != vertEnd; vert++, vertEnd--) {
+		case (SDL_FLIP_VERTICAL | SDL_FLIP_HORIZONTAL):
+		for (auto vert = topChain.begin(), vertEnd = topChain.end() - 1; vert  < vertEnd; vert++, vertEnd--) {
 			std::swap(vert->x, vertEnd->x);
 		}
-		for (auto vert = bottomChain.begin(), vertEnd = bottomChain.end() - 1; vert != vertEnd; vert++, vertEnd--) {
+		for (auto vert = bottomChain.begin(), vertEnd = bottomChain.end() - 1; vert  < vertEnd; vert++, vertEnd--) {
+			std::swap(vert->x, vertEnd->x);
+		}
+		for (auto vert = topChain.begin(), vertEnd = topChain.end() - 1; vert  < vertEnd; vert++, vertEnd--) {
+			std::swap(vert->y, vertEnd->y);
+		}
+		for (auto vert = bottomChain.begin(), vertEnd = bottomChain.end() - 1; vert  < vertEnd; vert++, vertEnd--) {
+			std::swap(vert->y, vertEnd->y);
+		}
+		break;
+
+		case SDL_FLIP_VERTICAL:
+		for (auto vert = topChain.begin(), vertEnd = topChain.end() - 1; vert  < vertEnd; vert++, vertEnd--) {
+			std::swap(vert->x, vertEnd->x);
+		}
+		for (auto vert = bottomChain.begin(), vertEnd = bottomChain.end() - 1; vert  < vertEnd; vert++, vertEnd--) {
 			std::swap(vert->x, vertEnd->x);
 		}
 		break;
-	case SDL_FLIP_HORIZONTAL:
-		for (auto vert = topChain.begin(), vertEnd = topChain.end() - 1; vert != vertEnd; vert++, vertEnd--) {
+
+		case SDL_FLIP_HORIZONTAL:
+		for (auto vert = topChain.begin(), vertEnd = topChain.end() - 1; vert  < vertEnd; vert++, vertEnd--) {
 			std::swap(vert->y, vertEnd->y);
 		}
-		for (auto vert = bottomChain.begin(), vertEnd = bottomChain.end() - 1; vert != vertEnd; vert++, vertEnd--) {
+		for (auto vert = bottomChain.begin(), vertEnd = bottomChain.end() - 1; vert  < vertEnd; vert++, vertEnd--) {
 			std::swap(vert->y, vertEnd->y);
 		}
 
@@ -195,56 +213,36 @@ void Tile::CreatePhysicsEdges(Vector2 playerDimensions)
 		std::reverse(bottomChain.begin(), bottomChain.end());
 
 		break;
-	default:
+
+		default:
 		break;
 	}
 }
 
-void Tile::DecideCapping(std::vector<std::vector<SDL_Color>>& pixels, SDL_Rect r)
+void Tile::DecideCapping(std::vector<std::vector<SDL_Color>>& pixels)
 {
 	b2Vec2 vert;
 	std::pair<std::vector<b2Vec2>, std::vector<b2Vec2>> cappings;
 	int row, col;
+	SDL_Rect r = sourceRect;
 
 	//Decide to cap cardinal direction(s)
 	if (capDirection != Direction::None) {
 		if (capDirection & Direction::East) {
+
 			eastCap.push_back(topChain.back());
-
-			for (col = topChain.back().x + (pixelDimensions.x/ 2.f); col < bottomChain.back().x;) {
-				for (row = topChain.back().x; pixels[row][col].a != 0; row++)
-					continue;
-
-				col -= (pixelDimensions.y/ 2.f);
-				vert = b2Vec2(col * MET_IN_PIX, (row - r.y) * MET_IN_PIX);
-				eastCap.push_back(vert);
-			}
-
-
 			eastCap.push_back(bottomChain.back());
 		}
 
 		if (capDirection & Direction::West) {
 			westCap.push_back(topChain.front());
-
-			for (col = topChain.front().x + (pixelDimensions.x/ 2.f); col < bottomChain.front().x;) {
-				for (row = 0; pixels[row][col].a != 0; row--)
-					continue;
-
-				col += (pixelDimensions.y/ 2.f);
-				vert = b2Vec2(col * MET_IN_PIX, (row - r.y) * MET_IN_PIX);
-				westCap.push_back(vert);
-			}
-
-
 			westCap.push_back(bottomChain.front());
 		}
 	}
 }
 
-void Tile::TilePhysicsInit(b2World* world, Vector2 playerDim)
+void Tile::TilePhysicsInit(b2World* world, Vector2 playerDim, std::vector<std::vector<SDL_Color>>& pixels)
 {
-	std::vector<std::vector<SDL_Color>> pixels = spriteSheet->GetPixelData();
 	Vector2 tmp;
 
 	tmp = pixelPosition;
@@ -256,11 +254,16 @@ void Tile::TilePhysicsInit(b2World* world, Vector2 playerDim)
 		(float)tmp.y
 	};
 
-	CreatePhysicsEdges(playerDim);
+	CreatePhysicsEdges(pixels, playerDim);
 
 	//Logic for ghost vertices ( previous and next ) goes here!!!
 
-	DecideCapping(pixels, spriteSheet->GetSourceRect());
+	DecideCapping(pixels);
+}
+
+void Tile::SetSDL_RendererFlipFlags(SDL_RendererFlip flip)
+{
+	flipFlags = flip;
 }
 
 void Tile::SetGridPosition(int col, int row)
@@ -330,13 +333,23 @@ void Tile::CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2
 	physicsBody->CreateFixture(&fd);
 
 	if (eastCap.size() > 0) {
-		c3.CreateChain(static_cast<b2Vec2*>(eastCap.data()), eastCap.size(), *(topChain.begin()), *(bottomChain.begin()));
-		fd.shape = &c3;
-		fd.friction = 0.7f;
-		physicsBody->CreateFixture(&fd);
+		Uint8 flag = 0;
+		for (int i = 0, j = eastCap.size() - 1; i < j; i++, j--)
+			if (eastCap[i].x == eastCap[j].x && eastCap[i].y == eastCap[j].y)
+				flag = 1;
+		if (!flag) {
+
+			c3.CreateChain(static_cast<b2Vec2*>(eastCap.data()), eastCap.size(), *(topChain.begin()), *(bottomChain.begin()));
+			fd.shape = &c3;
+			fd.friction = 0.7f;
+			physicsBody->CreateFixture(&fd);
+		}
 	}
 
 	if (westCap.size() > 0) {
+		for (int i = 0, j = westCap.size() - 1; i < j; i++, j--)
+			if (westCap[i].x == westCap[j].x && westCap[i].y == westCap[j].y)
+				return;
 		c4.CreateChain(static_cast<b2Vec2*>(westCap.data()), westCap.size(), *(topChain.end()-1), *(bottomChain.end()-1));
 		fd.shape = &c4;
 		fd.friction = 0.7f;
@@ -361,9 +374,9 @@ Tile::Tile()
 
 	physicsBody = nullptr;
 
-	spriteSheet.~shared_ptr();
-
-	graphicsRef.~shared_ptr();
+	spriteSheet = nullptr;
+			   
+	graphicsRef = nullptr;
 
 	flipFlags = SDL_FLIP_NONE;
 
@@ -372,6 +385,8 @@ Tile::Tile()
 	zRot = 0.f;
 
 	debugColor = SDL_Color(0, 255, 0, 255);
+
+	hillOrientation = Direction::None;
 }
 
 Tile::Tile(int id, std::shared_ptr<Sprite> s, Vector2 gridPosition, Vector2 dim, Direction dir, std::shared_ptr<Graphics> g, float zRotation, SDL_Rect srcRect)
@@ -392,11 +407,6 @@ Tile::Tile(int id, std::shared_ptr<Sprite> s, Vector2 gridPosition, Vector2 dim,
 	zRot = zRotation;
 
 	debugColor = SDL_Color(0, 255, 0, 255);
-
-	topChain = std::vector<b2Vec2>();
-	bottomChain = std::vector<b2Vec2>();
-	eastCap = std::vector<b2Vec2>();
-	westCap = std::vector<b2Vec2>();
 }
 
 Tile::Tile(const Tile &oldTile)
@@ -416,11 +426,10 @@ Tile::Tile(const Tile &oldTile)
 
 	this->spriteSheet = oldTile.spriteSheet;
 
-	for (auto connect : oldTile.possibleConnections) {
-		this->possibleConnections.push_back(TileConnection(connect));
-	}
+	this->possibleConnections = oldTile.possibleConnections;
 
 	this->capDirection = oldTile.capDirection;
+	this->direction = oldTile.direction;
 
 	this->zRot = oldTile.zRot;
 
@@ -434,11 +443,48 @@ Tile::Tile(const Tile &oldTile)
 	this->westCap = oldTile.westCap;
 }
 
+Tile& Tile::operator=(const Tile& rhs)
+{
+	this->id = rhs.id;
+	this->direction = rhs.direction;
+	this->pixelDimensions = rhs.pixelDimensions;
+	this->worldDimensions = rhs.worldDimensions;
+
+	this->pixelPosition = { 0,0 };
+
+	this->worldPosition = { 0,0 };
+
+	this->physicsBody = nullptr;
+
+	this->graphicsRef = rhs.graphicsRef;
+
+	this->spriteSheet = rhs.spriteSheet;
+
+	this->possibleConnections = rhs.possibleConnections;
+
+	this->capDirection = rhs.capDirection;
+	this->direction = rhs.direction;
+
+	this->zRot = rhs.zRot;
+
+	this->debugColor = rhs.debugColor;
+
+	this->sourceRect = rhs.sourceRect;
+
+	this->topChain = rhs.topChain;
+	this->bottomChain = rhs.bottomChain;
+	this->eastCap = rhs.eastCap;
+	this->westCap = rhs.westCap;
+	return *this;
+}
+
 Tile::~Tile()
 {
 	possibleConnections.clear();
 
-	spriteSheet.reset();
+	if(spriteSheet)
+		spriteSheet.reset();
+	
 	graphicsRef.reset();
 	topFix = nullptr;
 	bottomFix = nullptr;
@@ -504,8 +550,8 @@ void Tile::Draw(Vector2 cameraOffset)
 	scale = { 1,1 };
 
 	scaleCenter = {
-		sourceRect.w / 2.0,
-		sourceRect.h / 2.0
+		sourceRect.w / 2.0f,
+		sourceRect.h / 2.0f
 	};
 
 	dstRect = { 
@@ -515,7 +561,7 @@ void Tile::Draw(Vector2 cameraOffset)
 		(int)pixelDimensions.y 
 	};
 
-	spriteSheet->Draw(Vector2(dstRect.x, dstRect.y), sourceRect, &scale, &scaleCenter, &color);
+	spriteSheet->Draw(Vector2(dstRect.x, dstRect.y), sourceRect, &scale, &scaleCenter, &color, flipFlags);
 }
 
 void TileManager::TileParseTypesFromJSON(std::string json)
@@ -536,8 +582,12 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 	wallTiles = new std::vector<Tile*>();
 
 	Tile* t = nullptr;
+	Tile* tE = nullptr;
+	Tile* tW = nullptr;
+	Tile* tF = nullptr;
+	Tile* xMirrorHillTile = nullptr;
+	Tile* yMirrorHillTile = nullptr;
 	TileSpriteSheet* tss = new TileSpriteSheet();
-	std::shared_ptr<Sprite> spriteSheet;
 
 	sj_get_uint8_value(sj_object_get_value(jsonResource, "tilecount"), &tss->tileCount);
 	sj_get_uint8_value(sj_object_get_value(jsonResource, "columns"), &tss->columns);
@@ -576,12 +626,14 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			graphicsRef));
 	tss->sheet = spriteSheet.get();
 
+	spriteSheetPixels = spriteSheet->GetPixelData();
+
 	//LOADED SPRITE SHEET
 
 	//Maybe a loading screen for parsing tiles
-	for (int i = 0; i < tss->tileCount; i++) {		
+	for (int i = 0; i < tss->columns * tss->columns; i++) {
 		int layerCount = 0;
-		
+
 		layerCount = sj_array_get_count(sj_object_get_value(sj_array_get_nth(genDescList, i), "layers"));
 		sj_get_integer_value(sj_object_get_value(sj_array_get_nth(genDescList, i), "xLocation"), &xLocation);
 		sj_get_integer_value(sj_object_get_value(sj_array_get_nth(genDescList, i), "yLocation"), &yLocation);
@@ -596,9 +648,9 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			tss->tileHeight
 		};
 
-		if(!spriteSheet.get()->CheckIfViableTexture(sR))
+		if (!spriteSheet.get()->CheckIfViableTexture(sR))
 			continue;
-		
+
 		switch (direction) {
 		case North:
 			zRot = 0.f;
@@ -625,7 +677,7 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 
 		//s->RotateTextureZ(zRot);
 
-		t = new Tile(tiles->size()+1,
+		t = new Tile(tiles->size() + 1,
 			spriteSheet,
 			{ INT32_MIN,INT32_MIN },
 			Vector2(tss->tileWidth, tss->tileHeight),
@@ -633,36 +685,35 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			graphicsRef,
 			zRot,
 			sR);
+		t = new Tile(*t);
+		tE = new Tile(*t);
+		tW = new Tile(*t);
+		tF = new Tile(*t);
+		xMirrorHillTile = new Tile(*t);
+		yMirrorHillTile = new Tile(*t);
+
 
 
 		for (int l = 0; l < layerCount; l++) {
 			const char* layerName = sj_get_string_value(sj_array_get_nth(sj_object_get_value(sj_array_get_nth(genDescList, i), "layers"), l));
 			if (strcmp(layerName, "ground") == 0) {
 				t->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Ground));
-				groundTiles->push_back(t);
 			}
 			if (strcmp(layerName, "wall") == 0) {
 				t->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Wall));
-				wallTiles->push_back(t);
-			}
-			if (strcmp(layerName, "hill") == 0) {
-				t->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Hill));
-				hillTiles->push_back(t);
-
 			}
 			if (strcmp(layerName, "platform") == 0) {
 				t->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Platform));
-				platformTiles->push_back(t);
+			}
+			if (strcmp(layerName, "hill") == 0) {
+				t->SetTileLayer(TileLayer::Hill);
 			}
 		}
-
 		for (int j = 0; j < possibleConnects; j++) {
 			TileLayer layers = TileLayer::Empty;
 			Direction hillOrient;
 			SJson* pConnect = sj_array_get_nth(tileIndex, j);
 			int allowedLayerCount = sj_array_get_count(sj_object_get_value(pConnect, "allowedLayers"));
-			Tile* xMirrorHillTile = nullptr;
-			Tile* yMirrorHillTile = nullptr;
 			int x, y;
 
 			sj_get_integer_value(sj_object_get_value(pConnect, "x"), &x);
@@ -693,62 +744,49 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 				}
 			}
 			if (strcmp(o, "Northeast") == 0) {
-				xMirrorHillTile = new Tile(*t);
-				yMirrorHillTile = new Tile(*t);
-
-				xMirrorHillTile->SetSpriteDirection((Direction)(Direction::North | Direction::West));
-				xMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
-
-				yMirrorHillTile->SetSpriteDirection((Direction)(Direction::South | Direction::East));
-				yMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
-
 				xMirrorHillTile->AddPossibleConnection(
 					Vector2(x * -1, y),
 					layers,
-					(Direction)(Direction::North | Direction::West));
+					(Direction)(Direction::South | Direction::East));
+
+				xMirrorHillTile->SetHillOrientation((Direction)(Direction::South | Direction::East));
 
 				yMirrorHillTile->AddPossibleConnection(
 					Vector2(x, y * -1),
 					layers,
 					(Direction)(Direction::South | Direction::East));
+
+
+				yMirrorHillTile->SetHillOrientation((Direction)(Direction::South | Direction::East));
 
 				t->AddPossibleConnection(
 					Vector2(x, y),
 					layers,
 					(Direction)(Direction::North | Direction::East));
 
-				hillTiles->push_back(xMirrorHillTile);
-				hillTiles->push_back(yMirrorHillTile);
-				hillTiles->push_back(t);
+				t->SetHillOrientation((Direction)(Direction::North | Direction::East));
 			}
 			else if (strcmp(o, "Southeast") == 0) {
-				xMirrorHillTile = new Tile(*t);
-				yMirrorHillTile = new Tile(*t);
-
-				xMirrorHillTile->SetSpriteDirection((Direction)(Direction::South | Direction::West));
-				xMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
-
-				yMirrorHillTile->SetSpriteDirection((Direction)(Direction::North | Direction::East));
-				yMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
-
 				xMirrorHillTile->AddPossibleConnection(
 					Vector2(x * -1, y),
 					layers,
-					(Direction)(Direction::South | Direction::East));
+					(Direction)(Direction::North | Direction::East));
+
+				xMirrorHillTile->SetHillOrientation((Direction)(Direction::North | Direction::East));
 
 				yMirrorHillTile->AddPossibleConnection(
 					Vector2(x, y * -1),
 					layers,
-					(Direction)(Direction::South | Direction::West));
+					(Direction)(Direction::North | Direction::East));
+
+				yMirrorHillTile->SetHillOrientation((Direction)(Direction::North | Direction::East));
 
 				t->AddPossibleConnection(
 					Vector2(x * -1, y),
 					layers,
 					(Direction)(Direction::South | Direction::East));
 
-				hillTiles->push_back(xMirrorHillTile);
-				hillTiles->push_back(yMirrorHillTile);
-				hillTiles->push_back(t);
+				t->SetHillOrientation((Direction)(Direction::South | Direction::East));
 			}
 			else {
 				t->AddPossibleConnection(
@@ -757,8 +795,43 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 					Direction::None);
 			}
 		}
-	}
 
+		if ((TileLayer)(t->GetTileLayer() & TileLayer::Hill) == TileLayer::Hill) {
+			delete tE;
+			delete tW;
+			delete tF;
+
+			xMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
+			yMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
+
+			xMirrorHillTile->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			yMirrorHillTile->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+
+			t->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+		
+			hillTiles->push_back(xMirrorHillTile);
+			hillTiles->push_back(yMirrorHillTile);
+			hillTiles->push_back(t);
+		}
+		else {
+			delete xMirrorHillTile;
+			delete yMirrorHillTile;
+
+			tE->SetCappingDirection(Direction::East);
+			tW->SetCappingDirection(Direction::West);
+			tF->SetCappingDirection((Direction)(Direction::East | Direction::West));
+
+			tE->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			tW->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			tF->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			t->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+
+			groundTiles->push_back(tE);
+			groundTiles->push_back(tW);
+			groundTiles->push_back(tF);
+			groundTiles->push_back(t);
+		}
+	}
 
 	sj_free(jsonResource);
 	sj_free(genDesc);
@@ -779,35 +852,7 @@ TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphic
 	worldSize = graphics->GetScreenDimensions();
 	worldSize.x /= 4;
 
-	//tileTypes.insert(TileParseTypesFromJSON("data/tilemap/factory/pipeTiles.json"));
 	TileParseTypesFromJSON("data/tilemap/Grassland/grassTiles.json");
-
-	//for (int i = 0; i < tileTypes.at("Grassland").size(); i++) {
-	/*for (int i = tilerow->size() - 1; i >= 1; i--) {
-		newTile = new Tile(*tileRow[i]);
-
-		if (i == 1) {
-			newTile->SetCappingDirection(Direction::East);
-		}
-
-		newTile->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
-		newTile->FlipTileSprite();
-		newTile->TilePhysicsInit(physics, vector2(x++, y));
-		newTile->TileCreateBody(physics);
-		tilerow->push_back(newTile);
-	}
-	
-	srand(time(nullptr));
-
-	newTile = new Tile(*tileTypes["Grassland"][1]);
-	newTile->SetCappingDirection((Direction)(Direction::West | Direction::East));
-	newTile->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
-	newTile->FlipTileSprite();
-	newTile->TilePhysicsInit(physics, vector2(x++, y));
-	newTile->TileCreateBody(physics);
-	tilerow->push_back(newTile);*/
-
-	//tileMap.push_back(tileRow);
 }
 
 TileManager::~TileManager()
@@ -849,7 +894,7 @@ TileManager::~TileManager()
 	}
 	delete wallTiles;
 
-	spriteSheet.~shared_ptr();
+	spriteSheet.reset();
 
 	graphicsRef.reset();
 }
@@ -889,7 +934,6 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(PerlinNoise* perli
 			
 		tileMap.at(yIndex).at(x) = new Tile(*groundTiles->at(rand() % groundTiles->size()));
 		tileMap.at(yIndex).at(x)->SetGridPosition(x, yIndex);
-		tileMap.at(yIndex).at(x)->TilePhysicsInit(physicsWorld, pDim);
 	}
 
 	delete perlin;
