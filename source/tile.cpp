@@ -235,8 +235,8 @@ void Tile::DecideCapping(std::vector<std::vector<SDL_Color>>& pixels)
 		}
 
 		if (capDirection & Direction::West) {
-			westCap.push_back(topChain.front());
 			westCap.push_back(bottomChain.front());
+			westCap.push_back(topChain.front());
 		}
 	}
 }
@@ -326,6 +326,7 @@ void Tile::CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2
 	fd.friction = 0.7f;
 	physicsBody->CreateFixture(&fd);
 
+	std::reverse(bottomChain.begin(), bottomChain.end());
 	c2.CreateChain(static_cast<b2Vec2*>(bottomChain.data()), bottomChain.size(), bpg, bng);
 
 	fd.shape = &c2;
@@ -338,7 +339,6 @@ void Tile::CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2
 			if (eastCap[i].x == eastCap[j].x && eastCap[i].y == eastCap[j].y)
 				flag = 1;
 		if (!flag) {
-
 			c3.CreateChain(static_cast<b2Vec2*>(eastCap.data()), eastCap.size(), *(topChain.begin()), *(bottomChain.begin()));
 			fd.shape = &c3;
 			fd.friction = 0.7f;
@@ -350,6 +350,8 @@ void Tile::CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2
 		for (int i = 0, j = westCap.size() - 1; i < j; i++, j--)
 			if (westCap[i].x == westCap[j].x && westCap[i].y == westCap[j].y)
 				return;
+
+		//std::reverse(westCap.begin(), westCap.end());
 		c4.CreateChain(static_cast<b2Vec2*>(westCap.data()), westCap.size(), *(topChain.end()-1), *(bottomChain.end()-1));
 		fd.shape = &c4;
 		fd.friction = 0.7f;

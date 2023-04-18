@@ -119,9 +119,6 @@ void GameWorld::GameLoop(float & accumulator) {
 		currentArea->AreaDraw();
 
 		SDL_RenderPresent(graphicsPtr->GetRenderer());
-		
-		//if (graphicsPtr->GetFrameDeltaTime() < DELTA_TIME * MS)
-			//SDL_Delay(DELTA_TIME * MS - graphicsPtr->GetFrameDeltaTime());
 	}
 
 	return;
