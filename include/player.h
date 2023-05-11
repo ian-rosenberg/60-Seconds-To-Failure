@@ -29,12 +29,12 @@ private:
 	Bool					punching;
 
 public:
-	Player(std::shared_ptr<Graphics> g);
+	Player(const std::shared_ptr<Graphics>& graphics);
 
 	~Player();
 
-	inline void SetInputQueuePtr(std::vector<Entity::InputEvent*>* sp) { inputQueue = sp; }
-	inline void SetEventsToFirePtr(std::queue<Entity::InputEvent*>* q) { eventsToFire = q; }
+	void SetInputQueuePtr(std::vector<Entity::InputEvent*>* sp) { inputQueue = sp; }
+	void SetEventsToFirePtr(std::queue<Entity::InputEvent*>* q) { eventsToFire = q; }
 
 	/**
 	* @brief Handle input
@@ -44,7 +44,7 @@ public:
 	/**
 	* @brief Draw the player to screen
 	*/
-	void Draw();
+	void Draw(Vector2 cameraPosition);
 
 	/**
 	* @brief Update the player's state
@@ -58,7 +58,5 @@ public:
 	int Damage(int amount, Entity* source);						/**<when this entity takes damage*/
 
 	void Die();													/**<when this entity dies*/
-
-	void UpdateScreenPosition(double alpha);
 };
 

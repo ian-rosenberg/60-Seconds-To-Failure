@@ -1,8 +1,8 @@
 #include "entity.h"
 
-Entity::Entity()
+Entity::Entity(int id)
 {
-	id = -1;
+	this->id = id;
 	gravityEnabled = 0;
 	dampening = 1.0f;
 	logicalState = State::State_Idle;
@@ -25,11 +25,45 @@ Entity::Entity()
 	maxSpeed = 0;
 	dead = 0;
 	jumpForce = 1.0;
-	body = NULL;
-	jumpTrigger = NULL;
-	parentEntity = NULL;
-	debugDraw = NULL;
+	body = nullptr;
+	jumpTrigger = nullptr;
+	parentEntity = nullptr;
 	interpComponent = new PhysicsComponent{ {0,0}, 0.0f, {0,0}, 0.0f };
+	debugColor = SDL_Color(0, 255, 0, 255);
+	debugRect = SDL_Rect(0, 0, avgDim.x, avgDim.y);
+}
+
+Entity::Entity()
+{
+	id = 0;
+	gravityEnabled = 0;
+	dampening = 1.0f;
+	logicalState = State::State_Idle;
+	worldDimensions = {};
+	newDrawPosition = vector2(0, 0);
+	velocity = { 0,0 };
+	prevDrawPosition = newDrawPosition = { 0,0 };
+	prevBodyPosition = newBodyPosition = { 0,0 };
+	scale = { 0,0 };
+	scaleCenter = { 0,0 };
+	rotation = { 0,0,0 };
+	flip = { 0,0 };
+	facing = { 0,0 };
+	maxHealth = 0;
+	health = 0;
+	jumpTimer = 0.0f;
+	grounded = false;
+	energy = 0;
+	maxEnergy = 0;
+	maxSpeed = 0;
+	dead = 0;
+	jumpForce = 1.0;
+	body = nullptr;
+	jumpTrigger = nullptr;
+	parentEntity = nullptr;
+	interpComponent = new PhysicsComponent{ {0,0}, 0.0f, {0,0}, 0.0f };
+	debugColor = SDL_Color(0, 255, 0, 255);
+	debugRect = SDL_Rect(0, 0, avgDim.x, avgDim.y);
 }
 
 Entity::~Entity()
@@ -42,14 +76,11 @@ Entity::~Entity()
 		}
 	}
 
-	if (debugDraw)
-		delete debugDraw;
-
 	if (currentAnimation)
-		currentAnimation = NULL;
+		currentAnimation = nullptr;
 	
 	if (currentSprite)
-		currentSprite = NULL;
+		currentSprite = nullptr;
 
 	if (interpComponent)
 		delete interpComponent;
@@ -83,7 +114,7 @@ Animation* Entity::GetAnimationByName(const char* name)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void Entity::SetVelocity(InputEvent* e)
@@ -93,6 +124,12 @@ void Entity::SetVelocity(InputEvent* e)
 	velocity.y = body->GetLinearVelocity().y;
 	b2Vec2 v = b2Vec2(velocity.x, velocity.y);
 	body->SetLinearVelocity(v);
+}
+
+void Entity::SetPreviousPhysicsState()
+{
+	interpComponent->prevAngle = rotation.z;
+	interpComponent->prevPosition = newBodyPosition;
 }
 
 void Entity::RotateTranslate(b2Vec2& vector, const b2Vec2& center, float angle)
@@ -114,12 +151,17 @@ void Entity::SetId(int newId)
 }
 
 void Entity::SetBody(b2Body* b) {
+	b2Vec2 bP;
 	if (!b) {
-		std::cout << "Body is NULL." << std::endl;
+		std::cout << "Body is nullptr." << std::endl;
 
 		return;
 	}
-	
+
+	bP = b->GetPosition();
+		
+	newDrawPosition = Vector2(bP.x, bP.y);
+
 	body = b;
 	body->GetUserData().pointer = reinterpret_cast<uintptr_t>(interpComponent);
 }
@@ -130,18 +172,53 @@ void Entity::SetWorldDimensions(b2Vec2 dim) {
 
 void Entity::Jump(InputEvent* e)
 {
-	if (!jumpTrigger)
+	if (!jumpTrigger || !grounded)
 		return;
 
- 	body->ApplyLinearImpulse(b2Vec2(0, -body->GetMass() * jumpForce), body->GetPosition(), true);
+ 	body->ApplyLinearImpulse(b2Vec2(0, -body->GetMass() * jumpForce), body->GetWorldCenter(), true);
 	this->ToggleGrounded(false);
 }
 
 void Entity::ToggleGrounded(int flag)
 {
-	debugDraw->SetCollisionColor(flag);
+	grounded = flag;
 
-	grounded = flag == 1;
+	if (grounded)
+		debugColor = { 255, 0,0,255 };
+	else
+		debugColor = { 0,255,0,255 };
+}
+
+void Entity::UpdateScreenPosition()
+{
+	Vector2 p;
+	float alpha = graphics->GetAccumulatorTime();
+	//b2Vec2 bPos = body->GetPosition();
+
+	prevBodyPosition = newBodyPosition;
+	newBodyPosition = interpComponent->smoothedPosition;
+
+	//std::cout << "Smoothed Body Position: ( " << interpComponent->smoothedPosition.x << "," << interpComponent->smoothedPosition.y << "," << std::endl;
+	//std::cout << "Box2D Body Position: ( " << bPos.x << "," << bPos.y << ")" << std::endl << std::endl;
+	
+	p = { newBodyPosition.x, newBodyPosition.y };
+
+	prevDrawPosition = newDrawPosition;
+
+	graphics->Vector2MetersToPixels(p);
+	newDrawPosition = p;
+	newDrawPosition.x = newDrawPosition.x * alpha + prevDrawPosition.x * (1.0 - alpha);
+	newDrawPosition.y = newDrawPosition.y * alpha + prevDrawPosition.y * (1.0 - alpha);
+
+	/*newDrawPosition.x -= camRect.x + camRect.w / 2;
+	newDrawPosition.y -= camRect.y + camRect.h / 2;*/
+
+	//std::cout << GetAverageActorDimensions().x / 4 << std::endl;
+
+	/*if(newBodyPosition.x != prevBodyPosition.x || newBodyPosition.y != prevBodyPosition.y)
+		std::cout << "World Position: " << newBodyPosition.x << "," << newBodyPosition.y << std::endl;
+	if (newDrawPosition.x != prevDrawPosition.x || newDrawPosition.y != prevDrawPosition.y)
+		std::cout << "Draw Position: " << newDrawPosition.x << "," << newDrawPosition.y << std::endl;*/
 }
 
 EntityManager::EntityManager() {
@@ -149,16 +226,16 @@ EntityManager::EntityManager() {
 	inputQueue = new std::vector<Entity::InputEvent*>();
 	eventsToFire = new std::queue<Entity::InputEvent*>();
 	debugDraw = 0;
-	graphics = nullptr;
+	graphics.reset();
 }
 
-EntityManager::EntityManager(Uint8 debugFlag, std::shared_ptr<Graphics> g)
+EntityManager::EntityManager(Uint8 debugFlag, const std::shared_ptr<Graphics>& graphics)
 {
 	entities = new std::vector<Entity*>();
 	inputQueue = new std::vector<Entity::InputEvent*>();
 	eventsToFire = new std::queue<Entity::InputEvent*>();
 	debugDraw = debugFlag;
-	graphics = std::shared_ptr<Graphics>(g);
+	this->graphics = graphics;
 }
 
 EntityManager::~EntityManager()
@@ -176,25 +253,21 @@ EntityManager::~EntityManager()
 
 	delete inputQueue;
 
+	inputQueue = nullptr;
+
 	if (!eventsToFire->empty())
 		ClearEventsToFireQueue();
 
 	delete eventsToFire;
+
+	eventsToFire = nullptr;
 }
 
 void EntityManager::AddEntity(Entity* ent)
 {
-	if (debugDraw) {
-		ent->EnableDebugDraw(new DebugDraw(graphics, ent->GetActorName(), ent->GetAvgPixelDimensions()));
-		ent->GetDebugDraw()->SetBodyReference(ent->GetBody());
-		ent->GetDebugDraw()->SetWorldDimensions(ent->GetWorldDimensions());
-		if(ent->GetJumpTrigger())
-			ent->GetDebugDraw()->SetTriggerFixture(ent->GetJumpTrigger());
-
-	}
-
 	entities->push_back(ent);
-	ent->SetId(entities->size());
+	if(ent->GetId() > -1)
+		ent->SetId(entities->size());
 }
 
 Entity* EntityManager::DeleteEntity(Entity* ent)
@@ -212,72 +285,31 @@ Entity* EntityManager::DeleteEntity(Entity* ent)
 	}
 }
 
-void EntityManager::EntityDrawAll(double alpha)
+void EntityManager::EntityDrawAll(SDL_Rect cameraRect)
 {
 	SDL_Rect r;
-	Vector2 p, dim;
+	Vector2 p;
+	Vector2 camPos = Vector2(cameraRect.x, cameraRect.y);
 
 
 	for (std::vector<Entity*>::iterator it = entities->begin();
 		it != entities->end();
 		it++)
 	{
+		p = (*it)->GetDrawPosition();
+		(*it)->UpdateScreenPosition();
+		(*it)->Draw(camPos);
 
-		(*it)->UpdateScreenPosition(alpha);
-		(*it)->Draw();
-
-		//Debug Drawing
-		if ((*it)->GetDebugDrawEnabled()) {
-			DebugDrawing(*it);
-		}
 	}
 }
 
-void EntityManager::DebugDrawing(Entity* it)
+void EntityManager::EntityUpdateAll()
 {
-	Vector2 drawPos = it->GetScreenPosition();
-	it->GetDebugDraw()->UpdateBodyPosition(b2Vec2(drawPos.x, drawPos.y));
-
-	for (b2Fixture* f = it->GetBody()->GetFixtureList(); f; f = f->GetNext()) {
-		b2Shape::Type shapeType = f->GetType();
-
-		if (f == it->GetJumpTrigger()) {
-			b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
-			it->GetDebugDraw()->DrawTriggerPolygon(poly->m_vertices, poly->m_count);
-			continue;
-		}
-
-		if (shapeType == b2Shape::e_polygon) {
-			b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
-			it->GetDebugDraw()->DrawPolygon(poly->m_vertices, poly->m_count, b2Color(0,1.0f, 0));
-			continue;
-		}
-
-		else if (shapeType == b2Shape::e_edge) {
-			b2EdgeShape* edge = (b2EdgeShape*)f->GetShape();
-
-			it->GetDebugDraw()->DrawSegment(edge->m_vertex1, edge->m_vertex2, b2Color(0, 1.0f, 0));
-	
-			continue;
-		}
-
-		else if (shapeType == b2Shape::e_circle) {
-			b2CircleShape* poly = (b2CircleShape*)f->GetShape();
-			it->GetDebugDraw()->DrawCircle(poly->m_p, poly->m_radius * MET_TO_PIX, b2Color(0, 1.0f, 0));
-			continue;
-		}
-	}
-}
-
-void EntityManager::EntityUpdateAll(double ticks)
-{
-	Vector2 vel;
-	b2Vec2 v;
-
 	for (std::vector<Entity*>::iterator it = entities->begin();
 		it != entities->end();
 		it++)
 	{
+		(*it)->SetPreviousPhysicsState();
 		(*it)->Update();
 	}
 }
@@ -319,7 +351,7 @@ void EntityManager::InputUpdate()
 
 void EntityManager::ClearInputEventQueue()
 {
-	Entity::InputEvent* e = NULL;
+	Entity::InputEvent* e = nullptr;
 
 	while (!inputQueue->empty()) {
 		e = inputQueue->at(inputQueue->size() - 1);
@@ -330,7 +362,7 @@ void EntityManager::ClearInputEventQueue()
 
 void EntityManager::ClearEventsToFireQueue()
 {
-	Entity::InputEvent* e = NULL;
+	Entity::InputEvent* e = nullptr;
 
 	while (!eventsToFire->empty()) {
 		e = eventsToFire->front();

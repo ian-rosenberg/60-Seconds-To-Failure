@@ -52,8 +52,8 @@ protected:
 	AnimationType	animType;
 
 public:
-	Animation(Animation* old);
-	Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g);
+	Animation(const Animation & old);
+	Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics);
 	Animation(std::string n, Sprite* s, int width, int height, int xOffset, int yOffset, Vector4 color);
 	~Animation();
 
@@ -65,31 +65,31 @@ public:
 	*/
 	AnimationReturnType AnimationNextFrame(Animation* animList);
 
-	inline float GetCurrentFrame() {
+	float GetCurrentFrame() {
 		return currentFrame;
 	}
 
-	inline int GetYOffset() {
+	int GetYOffset() {
 		return yOffset;
 	}
 
-	inline int GetXOffset() {
+	int GetXOffset() {
 		return xOffset;
 	}
 
-	inline int GetCellHeight() {
+	int GetCellHeight() {
 		return cellHeight;
 	}
 
-	inline int GetCellWidth() {
+	int GetCellWidth() {
 		return cellWidth;
 	}
 
-	inline std::string GetName() {
+	std::string GetName() {
 		return name;
 	}
 
-	inline Sprite* GetSprite() {
+	Sprite* GetSprite() {
 		return sprite;
 	}
 };

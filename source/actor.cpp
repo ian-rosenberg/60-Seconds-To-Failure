@@ -7,7 +7,7 @@
 Actor::Actor()
 {
 	animState = State::State_Idle;
-	currentSprite = NULL;
+	currentSprite = nullptr;
 	color = vector4(0, 0, 0, 0);
 	numAnimations = 0;
 	scale = vector2(0, 0);
@@ -29,7 +29,6 @@ Actor::~Actor()
 	}
 
 	graphics.reset();
-	graphics = nullptr;
 }
 
 Actor* Actor::LoadActor(const char* filename)
@@ -43,7 +42,7 @@ Actor* Actor::LoadActor(const char* filename)
 	if (!in.is_open()) {
 		std::cerr << "Error Unable to open settings file \"" << filename << "\" for reading!" << std::endl;
 
-		return NULL;
+		return nullptr;
 	}
 
 	while (!std::getline(in, line, ':').eof())
@@ -146,7 +145,7 @@ void Actor::CalculateAverageActorDimensions()
 Animation* Actor::ParseAnimation(const char* filename)
 {
 	Uint32 iteFlag = 0;
-	Animation* anim = NULL;
+	Animation* anim = nullptr;
 	std::ifstream in(filename, std::ios::out);
 	std::string line = "";
 	std::string value = "";
@@ -162,7 +161,7 @@ Animation* Actor::ParseAnimation(const char* filename)
 	if (!in.is_open()) {
 		std::cerr << "Error Unable to open settings file \"" << filename << "\" for reading!" << std::endl;
 
-		return NULL;
+		return nullptr;
 	}
 
 	while (!std::getline(in, line, ':').eof())

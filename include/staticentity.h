@@ -1,9 +1,8 @@
 #pragma once
-#include "entity.h"
+#include <entity.h>
 #include <vector>
 #include <box2d/box2d.h>
-#include <actor.h>
-#include <debugdraw.h>
+#include <DebugDraw.h>
 
 
 class StaticEntity : public Entity {
@@ -20,13 +19,13 @@ private:
 public:
 	StaticEntity();
 
-	StaticEntity(std::shared_ptr<Graphics> g);
+	StaticEntity(const std::shared_ptr<Graphics>& graphics);
 
-	StaticEntity(std::shared_ptr<Graphics> g, float w, float h);
+	StaticEntity(const std::shared_ptr<Graphics>& graphics, float w, float h, Vector2 startPos);
 
 	~StaticEntity();
 
-	void Draw();
+	void Draw(Vector2 cameraPosition);
 
 	void Think();
 
@@ -40,7 +39,5 @@ public:
 
 	void Die();													/**<when this entity dies*/
 
-	void UpdateScreenPosition(double alpha);
-
-	inline void SetStaticTriggerFixture(b2Fixture* f) { boundingVolume = f; }
+	void SetStaticTriggerFixture(b2Fixture* f) { boundingVolume = f; }
 };

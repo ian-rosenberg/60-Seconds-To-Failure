@@ -1,59 +1,15 @@
 #include "gameworld.h"
 
-void GameWorld::PlayerPhysicsInit(b2World* physicsArea)
-{
-	// Actor
-	{
-		b2Vec2 d = player->GetWorldDimensions();
-		b2BodyDef bd;
-		bd.type = b2_dynamicBody;
-		bd.fixedRotation = true;
-		bd.position.Set(0, -graphicsPtr->GetScaledHeight() / 2);
-		player->SetBody(physicsArea->CreateBody(&bd));
-
-		b2FixtureDef fd;
-		b2CircleShape shape;
-
-		shape.m_radius = d.x / 4;
-		shape.m_p = b2Vec2(0, d.y/4);
-
-		fd.shape = &shape;
-		fd.friction = 0.5f;
-		fd.density = 10;
-		
-		player->GetBody()->CreateFixture(&fd);
-
-		b2PolygonShape jumpBox;
-		b2Vec2 verts[] = {
-			b2Vec2(-d.x * 0.25, d.y / 4),
-			b2Vec2(d.x * 0.25, d.y / 4),
-			b2Vec2(d.x * 0.25, d.y * 0.55),
-			b2Vec2(-d.x * 0.25, d.y * 0.55)
-		};
-		
-		jumpBox.Set(verts, 4);
-
-		b2FixtureDef jd;
-		jd.shape = &jumpBox;
-		jd.isSensor = true;
-		player->SetJumpTrigger(player->GetBody()->CreateFixture(&jd));
-	}
-
-	player->SetGravityEnabled(currentArea->GetGravityScale()->y != 0 ? 1 : 0);
-
-	currentArea->AddEntity(player);
-}
-
 GameWorld::GameWorld() {
-	areas = NULL;
-	player = NULL;
-	currentArea = NULL;
-	graphicsPtr = std::make_shared<Graphics>();
-	graphicsPtr->SetCurrentTime(SDL_GetTicks());
+	areas = nullptr;
+	player = nullptr;
+	currentArea = nullptr;
+	graphicsPtr = std::shared_ptr<Graphics>(new Graphics());
+	graphicsPtr->SetOldTime();
 
 	if (!graphicsPtr->GetRenderer()) {
-		std::cerr << "Renderer is NULL!" << std::endl;
-
+		std::cerr << "Renderer is nullptr!" << std::endl;
+		graphicsPtr = nullptr;
 		return;
 	}
 	
@@ -73,65 +29,97 @@ GameWorld::~GameWorld() {
 	}
 
 	graphicsPtr.reset();
-}
-
-void GameWorld::EnableDebugDraw() {
-	for (auto itArea = areas->begin(); itArea != areas->end(); itArea++) {
-		EntityManager* em = (*itArea)->GetEntityManager();
-	}
+	graphicsPtr = nullptr;
 }
 
 void GameWorld::InitTestArea() {
-	areas->push_back(new GameArea(areas->size(), b2Vec2(0.0f, 0.0025), graphicsPtr));
+	
+	areas->push_back(
+		new GameArea(areas->size(),
+			b2Vec2(0.0f,
+				10.f * PIX_IN_MET),
+			graphicsPtr,
+			player->GetAvgPixelDimensions()));
 
 	currentArea = areas->at(0);
+
+	// Actor
+	{
+		b2Vec2 pos = currentArea->FindSpawnPointFromLeft();
+		b2Vec2 d = player->GetWorldDimensions();
+		b2BodyDef bd;
+		bd.type = b2_dynamicBody;
+		bd.fixedRotation = true;
+		bd.position.Set(pos.x,pos.y);
+		player->SetBody(currentArea->GetWorldPtr()->CreateBody(&bd));
+
+		b2FixtureDef fd;
+		b2CircleShape shape;
+
+		shape.m_radius = d.x / 4;
+		shape.m_p = b2Vec2(0, d.y / 4);
+
+		fd.shape = &shape;
+		fd.density = 10.f;
+		fd.friction = .9f;
+
+		player->GetBody()->CreateFixture(&fd);
+
+		b2PolygonShape jumpBox;
+		b2Vec2 verts[] = {
+			b2Vec2(-d.x * 0.25, d.y * 0.25),
+			b2Vec2(d.x * 0.25, d.y * 0.25),
+			b2Vec2(d.x * 0.25, d.y * 0.55),
+			b2Vec2(-d.x * 0.25, d.y * 0.55)
+		};
+
+		jumpBox.Set(verts, 4);
+
+		b2FixtureDef jd;
+		jd.shape = &jumpBox;
+		jd.isSensor = true;
+		player->SetJumpTrigger(player->GetBody()->CreateFixture(&jd));
+	}
+
+	player->SetGravityEnabled(currentArea->GetGravityScale().y != 0 ? 1 : 0);
+
 	currentArea->SetActive(1);
 
 	currentArea->SetPlayer(player);
-
-	PlayerPhysicsInit(currentArea->GetWorldPtr());
-	
-	EnableDebugDraw();
+	currentArea->AddEntity(player);
 }
 
-bool GameWorld::GameLoop(float & accumulator) {
+void GameWorld::GameLoop(float & accumulator) {
 	SDL_Event currentEvent;
-	float newTime = graphicsPtr->GetGameTime();
-	float frameTime = newTime - graphicsPtr->GetCurrentTime();
-	float aStart = SDL_GetTicks64(), aEnd;
+	float frameTime;
 
-	SDL_RenderClear(graphicsPtr->GetRenderer());
+	SDL_PollEvent(&currentEvent);
 
-	if (frameTime > 0.25f)
-		frameTime = 0.25f;
-	graphicsPtr->SetCurrentTime(newTime);
+	while (currentEvent.type != SDL_QUIT) {
+		SDL_RenderClear(graphicsPtr->GetRenderer());
+		graphicsPtr->SetOldTime();
+		graphicsPtr->SetNewTime(SDL_GetTicks64());
+		frameTime = graphicsPtr->GetFrameDeltaTime() / MS;
 
-	accumulator += frameTime;
+		accumulator += (frameTime > 0.25f ? 0.25f : frameTime);
 
-	SDL_PumpEvents();
+		if (currentArea->CaptureInputEvents(&currentEvent) < 1)
+			break;
 
-	if (currentArea->CaptureInputEvents(&currentEvent) < 1)
-		return true;
-
-	currentArea->AreaThink();
-
-	while (accumulator >= DELTA_TIME) {	
+		currentArea->AreaThink();
 		
-		currentArea->PhysicsSteps(DELTA_TIME);
+		while (accumulator >= DELTA_TIME) {
+			currentArea->AreaUpdate();
 
-		accumulator -= DELTA_TIME;
+			currentArea->PhysicsSteps(DELTA_TIME);
+
+			accumulator -= DELTA_TIME;
+		}
+		graphicsPtr->SetAccumulatorTime(accumulator / DELTA_TIME);
+		currentArea->AreaDraw();
+
+		SDL_RenderPresent(graphicsPtr->GetRenderer());
 	}
 
-	if (accumulator < FRAME_DELAY)
-	{
-		SDL_Delay(FRAME_DELAY - DELTA_TIME);
-	}
-
-	currentArea->AreaDraw(accumulator / DELTA_TIME);
-
-	SDL_RenderPresent(graphicsPtr->GetRenderer());
-
-	aEnd = SDL_GetTicks64();
-
-	return false;
+	return;
 }

@@ -1,7 +1,6 @@
 #pragma once
 #include <gamearea.h>
 #include <player.h>
-#include <debugdraw.h>
 
 class GameWorld {
 private:
@@ -11,19 +10,15 @@ private:
 
 	std::vector<GameArea*>*		areas;
 	GameArea*					currentArea;
-	
-	void						PlayerPhysicsInit(b2World* physicsArea);
 
 public:
 	GameWorld();
 
 	~GameWorld();
 
-	inline std::shared_ptr<Graphics> GetGraphics() { return graphicsPtr; }
-
-	void EnableDebugDraw();
+	const std::shared_ptr<Graphics>& graphicsetGraphics() { return graphicsPtr; }
 
 	void InitTestArea();
 
-	bool GameLoop(float & accumulator);
+	void GameLoop(float & accumulator);
 };

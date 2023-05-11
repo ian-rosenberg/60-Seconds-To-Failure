@@ -25,7 +25,7 @@ protected:
 
 	State						animState;
 
-	std::shared_ptr<Graphics>	graphics;
+	std::shared_ptr<Graphics>		graphics;
 
 public:
 	/**
@@ -37,7 +37,7 @@ public:
 
 	~Actor();
 
-	inline SDL_Renderer* GetRenderer() { return graphics->GetRenderer(); }
+	SDL_Renderer* GetRenderer() { return graphics->GetRenderer(); }
 
 	/**
 	* @brief Load an actor from file
@@ -64,7 +64,7 @@ public:
 
 	void SetAnimation(Animation* anim);
 
-	inline void SetActorName(const char* n) { name = n; }
+	void SetActorName(const char* n) { name = n; }
 
-	inline void SetAnimationState(State s) { animState = s; }
+	void SetAnimationState(State s) { animState = s; }
 };

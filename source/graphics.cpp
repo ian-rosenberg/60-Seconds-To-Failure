@@ -11,10 +11,11 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 
 	SDL_DisplayMode DM;
 	SDL_GetCurrentDisplayMode(0, &DM);
-	screenWidth = 1280;// DM.w;
+	screenWidth = 1280;//DM.w;
 	screenHeight = 720;// DM.h;
-	scaledWidth = screenWidth * PIX_TO_MET;
-	scaledHeight = screenHeight * PIX_TO_MET;
+	scaledWidth = screenWidth / PIX_IN_MET;
+	scaledHeight = screenHeight / PIX_IN_MET;
+
 
 	std::cout << "Screen resolution: " << DM.w << "," << DM.h << std::endl;
 	
@@ -49,10 +50,12 @@ int Graphics::SDL2_Init(Uint8 flags, Uint16 windowWidth, Uint16 windowHeight){
 Graphics::Graphics() {
 	renderer = NULL;
 	window = NULL;
-	currentTime = 0.0;
-	accumulator = 0.0;
+	newTime = 0.0;
+	accumulator = 0.f;
+	oldTime = 0.f;
+	newTime = SDL_GetTicks64();
 
-	if (!SDL2_Init(SDL_INIT_EVERYTHING, 1280, 720)) {
+	if (!SDL2_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER, 1280, 720)) {
 		return;
 	}
 
@@ -69,23 +72,23 @@ Graphics::~Graphics() {
 	SDL_Quit();
 
 	std::cout << "SDL Subsystems closed successfully!" << std::endl;
-	std::cin >> r;
-}
-
-void Graphics::NextFrame() {
-
-	SDL_RenderClear(renderer);
-	SDL_RenderPresent(renderer);
+	std::cout << "Press any key to quit..." << std::endl;
 }
 
 void Graphics::Vector2PixelsToMeters(Vector2& val)
 {
-	val.x *= PIX_TO_MET;
-	val.y *= PIX_TO_MET;
+	val.x *= MET_IN_PIX;
+	val.y *= MET_IN_PIX;
 }
 
 void Graphics::Vector2MetersToPixels(Vector2& val)
 {
-	val.x = ((scaledWidth / 2.0f) + val.x) * MET_TO_PIX;
-	val.y = ((scaledHeight / 2.0f) + val.y) * MET_TO_PIX;
+	val.x = val.x * PIX_IN_MET;//((scaledWidth / 2.0f) + val.x) * PIX_IN_MET;
+	val.y = val.y * PIX_IN_MET;//((scaledHeight / 2.0f) + val.y) * PIX_IN_MET;
+}
+
+void Graphics::Vector2MetersToPixels(Vector2& val, Vector2 dimensions)
+{
+	val.x = val.x * PIX_IN_MET;// ((scaledWidth / 2.0f) + val.x)* PIX_IN_MET - dimensions.x / 2;
+	val.y = val.y * PIX_IN_MET;// ((scaledHeight / 2.0f) + val.y) * PIX_IN_MET - dimensions.y / 2;
 }

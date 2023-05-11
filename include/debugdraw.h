@@ -1,47 +1,46 @@
 #pragma once
 
-#include <box2d/b2_draw.h>
 #include <SDL.h>
 #include <box2d/b2_body.h>
-#include <string>
-#include <memory>
 #include <graphics.h>
+#include <unordered_map>
+#include <vector>
+#include <memory>
+#include <entity.h>
+#include <camera.h>
+#include <tile.h>
 
-class DebugDraw : public b2Draw {
+class DebugDraw {
 private:
-	std::shared_ptr<Graphics> graphicsRef;
-	b2Vec2 bodyPosition;
-	b2Body* bodyRef;
-	Vector2 pixelDimensions;
-	b2Fixture* triggerFix;
-	int32 worldWidth, worldHeight;
-	std::string objName;
-	bool isColliding;
-	Uint8 dR, dG, dB;
+	std::shared_ptr<Graphics>			graphicsRef;
+	std::unordered_map<int, Entity*>	entityRefs;
+	std::vector<Tile*>					tileRefs;
+	Camera*								camera;
+	int32								worldWidth, worldHeight;
+		
+	// Inherited via b2Draw
+	void DrawRect(b2Body* bodyRef, const SDL_Rect* rect, const SDL_Color& color);
+	void DrawRect(b2Body* bodyRef, const b2Vec2* vertices, int32 vertexCount, const SDL_Color& color);
+	void DrawTriggerPolygon(b2Body* bodyRef, const b2Vec2* vertices, int32 vertexCount, const SDL_Color& color);
+	void DrawSolidPolygon(b2Body* bodyRef, const b2Vec2* vertices, int32 vertexCount, const SDL_Color& color);
+	void DrawChainShape(b2Body* bodyRef, const b2Vec2* vertices, int32 vertexCount, b2Vec2 gPrev, b2Vec2 gNext, const SDL_Color& color);
+
+	void DrawPolygon(b2Body* bodyRef, const b2Vec2* vertices, int32 vertexCount, const SDL_Color& color);
+	void DrawCircle(b2Body* bodyRef, const b2Vec2& center, float radius, const SDL_Color& color);
+	void DrawSolidCircle(b2Body* bodyRef, const b2Vec2& center, float radius, const b2Vec2& axis, const SDL_Color& color);
+	void DrawSegment(b2Body* bodyRef, const b2Vec2& p1, const b2Vec2& p2, const SDL_Color& color);
+	void DrawTransform(b2Body* bodyRef, const b2Transform& xf);
+	void DrawPoint(b2Body* bodyRef, const b2Vec2& p, float size, const SDL_Color& color);
 
 public:
 
-	DebugDraw(std::shared_ptr<Graphics> gr, const char* name, Vector2 pixelDimensions);
+	DebugDraw(const std::shared_ptr<Graphics>& graphicsr, Camera* cam);
+	~DebugDraw();
 
 	void SetWorldDimensions(b2Vec2 dim);
-	void UpdateBodyPosition(b2Vec2 p);
-	void SetCollisionColor(Uint8 on) { isColliding = on == 1; }
-
-	inline void SetBodyReference(b2Body* ref) { bodyRef = ref; }
-	inline void SetTriggerFixture(b2Fixture* ref) { triggerFix = ref; }
-	inline b2Fixture* GetTrigger() { return triggerFix; }
-	
-	// Inherited via b2Draw
-	void DrawRect(const SDL_Rect* rect); 
-	void DrawRect(const b2Vec2* vertices, int32 vertexCount);
-	void DrawTriggerPolygon(const b2Vec2* vertices, int32 vertexCount);
-	void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
-	void DrawChainShape(const b2Vec2* vertices, int32 vertexCount, b2Vec2 gPrev, b2Vec2 gNext);
-
-	virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override;
-	virtual void DrawCircle(const b2Vec2& center, float radius, const b2Color& color) override;
-	virtual void DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color) override;
-	virtual void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) override;
-	virtual void DrawTransform(const b2Transform& xf) override;
-	virtual void DrawPoint(const b2Vec2& p, float size, const b2Color& color) override;
+	void UpdateCameraRect(SDL_Rect p);
+	void AddEntityRef(Entity* entityRef);
+	void AddTileRef(Tile* tile) { tileRefs.push_back(tile); }
+	void AddTileMapRef(std::vector<std::vector<Tile*>>* tilemapRef);
+	void DrawAll();
 };

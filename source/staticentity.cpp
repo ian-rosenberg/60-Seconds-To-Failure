@@ -2,40 +2,48 @@
 
 StaticEntity::StaticEntity() {
 	boundingVolume = nullptr;
-	graphics = nullptr;
 	body = nullptr;
+	debugColor = SDL_Color(0, 255, 255, 255);
 }
 
-StaticEntity::StaticEntity(std::shared_ptr<Graphics> g) {
-	graphics = g;
+StaticEntity::StaticEntity(const std::shared_ptr<Graphics>& graphics) {
+	this->graphics = graphics;
 	boundingVolume = nullptr;
 	body = nullptr;
+	debugColor = SDL_Color(0, 255, 255, 255);
 }
 
-StaticEntity::StaticEntity(std::shared_ptr<Graphics> g, float w, float h)
+StaticEntity::StaticEntity(const std::shared_ptr<Graphics>& graphics, float w, float h, Vector2 startPos)
 {
-	graphics = g;
+	this->graphics = graphics;
 	boundingVolume = nullptr;
 	SetWorldDimensions(b2Vec2(w, h));
+	newDrawPosition = startPos;
 	body = nullptr;
+	debugColor = SDL_Color(0, 255, 255, 255);
 }
 
 StaticEntity::~StaticEntity()
 {
 	body = nullptr;
 	boundingVolume = nullptr;
-	graphics = nullptr;
+	graphics.reset();
 }
 
-void StaticEntity::Draw() {
+void StaticEntity::Draw(Vector2 cameraPosition) {
+	Vector2 resultPosition;
+
 	if (!currentAnimation)
 		return;
+
+	resultPosition = { newDrawPosition.x - cameraPosition.x, 
+		newDrawPosition.y - cameraPosition.y };
 
 	scaleCenter = vector2(currentAnimation->GetCellWidth() / 2.0f,
 		currentAnimation->GetCellHeight() / 2.0f);
 
 	currentSprite->Draw(currentSprite,
-		newDrawPosition,
+		resultPosition,
 		&scale,
 		&scaleCenter,
 		&rotation,
@@ -52,8 +60,10 @@ void StaticEntity::Think()
 }
 
 void StaticEntity::Update()
-{
+{/*
 	worldPosition = body->GetPosition();
+	newDrawPosition = { worldPosition.x, worldPosition.y };
+	graphics->Vector2MetersToPixels(newDrawPosition);*/
 }
 
 int StaticEntity::Touch(Entity* other)
@@ -73,15 +83,4 @@ int StaticEntity::Damage(int amount, Entity* source)
 void StaticEntity::Die()
 {
 
-}
-
-void StaticEntity::UpdateScreenPosition(double alpha)
-{
-	newDrawPosition.x = ((graphics->GetScaledWidth() / 2.0f) + worldPosition.x) * MET_TO_PIX;
-	newDrawPosition.y = ((graphics->GetScaledHeight() / 2.0f) + worldPosition.y) * MET_TO_PIX;
-	debugRect.x = newDrawPosition.x - worldDimensions.x / 2 * MET_TO_PIX;
-	debugRect.y = newDrawPosition.y - worldDimensions.y / 2 * MET_TO_PIX;
-	/*std::cout << "Object: " << name << std::endl;
-	std::cout << "World Pos: " << worldPosition.x << "," << worldPosition.y << std::endl;
-	std::cout << "Screen Pos: " << newDrawPosition.x << "," << newDrawPosition.y << "\t\tDEBUG RECT: " << debugCircle.x << "," << debugCircle.y << std::endl;*/
 }

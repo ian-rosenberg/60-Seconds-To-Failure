@@ -5,12 +5,16 @@
 
 #include <entity.h>
 #include <player.h>
+#include <camera.h>
 #include <tile.h>
+#include <perlinnoise.h>
 #include <contactlistener.h>
 
 #include <box2d/box2d.h>
 #include <box2d/b2_math.h>
 #include <box2d/b2_world.h>
+#include <debugdraw.h>
+
 
 class GameArea {
 private:
@@ -25,12 +29,11 @@ private:
 
 	EntityManager*					entityManager;
 
-	b2Vec2*							gravityScale;
+	b2Vec2							gravityScale;
 	b2World*						areaPhysics;
 
 	TileManager*					tileManager;
 
-	void							CreateTestArea();
 	//Test ground vars
 	b2Body*							ground;
 	b2BodyDef						groundBD;
@@ -40,20 +43,28 @@ private:
 	float							testPlatformBottom;
 	float							testPlatformTop;
 
-	ContactListener					*listener;
+	ContactListener*				listener;
 
 	double							fixedTimestepAccum;
 	double							fixedTimestepAccumRatio;
-	const double					timeStep = 1 / 30.0f;
+	const float						timeStep = 1.f / 60.f;
 	const int32						velocityIterations = 6;
 	const int32						positionIterations = 2;
 
+	PerlinNoise*					perlinNoiseMap;
+
+	Camera*							camera;
+	DebugDraw*						debugDraw;
+
+	void InitPhysicsWorld();
+
+
 public:
-	GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g);
+	GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphics, Vector2 playerDim);
 
 	~GameArea();
 
-	inline b2World* GetWorldPtr() { return areaPhysics; }
+	b2World* GetWorldPtr() { return areaPhysics; }
 
 	void AddEntity(Entity* e);
 
@@ -73,13 +84,15 @@ public:
 
 	void ResetSmoothStates();
 
-	void AreaDraw(double accumulator);
+	void AreaDraw();
 
-	inline EntityManager* GetEntityManager() { return entityManager; }
+	EntityManager* GetEntityManager() { return entityManager; }
 
-	inline Uint8 IsActive() { return active; }
+	Uint8 IsActive() { return active; }
 
-	inline void SetActive(Uint8 flag) { active = flag; }
+	void SetActive(Uint8 flag) { active = flag; }
 
-	inline b2Vec2* GetGravityScale() { return gravityScale; }
+	b2Vec2 GetGravityScale() { return gravityScale; }
+
+	b2Vec2 FindSpawnPointFromLeft();
 };

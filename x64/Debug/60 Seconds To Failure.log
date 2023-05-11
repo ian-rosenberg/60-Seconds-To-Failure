@@ -1,18 +1,45 @@
-﻿  graphics.cpp
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\include\graphics.h(19,33): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\graphics.cpp(51,5): warning C4305: 'argument': truncation from 'unsigned int' to 'Uint8'
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\source\graphics.cpp(51,17): warning C4309: 'argument': truncation of constant value
-  player.obj : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
-LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
-player.obj : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in actor.obj
-player.obj : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in actor.obj
-sprite.obj : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in actor.obj
-sprite.obj : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in actor.obj
-staticentity.obj : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in actor.obj
-staticentity.obj : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in actor.obj
-tile.obj : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in actor.obj
-tile.obj : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in actor.obj
-vectortypes.obj : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in actor.obj
-vectortypes.obj : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in actor.obj
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-C:\Users\Ian\source\repos\60-Seconds-To-Failure\x64\Debug\60 Seconds To Failure.exe : fatal error LNK1319: 10 mismatches detected
+﻿  tile.cpp
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\graphics.h(53,42): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\graphics.h(55,54): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(72,46): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(82,39): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(169,53): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(171,53): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(176,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(212,36): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(380,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(386,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(598,53): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(600,53): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(605,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(33,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(57,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(97,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(121,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(156,27): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(157,25): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(160,31): warning C4244: '-=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(174,28): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(178,31): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(211,80): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(211,42): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(222,25): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(226,18): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(230,25): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(265,127): warning C4267: 'argument': conversion from 'size_t' to 'int32', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(201,9): warning C4101: 'pg': unreferenced local variable
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(202,9): warning C4101: 'ng': unreferenced local variable
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(199,8): warning C4101: 'temp': unreferenced local variable
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(386,18): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(385,18): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(449,3): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(453,3): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(457,3): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(476,36): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(476,36): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(476,62): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(476,62): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(516,11): warning C4101: 'srcRect': unreferenced local variable
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(612,2): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(65): warning C4715: 'to_string': not all control paths return a value
+  60 Seconds To Failure.vcxproj -> C:\Users\sapph\source\repos\60-Seconds-To-Failure\x64\Debug\60 Seconds To Failure.exe

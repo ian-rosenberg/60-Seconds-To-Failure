@@ -3,8 +3,6 @@
 #include <vector>
 #include <box2d/box2d.h>
 #include <actor.h>
-#include <camera.h>
-#include <debugdraw.h>
 #include <queue>
 #include <functional>
 
@@ -72,7 +70,7 @@ protected:
 	Uint16											health;
 	Uint16											maxHealth;
 
-	const double									jumpCooldown = 2550.0;	//1.25 second jump cooldown
+	const double									jumpCooldown = 2550.0;	//2.55 second jump cooldown
 	double											jumpTimer;
 	float											jumpForce;
 	float											dampening;
@@ -84,7 +82,7 @@ protected:
 	float											maxSpeed;
 
 	//Debug Drawing, null if not enabled
-	DebugDraw										*debugDraw;
+	SDL_Color										debugColor;
 	SDL_Rect										debugRect;
 
 public:
@@ -132,18 +130,18 @@ public:
 		}
 	};
 
+	Entity(int id);
 	Entity();
 
 	~Entity();
 
-	virtual void Draw() = 0;											/**<called after system entity drawing for custom effects*/
+	virtual void Draw(Vector2 cameraPosition) = 0;											/**<called after system entity drawing for custom effects*/
 	virtual void Think() = 0;											/**<called before system updates to make decisions / hand input*/
 	virtual void Update() = 0;											/**<called after system entity update*/
 	virtual int Touch(Entity* other) = 0;								/**<when this entity touches another entity*/
 	virtual void Activate(Entity* activator) = 0;						/**<some entities can be activated by others, doors opened, levels, etc*/
 	virtual int Damage(int amount, Entity* source) = 0;					/**<when this entity takes damage*/
 	virtual void Die() = 0;
-	virtual void UpdateScreenPosition(double alpha) = 0;
 	
 	/**
 	* @brief Set this actor's animation by the name of the animation
@@ -163,17 +161,17 @@ public:
 
 	void SetId(int newId);
 
-	inline int GetId() { return id; }
+	int GetId() { return id; }
 
 	void SetBody(b2Body* b);
 
-	inline b2Body* GetBody() { return body; }
+	b2Body* GetBody() { return body; }
 
-	inline b2Fixture* GetJumpTrigger() { return jumpTrigger; }
+	b2Fixture* GetJumpTrigger() { return jumpTrigger; }
 
 	void RotateTranslate(b2Vec2& vector, const b2Vec2& center, float angle);
 
-	inline b2Vec2 GetWorldDimensions() { return worldDimensions; }
+	b2Vec2 GetWorldDimensions() { return worldDimensions; }
 
 	void SetWorldDimensions(b2Vec2 dim);
 	
@@ -184,32 +182,30 @@ public:
 
 	void SetVelocity(InputEvent* e);
 
-	/** Inline Fcns -------------------------------------------------------------**/
-	inline void SetPixelVelocity(Vector2 v) { velocity = v; }
+	void SetPreviousPhysicsState();
 
-	inline void SetGravityEnabled(Uint8 flag) { gravityEnabled = flag; }
+	/** Fcns -------------------------------------------------------------**/
+	void SetPixelVelocity(Vector2 v) { velocity = v; }
+
+	void SetGravityEnabled(Uint8 flag) { gravityEnabled = flag; }
 	
-	inline Vector2 GetDrawPosition() { return newDrawPosition; }
-
-	inline void EnableDebugDraw(DebugDraw* ddPtr) { debugDraw = ddPtr; }
-
-	inline Uint8 GetDebugDrawEnabled() { return debugDraw!=NULL;}
-
-	inline DebugDraw* GetDebugDraw() { return debugDraw;}
+	void UpdateScreenPosition();
 	
-	inline Vector2 GetScreenPosition() { return newDrawPosition; }
+	Vector2 GetDrawPosition() { return newDrawPosition; }
 
-	inline const char* GetActorName() { return name.c_str(); }
+	const char* GetActorName() { return name.c_str(); }
 
-	inline void DecrementJumpTimer(double ticks) { jumpTimer -= ticks; }
+	void DecrementJumpTimer(double ticks) { jumpTimer -= ticks; }
 
-	inline void ResetJumpTimer() { jumpTimer = jumpCooldown; }
+	void ResetJumpTimer() { jumpTimer = jumpCooldown; }
 
-	inline bool IsJumpTimeReady() { return jumpTimer <= 0; }
+	bool IsJumpTimeReady() { return jumpTimer <= 0; }
 
-	inline bool IsGrounded() { return grounded; }
+	bool IsGrounded() { return grounded; }
 
-	inline Vector2 GetAvgPixelDimensions() { return avgDim; }
+	Vector2 GetAvgPixelDimensions() { return avgDim; }
+
+	SDL_Color GetDebugColor() { return debugColor; }
 };
 
 class EntityManager {
@@ -223,7 +219,7 @@ private:
 public:
 	EntityManager();
 
-	EntityManager(Uint8 debug, std::shared_ptr<Graphics> g);
+	EntityManager(Uint8 debug, const std::shared_ptr<Graphics>& graphics);
 
 	~EntityManager();
 
@@ -242,32 +238,28 @@ public:
 	/**
 	* Input driver integrated per entity manager, one active at a time
 	*/
-	inline void PushBackInputEvent(Entity::InputEvent* newEvent) { inputQueue->push_back(newEvent); }
+	void PushBackInputEvent(Entity::InputEvent* newEvent) { inputQueue->push_back(newEvent); }
 
-	inline void PushBackEventToFire(Entity::InputEvent* newEvent) { eventsToFire->push(newEvent); }
+	void PushBackEventToFire(Entity::InputEvent* newEvent) { eventsToFire->push(newEvent); }
 
-	inline std::vector<Entity::InputEvent*>* GetInputQueue() { return inputQueue; }
+	std::vector<Entity::InputEvent*>* GetInputQueue() { return inputQueue; }
 
-	inline std::queue<Entity::InputEvent*>* GetEventsToFire() { return eventsToFire; }
+	std::queue<Entity::InputEvent*>* GetEventsToFire() { return eventsToFire; }
 
 	/**
 	* @brief Render all entites to screen
 	*/
-	void EntityDrawAll(double alpha);
-
-	void DebugDrawing(Entity* it);
+	void EntityDrawAll(SDL_Rect cameraRect);
 
 	/**
 	* @brief Update all entites
 	*/
-	void EntityUpdateAll(double ticks);
+	void EntityUpdateAll();
 
 	/**
 	* @brief Let all managed entities think
 	*/
 	void InputUpdate();
 
-	void EntityThinkAll();
-
-	void SetAlpha(double a);
+	void EntityThinkAll(); 
 };

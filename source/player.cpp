@@ -3,13 +3,13 @@
 
 const int JOYSTICK_DEAD_ZONE = 8000;
 
-Player::Player(std::shared_ptr<Graphics> g)
+Player::Player(const std::shared_ptr<Graphics>& graphics) : Entity{ -1 }
 {
-	name = "";
+	name = "Player";
 	keys = 0;
-	controller = NULL;
+	controller = nullptr;
 	sensitivity = 0;
-	maxSpeed = 0.25f;
+	maxSpeed = 25.f;
 	dampening = 0.8f;
 	dimensions = { 0,0,0 };
 	enteredFrom = { 0,0 };
@@ -21,15 +21,15 @@ Player::Player(std::shared_ptr<Graphics> g)
 	health = maxHealth;
 	maxEnergy = 50;
 	energy = maxEnergy;
-	jumpForce = .01;
+	jumpForce = 10.f;
 	scale = { 1,1 };
 	prevDrawPosition = newDrawPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
 
 	punching = false;
-	graphics = g;
+	this->graphics = graphics;
 	LoadActor(actorFilePath.c_str());
-	SetWorldDimensions(b2Vec2(avgDim.x * PIX_TO_MET, avgDim.y * PIX_TO_MET));
+	SetWorldDimensions(b2Vec2(avgDim.x * MET_IN_PIX, avgDim.y * MET_IN_PIX));
 	currentAnimation = GetAnimationByName("idle");
 	currentSprite = currentAnimation->GetSprite();
 }
@@ -37,7 +37,7 @@ Player::Player(std::shared_ptr<Graphics> g)
 Player::~Player()
 {
 	InputEvent* e;
-	while (!inputQueue->empty()) {
+	while (inputQueue != nullptr && !inputQueue->empty()) {
 		e = inputQueue->front();
 		inputQueue->erase(inputQueue->begin());
 
@@ -53,7 +53,7 @@ Player::~Player()
 	}
 	delete eventsToFire;
 
-	graphics = nullptr;
+	graphics.reset();
 }
 
 void Player::Think() {
@@ -132,17 +132,16 @@ void Player::Think() {
 	}
 }
 
-void Player::Draw()
+void Player::Draw(Vector2 cameraPosition)
 {
 	Vector4 debugColor = vector4(.5, 1, 0, 1);
+	Vector2 resultPosition = { newDrawPosition.x - cameraPosition.x,
+		newDrawPosition.y - cameraPosition.y };
 
 	if (!this)
 	{
 		return;
 	}
-	
-	if (IsGrounded())
-		debugDraw->SetCollisionColor(1);
 
 	if ((health / maxHealth) < 0.25f)
 	{
@@ -156,10 +155,8 @@ void Player::Draw()
 	scaleCenter = vector2(currentAnimation->GetCellWidth() / 2.0f,
 		currentAnimation->GetCellHeight() / 2.0f);
 
-	//vector2d_sub(resultPos, position, GetCameraPosition());
-
 	currentSprite->Draw(currentSprite,
-		newDrawPosition,
+		resultPosition,
 		&scale,
 		&scaleCenter,
 		&rotation,
@@ -171,42 +168,25 @@ void Player::Draw()
 		currentAnimation->GetCellHeight());
 
 	currentAnimation->AnimationNextFrame(currentAnimation);
+
+	//std::cout << resultPosition.x << "," << resultPosition.y << std::endl;
+	//std::cout << "Player Velocity (" << velocity.x << ", " << velocity.y << ")" << std::endl;
 }
 
-void Player::UpdateScreenPosition(double alpha)
-{
-	Vector2 p;
 
-	prevBodyPosition = newBodyPosition;
-	newBodyPosition = interpComponent->smoothedPosition;
-
-	p = { newBodyPosition.x, newBodyPosition.y };
-
-	prevDrawPosition = newDrawPosition;
-
-	graphics->Vector2MetersToPixels(p);
-	newDrawPosition = p;
-	newDrawPosition.x = newDrawPosition.x * alpha + prevDrawPosition.x * (1.0 - alpha);
-	newDrawPosition.y = newDrawPosition.y * alpha + prevDrawPosition.y * (1.0 - alpha);
-
-	//std::cout << GetAverageActorDimensions().x / 4 << std::endl;
-
-	/*if(newBodyPosition.x != prevBodyPosition.x || newBodyPosition.y != prevBodyPosition.y)
-		std::cout << "World Position: " << newBodyPosition.x << "," << newBodyPosition.y << std::endl;
-	if (newDrawPosition.x != prevDrawPosition.x || newDrawPosition.y != prevDrawPosition.y)
-		std::cout << "Draw Position: " << newDrawPosition.x << "," << newDrawPosition.y << std::endl;*/
-}
 
 void Player::Update()
 {
+	b2Vec2 bodyVelocity = body->GetLinearVelocity();
+		
 	SetLogicalState(State::State_Idle);
 
 	if (dead)
 	{
 		return;
 	}
-
-	if (abs(velocity.x) == abs(maxSpeed))
+	
+	if (abs(bodyVelocity.x) > .01f)
 	{
 		if (velocity.x < 0)
 		{

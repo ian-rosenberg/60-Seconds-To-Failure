@@ -2,27 +2,27 @@
 #include <fstream>
 #include <string>
 
-Animation::Animation(Animation* old)
+Animation::Animation(const Animation & old)
 {
-	name = old->name;
-	filepath = old->filepath;
-	sprite = new Sprite(old->sprite);
-	length = old->length;
-	currentFrame = old->currentFrame;
-	cellWidth = old->cellWidth;
-	cellHeight = old->cellHeight;
-	yOffset = old->yOffset;
-	xOffset = old->xOffset;
-	colorSpecial = old->colorSpecial;
-	animType = old->animType;
-	frameRate = old->frameRate;
+	name = old.name;
+	filepath = old.filepath;
+	sprite = old.sprite;
+	length = old.length;
+	currentFrame = old.currentFrame;
+	cellWidth = old.cellWidth;
+	cellHeight = old.cellHeight;
+	yOffset = old.yOffset;
+	xOffset = old.xOffset;
+	colorSpecial = old.colorSpecial;
+	animType = old.animType;
+	frameRate = old.frameRate;
 }
 
-Animation::Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g)
+Animation::Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics)
 {
 	name = n;
 	filepath = fp;
-	sprite = new Sprite(fp.c_str(), vector2( 0,0 ), vector2( 1,1 ), vector2(0,0), vector3( 0,0,0 ), vector2( 0,0 ), color, 0, yOffset, width, height, g);
+	sprite = new Sprite(fp.c_str(), vector2( 0,0 ), vector2( 1,1 ), vector2(0,0), vector3( 0,0,0 ), vector2( 0,0 ), color, 0, yOffset, width, height, graphics);
 	length = len;
 	currentFrame = current;
 	cellWidth = width;
@@ -52,7 +52,7 @@ Animation::Animation(std::string n, Sprite* s, int width, int height, int xOffse
 
 Animation::~Animation()
 {
-	if (sprite != NULL)
+	if (sprite != nullptr)
 		delete sprite;
 	else
 		return;
@@ -66,7 +66,7 @@ AnimationReturnType Animation::AnimationNextFrame(Animation* anim)
 		return AnimationReturnType::ART_ERROR;
 	}
 
-	currentFrame += anim->frameRate;
+	currentFrame += anim->length * frameRate;
 	if ((int)(currentFrame) >= anim->length - 1)
 	{
 		switch (anim->animType)

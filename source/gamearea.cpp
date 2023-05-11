@@ -1,87 +1,59 @@
 #include "gamearea.h"
 #include "staticentity.h"
 
-void GameArea::CreateTestArea() {
-	float hDim = player->GetWorldDimensions().y;
-	float fVal = 0.9f;
-	areaPhysics = new b2World(*gravityScale);
-	areaPhysics->SetAutoClearForces(false);
-
-	listener = new ContactListener();
-	areaPhysics->SetContactListener(listener);
-	areaPhysics->SetAllowSleeping(false);
-
-	fixedTimestepAccum = 0;
-	fixedTimestepAccumRatio = 0;
-
-	// Ground
-	{
-		StaticEntity *se = new StaticEntity(graphics, graphics->GetScaledWidth(), hDim);
-		se->SetActorName("Ground");
-		se->CalculateAverageActorDimensions();
-		
-		b2BodyDef bd;
-		b2Body* ground = areaPhysics->CreateBody(&bd);
-		se->SetBody(ground);
-
-		b2EdgeShape shape;
-		shape.SetTwoSided(b2Vec2(-graphics->GetScaledWidth(), graphics->GetScaledHeight()/2 - hDim), b2Vec2(graphics->GetScaledWidth(), graphics->GetScaledHeight() / 2 - hDim));
-
-		b2FixtureDef tpd = {};
-		tpd.friction = fVal;
-		tpd.shape = new b2EdgeShape(shape);
-
-		b2Fixture* f = ground->CreateFixture(&tpd);
-		se->SetStaticTriggerFixture(f);
-		se->CalculateAverageActorDimensions();
-
-		entityManager->AddEntity(se);
-	}
-
-	// Platform
-	{
-		StaticEntity* se = new StaticEntity(graphics, graphics->GetScaledWidth() / 4.0f, 1.0f);
-		se->SetActorName("Platform");
-		b2BodyDef bd;
-		bd.position.Set(-graphics->GetScaledWidth() / 8.0f, -graphics->GetScaledHeight()/4);
-		b2Body* body = areaPhysics->CreateBody(&bd);
-		se->SetBody(body);
-
-		b2PolygonShape shape;
-		shape.SetAsBox(graphics->GetScaledWidth() / 8, 0.5f);
-
-		b2FixtureDef tpd = {};
-		tpd.friction = fVal;
-		tpd.shape =  new b2PolygonShape(shape);
-
-		b2Fixture* f = body->CreateFixture(&tpd);
-		se->SetStaticTriggerFixture(f);
-
-		entityManager->AddEntity(se);
-	}
-}
-
-GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g) {
+GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphics, Vector2 playerDim) {
+	Vector2 screenDim;
 	id = ID;
-	player = NULL;
-	entityManager = new EntityManager(1, g);//enabling debug draw with parameter, renderer
-	gravityScale = new b2Vec2(grav);
-	gravityEnabled = gravityScale->y != 0 || gravityScale->x != 0;
-	areaPhysics = NULL;
+	player = nullptr;
+	entityManager = new EntityManager(1, graphics);//enabling debug draw with parameter, renderer
+	gravityScale = grav;
+	gravityEnabled = gravityScale.y != 0 || gravityScale.x != 0;
 	ground = {};
 	testPlatform = {};
 	testPlatformBottom = 0.0f;
 	testPlatformTop = 0.0f;
-	graphics = std::shared_ptr<Graphics>(g);
-	tileManager = nullptr;
+	this->graphics = graphics;
+	
+	screenDim = graphics->GetScreenDimensions();
+	camera = new Camera(
+		SDL_Rect(0, 
+			0, 
+			screenDim.x,
+			screenDim.y), 
+		Vector4(-screenDim.x*2, 
+			-screenDim.y * 2, 
+			screenDim.x * 2, 
+			screenDim.y * 2));
+
+	debugDraw = new DebugDraw(graphics, camera);
+
+	InitPhysicsWorld();
+
+	tileManager = new TileManager("SideViewTest", 
+		graphics, 
+		areaPhysics, 
+		playerDim);
+
+	perlinNoiseMap = new PerlinNoise(Vector2(100, 20));
+
+	std::vector<std::vector<Tile*>>* tilemap = tileManager->GenerateTileMap(perlinNoiseMap, areaPhysics, playerDim);
+
+	tileManager->LinkTilemapGhostVertices(tilemap);
+
+	debugDraw->AddTileMapRef(tilemap);
 }
 
 GameArea::~GameArea() {
-	graphics = nullptr;
-	delete gravityScale;
 	delete entityManager;
-	delete areaPhysics;
+	delete debugDraw;
 	delete listener;
+    delete camera;
+	delete tileManager;
+
+	delete areaPhysics;
+	player = nullptr;
+
+	graphics.reset();
 }
 
 void GameArea::AreaThink() {
@@ -95,16 +67,12 @@ void GameArea::AreaUpdate() {
 	if (!active)
 		return;
 	tileManager->UpdateMap();
+	entityManager->EntityUpdateAll();
 	entityManager->InputUpdate();
-	entityManager->EntityUpdateAll(graphics->GetFrameDeltaTime());
-	
 }
 
+//https://www.unagames.com/blog/daniele/2010/06/fixed-time-step-implementation-box2d
 void GameArea::PhysicsSteps(float deltaTime) {
-	/*areaPhysics->Step(timeStep, velocityIterations, positionIterations);
-
-	SmoothPhysicsStates();*/
-
 	const int MAX_STEPS = 5;
 
 	fixedTimestepAccum += deltaTime;
@@ -120,16 +88,17 @@ void GameArea::PhysicsSteps(float deltaTime) {
 
 	assert(
 		"Accumulator must have a value lesser than the fixed time step" &&
-		fixedTimestepAccum < FIXED_TIMESTEP + FLT_EPSILON
+		fixedTimestepAccum < timeStep + FLT_EPSILON
 	);
 
 	fixedTimestepAccumRatio = fixedTimestepAccum / timeStep;
 
 	// This is similar to clamp "dt":
-	deltaTime = std::min(deltaTime, (float)(MAX_STEPS * timeStep));
+	//deltaTime = std::min(deltaTime, (float)(MAX_STEPS * timeStep));
 	// but it allows above calculations of fixedTimestepAccumulator_ and
 	// fixedTimestepAccumulatorRatio_ to remain unchanged.
 	const int nStepsClamped = std::min(nSteps, MAX_STEPS);
+	//std::cout << nStepsClamped << std::endl;
 	for (int i = 0; i < nStepsClamped; ++i)
 	{
 		// In singleStep_() the CollisionManager could fire custom
@@ -147,10 +116,8 @@ void GameArea::PhysicsSteps(float deltaTime) {
 }
 
 void GameArea::SinglePhysicsStep(float deltaTime)
-{
-	AreaUpdate();
-	
-	areaPhysics->Step(deltaTime, velocityIterations, positionIterations);
+{	
+	areaPhysics->Step(timeStep, velocityIterations, positionIterations);
 	
 	player->ToggleGrounded(false);
 	
@@ -171,7 +138,7 @@ void GameArea::SmoothPhysicsStates()
 {
 	const float oneMinusRatio = 1.f - fixedTimestepAccumRatio;
 
-	for (b2Body* b = areaPhysics->GetBodyList(); b != NULL; b = b->GetNext())
+	for (b2Body* b = areaPhysics->GetBodyList(); b != nullptr; b = b->GetNext())
 	{
 		if (b->GetType() == b2_staticBody)
 		{
@@ -190,7 +157,7 @@ void GameArea::SmoothPhysicsStates()
 
 void GameArea::ResetSmoothStates()
 {
-	for (b2Body* b = areaPhysics->GetBodyList(); b != NULL; b = b->GetNext())
+	for (b2Body* b = areaPhysics->GetBodyList(); b != nullptr; b = b->GetNext())
 	{
 		if (b->GetType() == b2_staticBody)
 		{
@@ -200,29 +167,67 @@ void GameArea::ResetSmoothStates()
 		PhysicsComponent* c = (PhysicsComponent*)(b->GetUserData().pointer);
 		c->smoothedPosition = c->prevPosition = b->GetPosition();
 		c->smoothedAngle = c->prevAngle = b->GetAngle();
+		//b->SetTransform(c->smoothedPosition, c->smoothedAngle);
 	}
 }
 
-void GameArea::AreaDraw(double accumulator) {
+void GameArea::AreaDraw() {
+	Vector2 pos;
+
 	if (!active)
 		return;
-	tileManager->DrawMap(Vector2(0,0));
-	entityManager->EntityDrawAll(accumulator);
+
+	pos = player->GetDrawPosition();
+	camera->Move(pos, graphics->GetAccumulatorTime());
+	tileManager->DrawMap(Vector2(camera->GetRect().x, camera->GetRect().y));
+	entityManager->EntityDrawAll(camera->GetRect());
+	debugDraw->DrawAll();
+}
+
+b2Vec2 GameArea::FindSpawnPointFromLeft()
+{
+	std::vector<std::vector<Tile*>>* tilemap = tileManager->GetTileMap();
+	Vector2 tileDim = tileManager->GetTileDimensions();
+	int col = 0;
+
+	for (int row = 0; col < tilemap->at(row).size(); row++) {
+		if (row >= tilemap->size()-1) {
+			row = 0;
+			col++;
+		}
+
+		if (tilemap->at(row).at(col) != nullptr) {
+			return b2Vec2(tilemap->at(row).at(col)->GetBodyReference()->GetPosition()) 
+				- b2Vec2(0, tilemap->at(row).at(col)->GetPixelDimensions().y * MET_IN_PIX);
+		}
+	}
+}
+
+void GameArea::InitPhysicsWorld()
+{
+	areaPhysics = new b2World(gravityScale);
+	areaPhysics->SetAllowSleeping(true);
+	areaPhysics->SetAutoClearForces(false);
+	listener = new ContactListener();
+	areaPhysics->SetContactListener(listener);
+
+	fixedTimestepAccum = 0;
+	fixedTimestepAccumRatio = 0;
 }
 
 void GameArea::AddEntity(Entity* e) {
 	entityManager->AddEntity(e);
+	debugDraw->AddEntityRef(e);
 }
 
 void GameArea::SetPlayer(Player* p) {
 	Vector2 dim = p->GetAvgPixelDimensions();
+	Vector2 sD = graphics->GetScreenDimensions();
+
 	player = p;
 	player->SetInputQueuePtr(entityManager->GetInputQueue());
 	player->SetEventsToFirePtr(entityManager->GetEventsToFire());
-
-	CreateTestArea();
-
-	tileManager = new TileManager("", graphics, areaPhysics, dim);
+	player->UpdateScreenPosition();
 }
 
 Uint8 GameArea::CaptureInputEvents(SDL_Event* e){
@@ -238,7 +243,7 @@ Uint8 GameArea::CaptureInputEvents(SDL_Event* e){
 			return 0;
 	}
 
-	keyboardState = SDL_GetKeyboardState(&keyCount);
+	keyboardState = SDL_GetKeyboardState(nullptr);
 	
 	if (keyboardState[SDL_SCANCODE_ESCAPE])
 		keyCount++;
@@ -324,19 +329,6 @@ Uint8 GameArea::CaptureInputEvents(SDL_Event* e){
 		prevEvent = newEvent;
 
 		keyCount--;
-	}
-
-	if (keyCount == 0) {
-		newEvent = new Entity::InputEvent();
-		newEvent->keyDown = 0;
-		newEvent->keyCount = keyCount;
-		newEvent->prevEvent = prevEvent;
-		newEvent->gravity = gravityEnabled;
-		newEvent->e = e;
-		newEvent->msSinceLastInput = (prevEvent != nullptr) ? SDL_GetTicks() - prevEvent->msSinceLastInput : SDL_GetTicks();
-		newEvent->repeat = 0;
-
-		entityManager->PushBackInputEvent(newEvent);
 	}
 
 	return 1;

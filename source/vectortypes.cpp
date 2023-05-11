@@ -207,38 +207,38 @@ void vector4_normalize(Vector4* V)
 
 Vector2* vector2_dup(Vector2 old)
 {
-    Vector2* duped = NULL;
+    Vector2* duped = nullptr;
     duped = vector2_new();
-    if (!duped)return NULL;
+    if (!duped)return nullptr;
     vector2_copy((*duped), old);
     return duped;
 }
 
 Vector3* vector3_dup(Vector3 old)
 {
-    Vector3* duped = NULL;
+    Vector3* duped = nullptr;
     duped = vector3_new();
-    if (!duped)return NULL;
+    if (!duped)return nullptr;
     vector3_copy((*duped), old);
     return duped;
 }
 
 Vector4* vector4_dup(Vector4 old)
 {
-    Vector4* duped = NULL;
+    Vector4* duped = nullptr;
     duped = vector4_new();
-    if (!duped)return NULL;
+    if (!duped)return nullptr;
     vector4_copy((*duped), old);
     return duped;
 }
 
 Vector2* vector2_new()
 {
-    Vector2* vec = NULL;
+    Vector2* vec = nullptr;
     vec = (Vector2*)malloc(sizeof(Vector2));
-    if (vec == NULL)
+    if (vec == nullptr)
     {
-        return NULL;
+        return nullptr;
     }
     vector2_clear((*vec));
     return vec;
@@ -246,11 +246,11 @@ Vector2* vector2_new()
 
 Vector3* vector3_new()
 {
-    Vector3* vec = NULL;
+    Vector3* vec = nullptr;
     vec = (Vector3*)malloc(sizeof(Vector3));
-    if (vec == NULL)
+    if (vec == nullptr)
     {
-        return NULL;
+        return nullptr;
     }
     vector3_clear((*vec));
     return vec;
@@ -258,11 +258,11 @@ Vector3* vector3_new()
 
 Vector4* vector4_new()
 {
-    Vector4* vec = NULL;
+    Vector4* vec = nullptr;
     vec = (Vector4*)malloc(sizeof(Vector4));
-    if (vec == NULL)
+    if (vec == nullptr)
     {
-        return NULL;
+        return nullptr;
     }
     vector4_clear((*vec));
     return vec;

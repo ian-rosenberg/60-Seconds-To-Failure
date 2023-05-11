@@ -10,29 +10,29 @@
 
 class Sprite {
 protected:
-	std::string					filepath;
-	int							frame;
-	int							yOffset;
-	int							xOffset;
-	int							frameWidth;
-	int							frameHeight;
+	std::string						filepath;
+	int								frame;
+	int								yOffset;
+	int								xOffset;
+	int								frameWidth;
+	int								frameHeight;
 
-	Vector2						flip;
-	Vector2						scale;
-	Vector2						scaleCenter;
+	Vector2							flip;
+	Vector2							scale;
+	Vector2							scaleCenter;
 
-	Vector3						rotation;
+	Vector3							rotation;
 
-	Vector4						color;
-
-	SDL_Texture*				texture;
-	SDL_Rect					srcRect;
-	std::shared_ptr<Graphics>	graphics;
+	Vector4							color;
+	std::shared_ptr<SDL_Texture>	texture;
+	std::shared_ptr<SDL_Surface>	surf;
+	SDL_Rect						srcRect;
+	std::shared_ptr<Graphics>		graphics;
 	
 public:
 	Sprite();
 
-	Sprite(Sprite* oldSprite);
+	Sprite(const Sprite &oldSprite);
 
 	Sprite(std::string filepath,
 		Vector2 drawPosition,
@@ -45,7 +45,20 @@ public:
 		int offset,
 		int frameWidth,
 		int frameHeight,
-		std::shared_ptr<Graphics> ren);
+		std::shared_ptr<Graphics> ren);		
+	
+	Sprite(std::shared_ptr<SDL_Texture> tex,
+
+		SDL_Rect* sourceRect,
+
+		Vector2 drawPosition,
+
+		Vector3 rotation,
+
+		Vector2 flip,
+
+		Vector4 colorShift,
+		std::shared_ptr<Graphics> ren, std::string fp);
 
 	Sprite(std::string filepath,
 		int imgWidth,
@@ -59,26 +72,34 @@ public:
 	Sprite(std::string filepath,
 		int width,
 		int height,
-		std::shared_ptr<Graphics> g);
+		const std::shared_ptr<Graphics>& graphics);
 
 	~Sprite();
 
 	Uint8 LoadPNGImage(std::string filepath);
 
-	SDL_Surface* LoadSurface(std::string filepath);
+	std::shared_ptr<SDL_Surface> LoadSurface(std::string filepath);
 
-	SDL_Texture* GetTexture();
+	std::shared_ptr<SDL_Texture> GetTexture();
 
-	Vector2 GetPosition();
+	void RotateTextureZ(float theta);
 
-	inline std::string GetFilePath() { return (std::string)filepath; }
+	std::string GetFilePath() { return (std::string)filepath; }
 
-	inline int GetXOffset() { return xOffset; }
-	inline int GetYOffset() { return yOffset; }
+	std::vector<std::vector<SDL_Color>> GetPixelData();
 
-	inline SDL_Rect GetSourceRect() { return srcRect; }
+	SDL_Color translate_color(Uint32 int_color);
 
-	inline Vector3 GetRotation() { return rotation; }
+	Uint32 GetPixel(std::shared_ptr<SDL_Surface> surface, int x, int y);
+
+	int GetXOffset() { return xOffset; }
+	int GetYOffset() { return yOffset; }
+
+	SDL_Rect GetSourceRect() { return srcRect; }
+
+	void SetSourceRectLocation(Vector2 pos);
+
+	Vector3 GetRotation() { return rotation; }
 
 	void Draw(Sprite* sprite,
 		Vector2 drawPosition,
@@ -92,5 +113,15 @@ public:
 		int frameWidth,
 		int frameHeight);
 
+	void Draw(Vector2 drawPosition,
+		SDL_Rect srcRect,
+		Vector2* scale,
+		Vector2* scaleCenter,
+		Vector4* colorShift, SDL_RendererFlip flipFlags);
+
 	void DrawSpriteImage(Sprite* image, Vector2 position, int width, int height);
+
+	Sprite* MakeFlippedTexture(SDL_RendererFlip flip);
+
+	bool CheckIfViableTexture(SDL_Rect sR);
 };
