@@ -4,23 +4,14 @@ import sys
 import numpy as np
 import os
 
-#ssInfo = sys.argv[0]
-#filename = sys.argv[0];
-
-class Line:
-    def __init__(self, x1, y1, x2, y2, slope):
-        self.x1 = x1
-        self.x2 = x2
-        self.y1 = y1
-        self.y2 = y2
-        self.slope = slope
-        
-    def __str__ (self):
-        return("Line going from (" + str(x1) + "," + str(y1) +") to (" + str(x2) + "," + str(y2) + " )\n" + "With dx,dy of (" + str(self.slope[0]) + "," + str(self.slope[1]) + ")")
+ssInfo = sys.argv[0]
+filename = sys.argv[0];
 
 if len(sys.argv) <= 1:
     print("Missing tilemap sprite sheet description JSON path!")
     quit()
+
+
 
 infoFile = open(sys.argv[1], "r")
 ssInfo = json.loads(infoFile.read())
@@ -29,6 +20,8 @@ margin = (int)(ssInfo["margin"])
 spacing = (int)(ssInfo["spacing"])
 tileHeight = (int)(ssInfo["tileheight"])
 tileWidth = (int)(ssInfo["tilewidth"])
+imageHeight = (int)(ssInfo["imageheight"])
+imageWidth = (int)(ssInfo["imagewidth"])
 orient = ssInfo["direction"]
 cols = (int)(ssInfo["columns"])
 tileCount = (int)(ssInfo["tilecount"])
@@ -36,179 +29,187 @@ outFileName = str(ssInfo["generationDescriptionOut"])
 name = str(ssInfo["name"])
 infoFile.close()
 
+SAMPLES = 16
+
 jsonList = []
 
+tileIndex = 1
 
-for i in range(1, tileCount + 1):
+print("program start")
+
+while tileIndex in range(1, tileCount+1):
     jsonObj =  {
                 "hillOrientation" : "None",
                 "possibleConnects": [],
                 "layers" : [],
-                "tileIndex" : i-1,
-                "xLocation": (int)(tileWidth * (i % cols) + spacing * (i % cols) + margin),                        
-                "yLocation": (int)(tileHeight * int(i / cols) + spacing * int(i / cols) + margin)                          
+                "tileIndex" : tileIndex,
+                "xLocation": int(tileWidth * int(tileIndex % cols) + spacing * int(tileIndex % cols) + margin),                        
+                "yLocation": int(tileHeight * int(tileIndex / cols) + spacing * int(tileIndex / cols) + margin)                     
                 }
 
-    layers = []
-    xStart = (int)(tileWidth * (i % cols) + spacing * (i % cols) + margin)
-    yStart = (int)(tileHeight * int(i / cols) + spacing * int(i / cols) + margin)
-    
-    
-    ################################
-    #1.----------------------------#
-    ################################
-    #Scan the top-left -> top-right#
-    ################################
-    x1 = xStart
-    x2 = xStart + tileWidth - 1
-    y1 = 0
-    y2 = 0
-    slope = np.array([0,0])
+    slopes = {
+        "dx": 0,
+        "dy": 0,
+        "slope": 0
+        }
 
-    for y in range(yStart, yStart + tileHeight):
-        if img[y, x1][3] != 0:
-            y1 = y
-            for endY in range(yStart, yStart + tileHeight ):
-                if img[endY,x2][3] != 0:
-                    y2 = endY
-                    break
-            break
-            
+    layers = []
+    xStart = jsonObj["xLocation"]
+    yStart = jsonObj["yLocation"]
+
     
-    slope[0] = x2 - x1
-    slope[1] = abs(y2 - y1)
-    dx = slope[0]
-    dy = slope[1]
-    err = dx / 2
-    yStep = (y1 < y2) if 1 else -1
-    steep = (abs(y2 - y1) > abs(x2 - x1))
-    nSlope = np.linalg.norm(slope)
-    validCoord1 = False
-    validCoord2 = False
+    #################################
+    ##1.----------------------------#
+    #################################
+    ##Scan the top-left -> top-right#
+    #################################
+    xyDictionary = {
+        "x": np.array([]),
+        "y" : np.array([])
+        }
+    x = xStart
+    y = yStart
     
-    topSlope = Line(x1, y1, x2, y2, slope)
+    slopes = np.array([])
+
+
+    while x in range(xStart, xStart+tileWidth) and y in range(yStart, yStart+tileHeight):
+        if img[y,x][3] > 0:
+            xyDictionary["y"] = np.append(xyDictionary["y"], img.shape[0] - y - 1)
+            x += tileWidth // SAMPLES
+            y = yStart
+        else:
+            y += 1
+        if y >= yStart+tileHeight-1:
+            x += tileWidth // SAMPLES
+            y = yStart
+
+    i = 0
+    while i in range(len(xyDictionary["y"])-1):
+        slopes = np.append(slopes, xyDictionary["y"][i+1] - xyDictionary["y"][i])
+        i += 1
+        
+    topAvgSlope = np.average(slopes)
     
-            
     ####################################
     #2.--------------------------------#
     ####################################
     #Scan the top-right -> bottom-right#
     ####################################
-    x1 = xStart + tileWidth - 1
-    x2 = xStart + tileWidth - 1 
-    y1 = yStart
-    y2 = yStart + tileHeight - 1
-    slope = np.array([0,0])
-    
-    for x in range(xStart + tileWidth, xStart, -1):
-        if img[y1, x][3] != 0:
-            x1 = x
-            validCoord1 = True
-            for endX in range(xStart + tileWidth - 1, xStart, -1):
-                if img[y2, endX][3] != 0:
-                    x2 = endX
-                    break
-            break
-       
-    
-    slope[0] = x2 - x1
-    slope[1] = abs(y2 - y1)
-    dx = slope[0]
-    dy = slope[1]
-    err = dx / 2
-    yStep = (y1 < y2) if 1 else -1
-    steep = (abs(y2 - y1) > abs(x2 - x1))
-    nSlope = np.linalg.norm(slope)
-    validCoord1 = False
-    validCoord2 = False
-    
-    rightSlope = Line(x1, y1, x2, y2, slope)
 
+    xyDictionary = {
+        "x": np.array([]),
+        "y" : np.array([])
+    }
+    x = xStart + tileWidth - 1
+    y = yStart
+  
 
+    slopes = np.array([])
+
+    while y in range(yStart, yStart+tileHeight) and x in range(xStart, xStart+tileWidth):
+        if img[y,x][3] > 0:
+            xyDictionary["x"] = np.append(xyDictionary["x"], x)
+            y += tileHeight // SAMPLES
+            x = xStart + tileWidth - 1
+        elif x <= xStart:
+            y += tileHeight // SAMPLES
+            x = xStart + tileWidth - 1
+        else:
+            x -= 1
+    
+    i = 0
+    while i in range(len(xyDictionary["x"])-1):
+        slopes = np.append(slopes, xyDictionary["x"][i+1] - xyDictionary["x"][i])
+        i += 1
+        
+    rightAvgSlope = np.average(slopes)
             
     ######################################
     #3.----------------------------------#
     ######################################
     #Scan the bottom-left -> bottom-right#
     ######################################
-    x1 = xStart
-    x2 = xStart + tileWidth - 1 
-    y1 = 0
-    y2 = 0
-    slope = np.array([0,0])
 
-    for y in range(yStart + tileHeight - 1, yStart, -1):
-        if img[y, x1][3] != 0:
-            y1 = y
-            for endY in range(yStart + tileHeight - 1, yStart, -1):
-                if img[endY, x2][3] != 0:
-                    y2 = endY
-                    break
-            break
-        
-    slope[0] = x2 - x1
-    slope[1] = abs(y2 - y1)
-    dx = slope[0]
-    dy = slope[1]
-    err = dx / 2
-    yStep = (y1 < y2) if 1 else -1
-    steep = (abs(y2 - y1) > abs(x2 - x1))
-    nSlope = np.linalg.norm(slope)
-    validCoord1 = False
-    validCoord2 = False
+    xyDictionary = {
+        "x": np.array([]),
+        "y" : np.array([])
+    }
+    x = xStart
+    y = yStart + tileHeight - 1
     
-    bottomSlope = Line(x1, y1, x2, y2, slope)
+    slopes = np.array([])
 
+    while x in range(xStart, xStart+tileWidth) and y in range(yStart, yStart+tileHeight):
+        if img[y,x][3] > 0:
+            xyDictionary["y"] = np.append(xyDictionary["y"], img.shape[0] - y - 1)
+            x += tileWidth // SAMPLES
+            y = yStart + tileHeight - 1
+        else:
+            y -= 1
+        if y <= yStart:
+            x += tileWidth // SAMPLES
+            y = yStart + tileHeight - 1
+
+    i = 0
+    while i in range(len(xyDictionary["y"])-1):
+        slopes = np.append(slopes, xyDictionary["y"][i+1] - xyDictionary["y"][i])
+        i += 1
+        
+    bottomAvgSlope = np.average(slopes)
 
     ##################################
     #4.------------------------------#
     ##################################
     #Scan the top-left -> bottom-left#
     ##################################
-    x1 = xStart
-    x2 = xStart
-    y1 = yStart
-    y2 = yStart + tileHeight - 1
-    slope = np.array([0,0])
+
+    xyDictionary = {
+        "x": np.array([]),
+        "y" : np.array([])
+    }
+    x = xStart
+    y = yStart
     
-    for x in range(xStart,  xStart + tileWidth - 1):
-        if img[y1, x][3] != 0:
-            x1 = x
-            for endX in range(xStart,  xStart + tileWidth - 1):
-                if img[y2, endX][3] != 0:
-                    x2 = endX
-                    break
-            break
-        
-    slope[0] = x2 - x1
-    slope[1] = abs(y2 - y1)
-    dx = slope[0]
-    dy = slope[1]
-    err = dx / 2
-    yStep = (y1 < y2) if 1 else -1
-    steep = (abs(y2 - y1) > abs(x2 - x1))
-    nSlope = np.linalg.norm(slope)
+    slopes = np.array([])
 
-    leftSlope = Line(x1, y1, x2, y2, slope)
+    while y in range(yStart, yStart+tileHeight) and x in range(xStart, xStart+tileWidth):
+        if img[y,x][3] > 0:
+            xyDictionary["x"] = np.append(xyDictionary["x"], x)
+            y += tileHeight // SAMPLES
+            x = xStart
+        elif x >= xStart+tileWidth-1:
+            y += tileHeight // SAMPLES
+            x = xStart
+        else:
+            x += 1
 
+    i = 0
+    while i in range(len(xyDictionary["x"])-1):
+        slopes = np.append(slopes, xyDictionary["x"][i+1] - xyDictionary["x"][i])
+        i += 1
 
+    leftAvgSlope = np.average(slopes)
+    
     #########################
     #########################
     ##DETERMINE CONNECTIONS##
     #########################
     #########################
 
+   #print(f"Top {topAvgSlope} Bottom {bottomAvgSlope} Left {leftAvgSlope} Right {rightAvgSlope}")
+
     
 #########################
 #Check NW, N, NE  #######
 #########################
 
-        #   *
-        #   _
-        #  | |
-        #   -
-        #
-    if topSlope.slope[1] == 0:
+    #   *
+    #   _
+    #  | |
+    #   -
+    #
+    if topAvgSlope == 0:
         layers.append("ground")
         layers.append("wall")
         #
@@ -216,7 +217,7 @@ for i in range(1, tileCount + 1):
         #  | |
         #   -
         #
-        if leftSlope.slope[0] == 0:
+        if leftAvgSlope == 0:
             jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "hill", "ground", "wall"
@@ -231,7 +232,7 @@ for i in range(1, tileCount + 1):
             #  \ |
             #   -
             #
-            if leftSlope.slope[0] < 0:
+            if leftAvgSlope < 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         ],
@@ -244,7 +245,7 @@ for i in range(1, tileCount + 1):
             #  / |
             #   -
             #
-            elif leftSlope.slope[0] > 0:
+            elif leftAvgSlope > 0:
                 layers.append("hill")
                 if "wall" in layers:
                     layers.remove("wall")
@@ -262,7 +263,7 @@ for i in range(1, tileCount + 1):
         #  | |
         #   -
         #
-        if rightSlope.slope[0] == 0:
+        if rightAvgSlope == 0:
             jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "hill", "ground", "wall"
@@ -276,7 +277,7 @@ for i in range(1, tileCount + 1):
             #  | /
             #   -
             #
-            if rightSlope.slope[0] < 0 :
+            if rightAvgSlope < 0 :
                 layers.append("platform")
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
@@ -291,7 +292,7 @@ for i in range(1, tileCount + 1):
             #  | \
             #   -
             #
-            elif rightSlope.slope[0] > 0:
+            elif rightAvgSlope > 0:
                 layers.append("platform")
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
@@ -317,17 +318,15 @@ for i in range(1, tileCount + 1):
         #  | |
         #   -
         #
-        if topSlope.y2 - topSlope.y1 < 0:
-            layers.append("hill")
-            if "wall" in layers:
-                layers.remove("wall")
+        if topAvgSlope < 0:
+            layers = ["hill"]
             jsonObj["hillOrientation"] = "Northeast"
             #
             # * /
             #  \ |
             #   -
             #
-            if leftSlope.slope[0] > 0:
+            if leftAvgSlope > 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "ground", "wall"
@@ -340,7 +339,7 @@ for i in range(1, tileCount + 1):
             #  | |
             #   -
             #
-            elif leftSlope.slope[0] == 0:
+            elif leftAvgSlope == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "ground", "wall"
@@ -354,7 +353,7 @@ for i in range(1, tileCount + 1):
             #  | /
             #   -
             #
-            if rightSlope.slope[0] < 0 :
+            if rightAvgSlope < 0 :
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "wall"
@@ -368,7 +367,7 @@ for i in range(1, tileCount + 1):
             #  | \
             #   -
             #
-            elif rightSlope.slope[0] > 0:
+            elif rightAvgSlope > 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         ],
@@ -381,7 +380,7 @@ for i in range(1, tileCount + 1):
             #  | |
             #   -
             #    
-            elif rightSlope.slope[0] == 0:
+            elif rightAvgSlope == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "ground", "wall"
@@ -396,10 +395,8 @@ for i in range(1, tileCount + 1):
         #  | |
         #   -
         #
-        elif topSlope.y2 - topSlope.y1 > 0:
-            layers.append("hill")
-            if "wall" in layers:
-                layers.remove("wall")
+        elif topAvgSlope > 0:
+            layers = ["hill"]
             jsonObj["hillOrientation"] = "Southeast"
             
             #
@@ -407,7 +404,7 @@ for i in range(1, tileCount + 1):
             #  \ |
             #   -
             #
-            if leftSlope.slope[0] > 0:
+            if leftAvgSlope > 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill"
@@ -420,7 +417,7 @@ for i in range(1, tileCount + 1):
             #  | |
             #   -
             #
-            elif leftSlope.slope[0] == 0:
+            elif leftAvgSlope == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground", "wall"
@@ -434,7 +431,7 @@ for i in range(1, tileCount + 1):
             #  | /
             #   -
             #
-            if rightSlope.slope[0] < 0 :
+            if rightAvgSlope < 0 :
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill",
@@ -448,7 +445,7 @@ for i in range(1, tileCount + 1):
             #  | \
             #   -
             #
-            elif rightSlope.slope[0] > 0:
+            elif rightAvgSlope > 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         ],
@@ -461,7 +458,7 @@ for i in range(1, tileCount + 1):
             #  | |
             #   -
             #    
-            elif rightSlope.slope[0] == 0:
+            elif rightAvgSlope == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "wall"
@@ -472,7 +469,7 @@ for i in range(1, tileCount + 1):
 
 
 
-
+    ##print(topAvgSlope, bottomAvgSlope, leftAvgSlope, rightAvgSlope, '\t', tileIndex)
 
 
 
@@ -486,13 +483,13 @@ for i in range(1, tileCount + 1):
     #  | |
     #   -
     #   *
-    if bottomSlope.slope[1] == 0:
+    if bottomAvgSlope == 0:
         #
         #   _
         #  | |
         # * -
         #
-        if leftSlope.slope[0] == 0:
+        if leftAvgSlope == 0:
             jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "hill", "ground", "wall"
@@ -506,7 +503,7 @@ for i in range(1, tileCount + 1):
             #  \ |
             # * -
             #
-            if leftSlope.slope[0] < 0:
+            if leftAvgSlope < 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground"
@@ -520,7 +517,7 @@ for i in range(1, tileCount + 1):
             #  / |
             # * -
             #
-            elif leftSlope.slope[0] > 0:
+            elif leftAvgSlope > 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "ground"
@@ -535,7 +532,7 @@ for i in range(1, tileCount + 1):
         #  | |
         #   - *
         #
-        if rightSlope.slope[0] == 0:
+        if rightAvgSlope == 0:
             jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "hill", "ground"
@@ -549,7 +546,7 @@ for i in range(1, tileCount + 1):
             #  | /
             #   - *
             #
-            if rightSlope.slope[0] < 0 :
+            if rightAvgSlope < 0 :
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground"
@@ -563,7 +560,7 @@ for i in range(1, tileCount + 1):
             #  | \
             #   - *
             #
-            elif rightSlope.slope[0] > 0:
+            elif rightAvgSlope > 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill"
@@ -589,13 +586,13 @@ for i in range(1, tileCount + 1):
         #  | |
         #   /
         #   *
-        if bottomSlope.y2 - topSlope.y1 < 0:
+        if bottomAvgSlope < 0:
             #
             #   -
             #  \ |
             # * /
             #
-            if leftSlope.slope[0] > 0:
+            if leftAvgSlope > 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         ],
@@ -607,7 +604,7 @@ for i in range(1, tileCount + 1):
             #  | |
             # * /
             #
-            elif leftSlope.slope[0] == 0:
+            elif leftAvgSlope == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "ground"
@@ -621,7 +618,7 @@ for i in range(1, tileCount + 1):
             #  | /
             #   / *
             #
-            if rightSlope.slope[0] < 0 :
+            if rightAvgSlope < 0 :
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground"
@@ -635,7 +632,7 @@ for i in range(1, tileCount + 1):
             #  | \
             #   / *
             #
-            elif rightSlope.slope[0] > 0:
+            elif rightAvgSlope > 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "ground"
@@ -649,7 +646,7 @@ for i in range(1, tileCount + 1):
             #  | /
             #   / *
             #    
-            elif rightSlope.slope[0] == 0:
+            elif rightAvgSlope == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground"
@@ -664,13 +661,13 @@ for i in range(1, tileCount + 1):
         #  | |
         #   \
         #   *
-        elif bottomSlope.y2 - topSlope.y1 > 0:
+        elif bottomAvgSlope > 0:
             #
             #   -
             #  \ |
             # * \
             #
-            if leftSlope.slope[0] > 0:
+            if leftAvgSlope > 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground"
@@ -683,7 +680,7 @@ for i in range(1, tileCount + 1):
             #  | |
             # * \
             #
-            elif leftSlope.slope[0] == 0:
+            elif leftAvgSlope == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground", "wall"
@@ -697,7 +694,7 @@ for i in range(1, tileCount + 1):
             #  | /
             #   \ *
             #
-            if rightSlope.slope[0] < 0 :
+            if rightAvgSlope < 0 :
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         ],
@@ -710,7 +707,7 @@ for i in range(1, tileCount + 1):
             #  | \
             #   \ *
             #
-            elif rightSlope.slope[0] > 0:
+            elif rightAvgSlope > 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill"
@@ -724,7 +721,7 @@ for i in range(1, tileCount + 1):
             #  | |
             #   \ *
             #    
-            elif rightSlope.slope[0] == 0:
+            elif rightAvgSlope == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground", "hill"
@@ -744,7 +741,7 @@ for i in range(1, tileCount + 1):
     # *| |
     #   -
     #   
-    if leftSlope.slope[0] == 0:
+    if leftAvgSlope == 0:
         jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "ground", "hill", "wall"
@@ -757,8 +754,7 @@ for i in range(1, tileCount + 1):
     # */ |
     #   -
     #   
-    elif leftSlope.x2 - leftSlope.x1 > 0:
-        jsonObj["hillOrientation"] = "Northeast"
+    elif leftAvgSlope > 0:
         jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     ],
@@ -771,7 +767,7 @@ for i in range(1, tileCount + 1):
     # *\ |
     #   -
     #               
-    elif leftSlope.x2 - leftSlope.x1 < 0:
+    elif leftAvgSlope < 0:
         jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "ground", "hill"
@@ -786,7 +782,7 @@ for i in range(1, tileCount + 1):
     #  | |*
     #   -
     #   
-    if leftSlope.slope[0] == 0:
+    if rightAvgSlope == 0:
         jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "ground", "hill", "wall"
@@ -799,8 +795,7 @@ for i in range(1, tileCount + 1):
     #  | \*
     #   -
     #   
-    elif leftSlope.x2 - leftSlope.x1 > 0:
-        jsonObj["hillOrientation"] = "Southeast"
+    elif rightAvgSlope > 0:
         jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     ],
@@ -813,7 +808,7 @@ for i in range(1, tileCount + 1):
     #  | /*
     #   -
     #               
-    elif leftSlope.x2 - leftSlope.x1 < 0:
+    elif rightAvgSlope < 0:
         jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "ground", "hill"
@@ -826,6 +821,7 @@ for i in range(1, tileCount + 1):
             
     jsonList.append(jsonObj)
 
+    tileIndex += 1
 
 
 with open(outFileName, 'w', encoding='utf-8') as outfile:

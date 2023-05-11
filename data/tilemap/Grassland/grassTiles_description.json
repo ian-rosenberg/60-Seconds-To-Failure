@@ -4,87 +4,6 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 0,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 0,
-            "xLocation": 143,
-            "yLocation": 5
-        },
-        {
-            "hillOrientation": "Southeast",
-            "layers": [
-                "ground",
                 "platform",
                 "hill"
             ],
@@ -118,6 +37,7 @@
                 },
                 {
                     "allowedLayers": [
+                        "hill",
                         "ground"
                     ],
                     "x": -1,
@@ -125,10 +45,17 @@
                 },
                 {
                     "allowedLayers": [
-                        "ground",
-                        "hill"
+                        "hill",
+                        "ground"
                     ],
                     "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
                     "y": 1
                 },
                 {
@@ -137,20 +64,25 @@
                     "y": 0
                 },
                 {
-                    "allowedLayers": [],
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 1,
-            "xLocation": 281,
+            "xLocation": 143,
             "yLocation": 5
         },
         {
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "wall",
+                "platform"
             ],
             "possibleConnects": [
                 {
@@ -183,25 +115,16 @@
                 {
                     "allowedLayers": [
                         "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground"
                     ],
                     "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
                     "y": 1
                 },
                 {
@@ -216,15 +139,14 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 2,
-            "xLocation": 419,
+            "xLocation": 281,
             "yLocation": 5
         },
         {
@@ -305,6 +227,82 @@
                 }
             ],
             "tileIndex": 3,
+            "xLocation": 419,
+            "yLocation": 5
+        },
+        {
+            "hillOrientation": "None",
+            "layers": [
+                "ground",
+                "platform",
+                "hill",
+                "platform"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 0,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 4,
             "xLocation": 557,
             "yLocation": 5
         },
@@ -312,7 +310,9 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "platform",
+                "hill",
+                "platform"
             ],
             "possibleConnects": [
                 {
@@ -345,15 +345,13 @@
                 {
                     "allowedLayers": [
                         "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground"
                     ],
                     "x": 1,
@@ -367,107 +365,21 @@
                     "y": 1
                 },
                 {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": -1,
                     "y": 0
                 },
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 4,
-            "xLocation": 695,
-            "yLocation": 5
-        },
-        {
-            "hillOrientation": "None",
-            "layers": [
-                "ground",
-                "wall"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 0,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 5,
-            "xLocation": 833,
+            "xLocation": 695,
             "yLocation": 5
         },
         {
@@ -548,7 +460,7 @@
                 }
             ],
             "tileIndex": 6,
-            "xLocation": 971,
+            "xLocation": 833,
             "yLocation": 5
         },
         {
@@ -629,7 +541,7 @@
                 }
             ],
             "tileIndex": 7,
-            "xLocation": 1109,
+            "xLocation": 971,
             "yLocation": 5
         },
         {
@@ -710,8 +622,8 @@
                 }
             ],
             "tileIndex": 8,
-            "xLocation": 5,
-            "yLocation": 143
+            "xLocation": 1109,
+            "yLocation": 5
         },
         {
             "hillOrientation": "None",
@@ -791,11 +703,11 @@
                 }
             ],
             "tileIndex": 9,
-            "xLocation": 143,
+            "xLocation": 5,
             "yLocation": 143
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "None",
             "layers": [
                 "ground",
                 "platform",
@@ -831,6 +743,7 @@
                 },
                 {
                     "allowedLayers": [
+                        "hill",
                         "ground"
                     ],
                     "x": -1,
@@ -838,10 +751,17 @@
                 },
                 {
                     "allowedLayers": [
-                        "ground",
-                        "hill"
+                        "hill",
+                        "ground"
                     ],
                     "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
                     "y": 1
                 },
                 {
@@ -850,20 +770,25 @@
                     "y": 0
                 },
                 {
-                    "allowedLayers": [],
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 10,
-            "xLocation": 281,
+            "xLocation": 143,
             "yLocation": 143
         },
         {
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "wall",
+                "platform"
             ],
             "possibleConnects": [
                 {
@@ -896,15 +821,86 @@
                 {
                     "allowedLayers": [
                         "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
                 },
                 {
                     "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
                         "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 11,
+            "xLocation": 281,
+            "yLocation": 143
+        },
+        {
+            "hillOrientation": "None",
+            "layers": [
+                "ground",
+                "platform",
+                "hill",
+                "platform"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 0,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
                         "ground"
                     ],
                     "x": 1,
@@ -918,25 +914,20 @@
                     "y": 1
                 },
                 {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": -1,
                     "y": 0
                 },
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
-            "tileIndex": 11,
+            "tileIndex": 12,
             "xLocation": 419,
             "yLocation": 143
         },
@@ -1017,12 +1008,12 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 12,
+            "tileIndex": 13,
             "xLocation": 557,
             "yLocation": 143
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "None",
             "layers": [
                 "ground",
                 "platform",
@@ -1057,32 +1048,33 @@
                     "y": -1
                 },
                 {
+                    "allowedLayers": [],
+                    "x": -1,
+                    "y": 1
+                },
+                {
                     "allowedLayers": [
                         "ground"
                     ],
-                    "x": -1,
+                    "x": 1,
                     "y": 1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": -1,
+                    "y": 0
                 },
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill"
+                        "hill",
+                        "wall"
                     ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [],
                     "x": 1,
                     "y": 0
                 }
             ],
-            "tileIndex": 13,
+            "tileIndex": 14,
             "xLocation": 695,
             "yLocation": 143
         },
@@ -1146,19 +1138,18 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
-            "tileIndex": 14,
+            "tileIndex": 15,
             "xLocation": 833,
             "yLocation": 143
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "None",
             "layers": [
                 "ground",
                 "platform",
@@ -1193,26 +1184,15 @@
                     "y": -1
                 },
                 {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
+                    "allowedLayers": [],
                     "x": -1,
                     "y": 1
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground"
                     ],
                     "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
                     "y": 1
                 },
                 {
@@ -1221,12 +1201,16 @@
                     "y": 0
                 },
                 {
-                    "allowedLayers": [],
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
                     "x": 1,
                     "y": 0
                 }
             ],
-            "tileIndex": 15,
+            "tileIndex": 16,
             "xLocation": 971,
             "yLocation": 143
         },
@@ -1307,7 +1291,7 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 16,
+            "tileIndex": 17,
             "xLocation": 1109,
             "yLocation": 143
         },
@@ -1348,16 +1332,14 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground"
+                        "ground",
+                        "wall"
                     ],
                     "x": -1,
                     "y": 1
                 },
                 {
-                    "allowedLayers": [
-                        "ground"
-                    ],
+                    "allowedLayers": [],
                     "x": 1,
                     "y": 1
                 },
@@ -1373,14 +1355,13 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
-            "tileIndex": 17,
+            "tileIndex": 18,
             "xLocation": 5,
             "yLocation": 281
         },
@@ -1461,264 +1442,8 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 18,
-            "xLocation": 143,
-            "yLocation": 281
-        },
-        {
-            "hillOrientation": "Northeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
             "tileIndex": 19,
-            "xLocation": 281,
-            "yLocation": 281
-        },
-        {
-            "hillOrientation": "Northeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 20,
-            "xLocation": 419,
-            "yLocation": 281
-        },
-        {
-            "hillOrientation": "Southeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 21,
-            "xLocation": 557,
-            "yLocation": 281
-        },
-        {
-            "hillOrientation": "Northeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 22,
-            "xLocation": 695,
+            "xLocation": 143,
             "yLocation": 281
         },
         {
@@ -1798,8 +1523,184 @@
                     "y": 0
                 }
             ],
+            "tileIndex": 20,
+            "xLocation": 281,
+            "yLocation": 281
+        },
+        {
+            "hillOrientation": "Southeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 21,
+            "xLocation": 419,
+            "yLocation": 281
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 22,
+            "xLocation": 557,
+            "yLocation": 281
+        },
+        {
+            "hillOrientation": "Southeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
             "tileIndex": 23,
-            "xLocation": 833,
+            "xLocation": 695,
             "yLocation": 281
         },
         {
@@ -1880,14 +1781,15 @@
                 }
             ],
             "tileIndex": 24,
-            "xLocation": 971,
+            "xLocation": 833,
             "yLocation": 281
         },
         {
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "wall",
+                "platform"
             ],
             "possibleConnects": [
                 {
@@ -1928,7 +1830,6 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground"
                     ],
                     "x": 1,
@@ -1953,15 +1854,14 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 25,
-            "xLocation": 1109,
+            "xLocation": 971,
             "yLocation": 281
         },
         {
@@ -2042,76 +1942,8 @@
                 }
             ],
             "tileIndex": 26,
-            "xLocation": 5,
-            "yLocation": 419
-        },
-        {
-            "hillOrientation": "Southeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 27,
-            "xLocation": 143,
-            "yLocation": 419
+            "xLocation": 1109,
+            "yLocation": 281
         },
         {
             "hillOrientation": "None",
@@ -2190,8 +2022,70 @@
                     "y": 0
                 }
             ],
+            "tileIndex": 27,
+            "xLocation": 5,
+            "yLocation": 419
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
             "tileIndex": 28,
-            "xLocation": 281,
+            "xLocation": 143,
             "yLocation": 419
         },
         {
@@ -2272,6 +2166,79 @@
                 }
             ],
             "tileIndex": 29,
+            "xLocation": 281,
+            "yLocation": 419
+        },
+        {
+            "hillOrientation": "None",
+            "layers": [
+                "ground",
+                "wall"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 0,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 30,
             "xLocation": 419,
             "yLocation": 419
         },
@@ -2352,29 +2319,18 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 30,
+            "tileIndex": 31,
             "xLocation": 557,
             "yLocation": 419
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -2382,9 +2338,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
@@ -2407,8 +2361,7 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": -1,
                     "y": 0
@@ -2423,7 +2376,7 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 31,
+            "tileIndex": 32,
             "xLocation": 695,
             "yLocation": 419
         },
@@ -2463,86 +2416,10 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
                     "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 32,
-            "xLocation": 833,
-            "yLocation": 419
-        },
-        {
-            "hillOrientation": "Northeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
                     "y": 1
                 },
                 {
@@ -2550,42 +2427,40 @@
                         "ground",
                         "hill"
                     ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
                     "x": -1,
                     "y": 0
                 },
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill"
+                        "hill",
+                        "wall"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 33,
-            "xLocation": 971,
+            "xLocation": 833,
             "yLocation": 419
         },
         {
-            "hillOrientation": "None",
+            "hillOrientation": "Southeast",
             "layers": [
-                "ground",
-                "wall"
+                "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -2593,18 +2468,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 0,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
@@ -2627,8 +2491,7 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": -1,
                     "y": 0
@@ -2644,7 +2507,7 @@
                 }
             ],
             "tileIndex": 34,
-            "xLocation": 1109,
+            "xLocation": 971,
             "yLocation": 419
         },
         {
@@ -2725,76 +2588,8 @@
                 }
             ],
             "tileIndex": 35,
-            "xLocation": 5,
-            "yLocation": 557
-        },
-        {
-            "hillOrientation": "Southeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 36,
-            "xLocation": 143,
-            "yLocation": 557
+            "xLocation": 1109,
+            "yLocation": 419
         },
         {
             "hillOrientation": "None",
@@ -2873,7 +2668,146 @@
                     "y": 0
                 }
             ],
+            "tileIndex": 36,
+            "xLocation": 5,
+            "yLocation": 557
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
             "tileIndex": 37,
+            "xLocation": 143,
+            "yLocation": 557
+        },
+        {
+            "hillOrientation": "None",
+            "layers": [
+                "ground",
+                "platform",
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 0,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 38,
             "xLocation": 281,
             "yLocation": 557
         },
@@ -2954,18 +2888,19 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 38,
+            "tileIndex": 39,
             "xLocation": 419,
             "yLocation": 557
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -3010,16 +2945,12 @@
                     "y": 0
                 },
                 {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": 1,
                     "y": 0
                 }
             ],
-            "tileIndex": 39,
+            "tileIndex": 40,
             "xLocation": 557,
             "yLocation": 557
         },
@@ -3059,7 +2990,6 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -3068,98 +2998,10 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground"
+                        "ground",
+                        "hill"
                     ],
                     "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 40,
-            "xLocation": 695,
-            "yLocation": 557
-        },
-        {
-            "hillOrientation": "None",
-            "layers": [
-                "ground",
-                "wall"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 0,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
                     "y": 1
                 },
                 {
@@ -3182,7 +3024,7 @@
                 }
             ],
             "tileIndex": 41,
-            "xLocation": 833,
+            "xLocation": 695,
             "yLocation": 557
         },
         {
@@ -3263,6 +3105,63 @@
                 }
             ],
             "tileIndex": 42,
+            "xLocation": 833,
+            "yLocation": 557
+        },
+        {
+            "hillOrientation": "Southeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 43,
             "xLocation": 971,
             "yLocation": 557
         },
@@ -3282,73 +3181,7 @@
                     "y": -1
                 },
                 {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 43,
-            "xLocation": 1109,
-            "yLocation": 557
-        },
-        {
-            "hillOrientation": "Northeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": 1,
                     "y": -1
                 },
@@ -3363,8 +3196,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground"
+                        "hill"
                     ],
                     "x": 1,
                     "y": 1
@@ -3386,38 +3218,23 @@
                     "y": 0
                 },
                 {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 44,
-            "xLocation": 5,
-            "yLocation": 695
+            "xLocation": 1109,
+            "yLocation": 557
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -3425,9 +3242,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
@@ -3450,8 +3265,7 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": -1,
                     "y": 0
@@ -3467,19 +3281,17 @@
                 }
             ],
             "tileIndex": 45,
-            "xLocation": 143,
+            "xLocation": 5,
             "yLocation": 695
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -3518,13 +3330,71 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill"
+                        "hill",
+                        "wall"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 46,
+            "xLocation": 143,
+            "yLocation": 695
+        },
+        {
+            "hillOrientation": "Southeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 47,
             "xLocation": 281,
             "yLocation": 695
         },
@@ -3605,7 +3475,7 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 47,
+            "tileIndex": 48,
             "xLocation": 419,
             "yLocation": 695
         },
@@ -3625,84 +3495,8 @@
                     "y": -1
                 },
                 {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 48,
-            "xLocation": 557,
-            "yLocation": 695
-        },
-        {
-            "hillOrientation": "None",
-            "layers": [
-                "ground",
-                "wall"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 0,
                     "y": -1
                 },
                 {
@@ -3716,8 +3510,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground"
+                        "hill"
                     ],
                     "x": 1,
                     "y": 1
@@ -3739,17 +3532,13 @@
                     "y": 0
                 },
                 {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 49,
-            "xLocation": 695,
+            "xLocation": 557,
             "yLocation": 695
         },
         {
@@ -3830,17 +3619,19 @@
                 }
             ],
             "tileIndex": 50,
-            "xLocation": 833,
+            "xLocation": 695,
             "yLocation": 695
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "None",
             "layers": [
-                "hill"
+                "ground",
+                "wall"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -3849,9 +3640,20 @@
                 },
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 0,
                     "y": -1
                 },
                 {
@@ -3898,153 +3700,18 @@
                 }
             ],
             "tileIndex": 51,
-            "xLocation": 971,
+            "xLocation": 833,
             "yLocation": 695
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
                         "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 52,
-            "xLocation": 1109,
-            "yLocation": 695
-        },
-        {
-            "hillOrientation": "Southeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 53,
-            "xLocation": 5,
-            "yLocation": 833
-        },
-        {
-            "hillOrientation": "Southeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
                         "ground",
                         "wall"
                     ],
@@ -4089,16 +3756,198 @@
                     "y": 0
                 },
                 {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 52,
+            "xLocation": 971,
+            "yLocation": 695
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
                     "allowedLayers": [
                         "ground",
                         "hill",
                         "wall"
                     ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 53,
+            "xLocation": 1109,
+            "yLocation": 695
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 54,
+            "xLocation": 5,
+            "yLocation": 833
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 55,
             "xLocation": 143,
             "yLocation": 833
         },
@@ -4138,7 +3987,6 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -4147,17 +3995,10 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground"
+                        "ground",
+                        "hill"
                     ],
                     "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
                     "y": 1
                 },
                 {
@@ -4179,7 +4020,7 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 55,
+            "tileIndex": 56,
             "xLocation": 281,
             "yLocation": 833
         },
@@ -4219,7 +4060,6 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -4228,98 +4068,10 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground"
+                        "ground",
+                        "hill"
                     ],
                     "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 56,
-            "xLocation": 419,
-            "yLocation": 833
-        },
-        {
-            "hillOrientation": "None",
-            "layers": [
-                "ground",
-                "wall"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 0,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
                     "y": 1
                 },
                 {
@@ -4342,7 +4094,7 @@
                 }
             ],
             "tileIndex": 57,
-            "xLocation": 557,
+            "xLocation": 419,
             "yLocation": 833
         },
         {
@@ -4423,7 +4175,7 @@
                 }
             ],
             "tileIndex": 58,
-            "xLocation": 695,
+            "xLocation": 557,
             "yLocation": 833
         },
         {
@@ -4504,28 +4256,17 @@
                 }
             ],
             "tileIndex": 59,
-            "xLocation": 833,
+            "xLocation": 695,
             "yLocation": 833
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -4533,9 +4274,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
@@ -4558,8 +4297,7 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": -1,
                     "y": 0
@@ -4575,7 +4313,7 @@
                 }
             ],
             "tileIndex": 60,
-            "xLocation": 971,
+            "xLocation": 833,
             "yLocation": 833
         },
         {
@@ -4586,14 +4324,6 @@
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
                         "wall"
                     ],
                     "x": 1,
@@ -4601,9 +4331,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
@@ -4626,8 +4354,7 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": -1,
                     "y": 0
@@ -4643,6 +4370,68 @@
                 }
             ],
             "tileIndex": 61,
+            "xLocation": 971,
+            "yLocation": 833
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 62,
             "xLocation": 1109,
             "yLocation": 833
         },
@@ -4650,7 +4439,8 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "wall",
+                "platform"
             ],
             "possibleConnects": [
                 {
@@ -4691,7 +4481,6 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground"
                     ],
                     "x": 1,
@@ -4716,107 +4505,24 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 62,
-            "xLocation": 5,
-            "yLocation": 971
-        },
-        {
-            "hillOrientation": "Northeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 63,
-            "xLocation": 143,
+            "xLocation": 5,
             "yLocation": 971
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -4824,9 +4530,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
@@ -4849,8 +4553,7 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": -1,
                     "y": 0
@@ -4866,28 +4569,17 @@
                 }
             ],
             "tileIndex": 64,
-            "xLocation": 281,
+            "xLocation": 143,
             "yLocation": 971
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -4895,9 +4587,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
@@ -4920,8 +4610,7 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": -1,
                     "y": 0
@@ -4937,28 +4626,17 @@
                 }
             ],
             "tileIndex": 65,
-            "xLocation": 419,
+            "xLocation": 281,
             "yLocation": 971
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -4966,9 +4644,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
@@ -4991,8 +4667,7 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": -1,
                     "y": 0
@@ -5008,28 +4683,17 @@
                 }
             ],
             "tileIndex": 66,
-            "xLocation": 557,
+            "xLocation": 419,
             "yLocation": 971
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -5037,9 +4701,7 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
@@ -5062,8 +4724,7 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": -1,
                     "y": 0
@@ -5079,19 +4740,17 @@
                 }
             ],
             "tileIndex": 67,
-            "xLocation": 695,
+            "xLocation": 557,
             "yLocation": 971
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -5130,13 +4789,71 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill"
+                        "hill",
+                        "wall"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 68,
+            "xLocation": 695,
+            "yLocation": 971
+        },
+        {
+            "hillOrientation": "Southeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 69,
             "xLocation": 833,
             "yLocation": 971
         },
@@ -5172,74 +4889,6 @@
                         "wall"
                     ],
                     "x": 0,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 69,
-            "xLocation": 971,
-            "yLocation": 971
-        },
-        {
-            "hillOrientation": "Southeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "wall"
-                    ],
-                    "x": 1,
                     "y": -1
                 },
                 {
@@ -5286,221 +4935,18 @@
                 }
             ],
             "tileIndex": 70,
-            "xLocation": 1109,
+            "xLocation": 971,
             "yLocation": 971
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
                         "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 71,
-            "xLocation": 5,
-            "yLocation": 1109
-        },
-        {
-            "hillOrientation": "Southeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 72,
-            "xLocation": 143,
-            "yLocation": 1109
-        },
-        {
-            "hillOrientation": "Southeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "tileIndex": 73,
-            "xLocation": 281,
-            "yLocation": 1109
-        },
-        {
-            "hillOrientation": "Southeast",
-            "layers": [
-                "hill"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
                         "ground",
                         "wall"
                     ],
@@ -5545,16 +4991,260 @@
                     "y": 0
                 },
                 {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 71,
+            "xLocation": 1109,
+            "yLocation": 971
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
                     "allowedLayers": [
                         "ground",
                         "hill",
                         "wall"
                     ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 72,
+            "xLocation": 5,
+            "yLocation": 1109
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 73,
+            "xLocation": 143,
+            "yLocation": 1109
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
                     "x": 1,
                     "y": 0
                 }
             ],
             "tileIndex": 74,
+            "xLocation": 281,
+            "yLocation": 1109
+        },
+        {
+            "hillOrientation": "Northeast",
+            "layers": [
+                "hill"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "tileIndex": 75,
             "xLocation": 419,
             "yLocation": 1109
         },
@@ -5562,7 +5252,8 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "platform",
+                "hill"
             ],
             "possibleConnects": [
                 {
@@ -5595,8 +5286,7 @@
                 {
                     "allowedLayers": [
                         "hill",
-                        "ground",
-                        "wall"
+                        "ground"
                     ],
                     "x": -1,
                     "y": 1
@@ -5617,11 +5307,7 @@
                     "y": 1
                 },
                 {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": -1,
                     "y": 0
                 },
@@ -5635,7 +5321,7 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 75,
+            "tileIndex": 76,
             "xLocation": 557,
             "yLocation": 1109
         },
@@ -5716,7 +5402,7 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 76,
+            "tileIndex": 77,
             "xLocation": 695,
             "yLocation": 1109
         },
@@ -5724,7 +5410,8 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "wall",
+                "platform"
             ],
             "possibleConnects": [
                 {
@@ -5756,16 +5443,14 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill",
-                        "ground"
+                        "ground",
+                        "wall"
                     ],
                     "x": -1,
                     "y": 1
                 },
                 {
-                    "allowedLayers": [
-                        "ground"
-                    ],
+                    "allowedLayers": [],
                     "x": 1,
                     "y": 1
                 },
@@ -5781,14 +5466,13 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill",
-                        "wall"
+                        "hill"
                     ],
                     "x": 1,
                     "y": 0
                 }
             ],
-            "tileIndex": 77,
+            "tileIndex": 78,
             "xLocation": 833,
             "yLocation": 1109
         },
@@ -5796,7 +5480,8 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "platform",
+                "hill"
             ],
             "possibleConnects": [
                 {
@@ -5827,35 +5512,19 @@
                     "y": -1
                 },
                 {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": -1,
                     "y": 1
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground"
                     ],
                     "x": 1,
                     "y": 1
                 },
                 {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": -1,
                     "y": 0
                 },
@@ -5869,7 +5538,7 @@
                     "y": 0
                 }
             ],
-            "tileIndex": 78,
+            "tileIndex": 79,
             "xLocation": 971,
             "yLocation": 1109
         }

@@ -1,8 +1,8 @@
 #include <debugdraw.h>
 #include <iostream>
 
-DebugDraw::DebugDraw(std::shared_ptr<Graphics> gr, Camera* cam) {
-	graphicsRef = gr;
+DebugDraw::DebugDraw(const std::shared_ptr<Graphics>& graphics, Camera* cam) {
+	graphicsRef = graphics;
 	camera = cam;
 }
 

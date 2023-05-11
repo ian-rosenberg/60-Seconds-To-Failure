@@ -29,7 +29,7 @@ private:
 	Bool					punching;
 
 public:
-	Player(std::shared_ptr<Graphics> g);
+	Player(const std::shared_ptr<Graphics>& graphics);
 
 	~Player();
 

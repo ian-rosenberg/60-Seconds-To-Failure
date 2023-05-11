@@ -6,16 +6,16 @@ StaticEntity::StaticEntity() {
 	debugColor = SDL_Color(0, 255, 255, 255);
 }
 
-StaticEntity::StaticEntity(std::shared_ptr<Graphics> g) {
-	graphics = g;
+StaticEntity::StaticEntity(const std::shared_ptr<Graphics>& graphics) {
+	this->graphics = graphics;
 	boundingVolume = nullptr;
 	body = nullptr;
 	debugColor = SDL_Color(0, 255, 255, 255);
 }
 
-StaticEntity::StaticEntity(std::shared_ptr<Graphics> g, float w, float h, Vector2 startPos)
+StaticEntity::StaticEntity(const std::shared_ptr<Graphics>& graphics, float w, float h, Vector2 startPos)
 {
-	graphics = g;
+	this->graphics = graphics;
 	boundingVolume = nullptr;
 	SetWorldDimensions(b2Vec2(w, h));
 	newDrawPosition = startPos;

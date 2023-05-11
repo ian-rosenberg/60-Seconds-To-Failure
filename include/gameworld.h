@@ -16,7 +16,7 @@ public:
 
 	~GameWorld();
 
-	std::shared_ptr<Graphics> GetGraphics() { return graphicsPtr; }
+	const std::shared_ptr<Graphics>& graphicsetGraphics() { return graphicsPtr; }
 
 	void InitTestArea();
 

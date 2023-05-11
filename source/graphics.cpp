@@ -73,7 +73,6 @@ Graphics::~Graphics() {
 
 	std::cout << "SDL Subsystems closed successfully!" << std::endl;
 	std::cout << "Press any key to quit..." << std::endl;
-	getchar();
 }
 
 void Graphics::Vector2PixelsToMeters(Vector2& val)

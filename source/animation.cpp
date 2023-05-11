@@ -18,11 +18,11 @@ Animation::Animation(const Animation & old)
 	frameRate = old.frameRate;
 }
 
-Animation::Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, std::shared_ptr<Graphics> g)
+Animation::Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics)
 {
 	name = n;
 	filepath = fp;
-	sprite = new Sprite(fp.c_str(), vector2( 0,0 ), vector2( 1,1 ), vector2(0,0), vector3( 0,0,0 ), vector2( 0,0 ), color, 0, yOffset, width, height, g);
+	sprite = new Sprite(fp.c_str(), vector2( 0,0 ), vector2( 1,1 ), vector2(0,0), vector3( 0,0,0 ), vector2( 0,0 ), color, 0, yOffset, width, height, graphics);
 	length = len;
 	currentFrame = current;
 	cellWidth = width;

@@ -3,7 +3,7 @@
 
 const int JOYSTICK_DEAD_ZONE = 8000;
 
-Player::Player(std::shared_ptr<Graphics> g) : Entity{ -1 }
+Player::Player(const std::shared_ptr<Graphics>& graphics) : Entity{ -1 }
 {
 	name = "Player";
 	keys = 0;
@@ -27,7 +27,7 @@ Player::Player(std::shared_ptr<Graphics> g) : Entity{ -1 }
 	prevBodyPosition = newBodyPosition = { 0,0 };
 
 	punching = false;
-	graphics = g;
+	this->graphics = graphics;
 	LoadActor(actorFilePath.c_str());
 	SetWorldDimensions(b2Vec2(avgDim.x * MET_IN_PIX, avgDim.y * MET_IN_PIX));
 	currentAnimation = GetAnimationByName("idle");

@@ -391,13 +391,13 @@ Tile::Tile()
 	hillOrientation = Direction::None;
 }
 
-Tile::Tile(int id, std::shared_ptr<Sprite> s, Vector2 gridPosition, Vector2 dim, Direction dir, std::shared_ptr<Graphics> g, float zRotation, SDL_Rect srcRect)
+Tile::Tile(int id, const std::shared_ptr<Sprite>& s, Vector2 gridPosition, Vector2 dim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect)
 {
 	this->id = id;
 
 	sourceRect = SDL_Rect(srcRect);
 
-	graphicsRef = g;
+	graphicsRef = graphics;
 	spriteSheet = s;
 
 	pixelDimensions = dim;
@@ -424,9 +424,8 @@ Tile::Tile(const Tile &oldTile)
 
 	this->physicsBody = nullptr;
 
-	this->graphicsRef = oldTile.graphicsRef;
-
-	this->spriteSheet = oldTile.spriteSheet;
+    this->graphicsRef = (const std::shared_ptr<Graphics>&)oldTile.graphicsRef;
+	this->spriteSheet = (const std::shared_ptr<Sprite>&)oldTile.spriteSheet;
 
 	this->possibleConnections = oldTile.possibleConnections;
 
@@ -459,7 +458,6 @@ Tile& Tile::operator=(const Tile& rhs)
 	this->physicsBody = nullptr;
 
 	this->graphicsRef = rhs.graphicsRef;
-
 	this->spriteSheet = rhs.spriteSheet;
 
 	this->possibleConnections = rhs.possibleConnections;
@@ -484,9 +482,7 @@ Tile::~Tile()
 {
 	possibleConnections.clear();
 
-	if(spriteSheet)
-		spriteSheet.reset();
-	
+	spriteSheet.reset();
 	graphicsRef.reset();
 	topFix = nullptr;
 	bottomFix = nullptr;
@@ -566,6 +562,32 @@ void Tile::Draw(Vector2 cameraOffset)
 	spriteSheet->Draw(Vector2(dstRect.x, dstRect.y), sourceRect, &scale, &scaleCenter, &color, flipFlags);
 }
 
+void Tile::TestDraw()
+{
+	Vector2 scale;
+	Vector2 scaleCenter;
+	Vector3 rot{ 0,0,0 };
+	Vector4 color = { 255,255,255,255 };
+	SDL_Rect dstRect;
+	Vector2 sDim = graphicsRef->GetScreenDimensions();
+
+	scale = { 1,1 };
+
+	scaleCenter = {
+		sourceRect.w / 2.0f,
+		sourceRect.h / 2.0f
+	};
+
+	dstRect = { (int)(sDim.x / 2 - pixelDimensions.x / 2),
+		(int)(sDim.y / 2 - pixelDimensions.y / 2),
+		(int)pixelDimensions.x, 
+		(int)pixelDimensions.y 
+	};
+	SDL_RenderClear(graphicsRef->GetRenderer());
+	spriteSheet->Draw(Vector2(dstRect.x, dstRect.y), sourceRect, &scale, &scaleCenter, &color, flipFlags);
+	SDL_RenderPresent(graphicsRef->GetRenderer());
+}
+
 void TileManager::TileParseTypesFromJSON(std::string json)
 {
 	const char* dirStr;
@@ -577,18 +599,22 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 	SJson* jsonResource = sj_load(json.c_str());
 	SJson* genDescList = nullptr;
 	int xLocation = 0, yLocation = 0;
-
-	groundTiles = new std::vector<Tile*>();
-	hillTiles = new std::vector<Tile*>();
-	platformTiles = new std::vector<Tile*>();
-	wallTiles = new std::vector<Tile*>();
-
 	Tile* t = nullptr;
 	Tile* tE = nullptr;
 	Tile* tW = nullptr;
 	Tile* tF = nullptr;
+
 	Tile* xMirrorHillTile = nullptr;
+	Tile* xMirrorHillTileE = nullptr;
+	Tile* xMirrorHillTileW = nullptr;
+	Tile* xMirrorHillTileF = nullptr;
+
 	Tile* yMirrorHillTile = nullptr;
+	Tile* yMirrorHillTileE = nullptr;
+	Tile* yMirrorHillTileW = nullptr;
+	Tile* yMirrorHillTileF = nullptr;
+
+
 	TileSpriteSheet* tss = new TileSpriteSheet();
 
 	sj_get_uint8_value(sj_object_get_value(jsonResource, "tilecount"), &tss->tileCount);
@@ -627,13 +653,15 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			tss->imageHeight, 
 			graphicsRef));
 	tss->sheet = spriteSheet.get();
+	tileWidth = tss->tileWidth;
+	tileHeight = tss->tileHeight;
 
 	spriteSheetPixels = spriteSheet->GetPixelData();
 
 	//LOADED SPRITE SHEET
 
 	//Maybe a loading screen for parsing tiles
-	for (int i = 0; i < tss->columns * tss->columns; i++) {
+	for (int i = 0; i < sj_array_get_count(genDescList); i++) {
 		int layerCount = 0;
 
 		layerCount = sj_array_get_count(sj_object_get_value(sj_array_get_nth(genDescList, i), "layers"));
@@ -692,7 +720,13 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 		tW = new Tile(*t);
 		tF = new Tile(*t);
 		xMirrorHillTile = new Tile(*t);
+		xMirrorHillTileE = new Tile(*t);
+		xMirrorHillTileW = new Tile(*t);
+		xMirrorHillTileF = new Tile(*t);
 		yMirrorHillTile = new Tile(*t);
+		yMirrorHillTileE = new Tile(*t);
+		yMirrorHillTileW = new Tile(*t);
+		yMirrorHillTileF = new Tile(*t);
 
 
 
@@ -709,6 +743,7 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			}
 			if (strcmp(layerName, "hill") == 0) {
 				t->SetTileLayer(TileLayer::Hill);
+				break;
 			}
 		}
 		for (int j = 0; j < possibleConnects; j++) {
@@ -758,7 +793,6 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 					layers,
 					(Direction)(Direction::South | Direction::East));
 
-
 				yMirrorHillTile->SetHillOrientation((Direction)(Direction::South | Direction::East));
 
 				t->AddPossibleConnection(
@@ -799,25 +833,62 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 		}
 
 		if ((TileLayer)(t->GetTileLayer() & TileLayer::Hill) == TileLayer::Hill) {
-			delete tE;
-			delete tW;
-			delete tF;
-
 			xMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
-			yMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
+			xMirrorHillTileE->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
+			xMirrorHillTileW->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
+			xMirrorHillTileF->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
 
-			xMirrorHillTile->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
-			yMirrorHillTile->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			yMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
+			yMirrorHillTileE->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
+			yMirrorHillTileW->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
+			yMirrorHillTileF->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
+
+			xMirrorHillTileE->SetCappingDirection(Direction::East);
+			xMirrorHillTileW->SetCappingDirection(Direction::West);
+			xMirrorHillTileF->SetCappingDirection((Direction)(Direction::East | Direction::West));
+
+			yMirrorHillTileE->SetCappingDirection(Direction::East);
+			yMirrorHillTileW->SetCappingDirection(Direction::West);
+			yMirrorHillTileF->SetCappingDirection((Direction)(Direction::East | Direction::West));
 
 			t->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+
+			xMirrorHillTile->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			xMirrorHillTileE->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			xMirrorHillTileW->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			xMirrorHillTileF->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+
+			yMirrorHillTile->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			yMirrorHillTileE->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			yMirrorHillTileW->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
+			yMirrorHillTileF->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
 		
-			hillTiles->push_back(xMirrorHillTile);
-			hillTiles->push_back(yMirrorHillTile);
-			hillTiles->push_back(t);
+			hillTiles->at(Direction::East).push_back(xMirrorHillTileE);
+			hillTiles->at(Direction::West).push_back(xMirrorHillTileW);
+			hillTiles->at((Direction)(Direction::East | Direction::West)).push_back(xMirrorHillTileF);
+			hillTiles->at(Direction::None).push_back(xMirrorHillTile);
+					 
+			hillTiles->at(Direction::East).push_back(yMirrorHillTileE);
+			hillTiles->at(Direction::West).push_back(yMirrorHillTileW);
+			hillTiles->at((Direction)(Direction::East | Direction::West)).push_back(yMirrorHillTileF);
+			hillTiles->at(Direction::None).push_back(yMirrorHillTile);
+					 
+			hillTiles->at(Direction::East).push_back(tE);
+			hillTiles->at(Direction::West).push_back(tW);
+			hillTiles->at((Direction)(Direction::East | Direction::West)).push_back(tF);
+			hillTiles->at(Direction::None).push_back(t);
 		}
 		else {
+			delete xMirrorHillTileE;
+			delete xMirrorHillTileW;
+			delete xMirrorHillTileF;
 			delete xMirrorHillTile;
+
+			delete yMirrorHillTileE;
+			delete yMirrorHillTileW;
+			delete yMirrorHillTileF;
 			delete yMirrorHillTile;
+
 
 			tE->SetCappingDirection(Direction::East);
 			tW->SetCappingDirection(Direction::West);
@@ -828,10 +899,10 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			tF->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
 			t->TilePhysicsInit(physics, playerDimensions, spriteSheetPixels);
 
-			groundTiles->push_back(tE);
-			groundTiles->push_back(tW);
-			groundTiles->push_back(tF);
-			groundTiles->push_back(t);
+			groundTiles->at(Direction::East).push_back(tE);
+			groundTiles->at(Direction::West).push_back(tW);
+			groundTiles->at((Direction)(Direction::East | Direction::West)).push_back(tF);
+			groundTiles->at(Direction::None).push_back(t);
 		}
 	}
 
@@ -839,7 +910,7 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 	sj_free(genDesc);
 }
 
-TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDim)
+TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDim)
 {
 	std::vector<Tile*> tileRow;
 	Tile* newTile;
@@ -854,9 +925,35 @@ TileManager::TileManager(const char* filepath, std::shared_ptr<Graphics> graphic
 	worldSize = graphics->GetScreenDimensions();
 	worldSize.x /= 4;
 
+	groundTiles = new std::unordered_map<Direction, std::vector<Tile*>>();
+	groundTiles->insert_or_assign(Direction::None, std::vector<Tile*>());
+	groundTiles->insert_or_assign(Direction::East, std::vector<Tile*>());
+	groundTiles->insert_or_assign(Direction::West, std::vector<Tile*>());
+	groundTiles->insert_or_assign((Direction)(Direction::East|Direction::West), std::vector<Tile*>());
+
+	hillTiles = new std::unordered_map<Direction, std::vector<Tile*>>();
+	hillTiles->insert_or_assign(Direction::None, std::vector<Tile*>());
+	hillTiles->insert_or_assign(Direction::East, std::vector<Tile*>());
+	hillTiles->insert_or_assign(Direction::West, std::vector<Tile*>());
+	hillTiles->insert_or_assign((Direction)(Direction::East | Direction::West), std::vector<Tile*>());
+
+	platformTiles = new std::unordered_map<Direction, std::vector<Tile*>>();
+	platformTiles->insert_or_assign(Direction::None, std::vector<Tile*>());
+	platformTiles->insert_or_assign(Direction::East, std::vector<Tile*>());
+	platformTiles->insert_or_assign(Direction::West, std::vector<Tile*>());
+	platformTiles->insert_or_assign((Direction)(Direction::East | Direction::West), std::vector<Tile*>());
+
+	wallTiles = new std::unordered_map<Direction, std::vector<Tile*>>();
+	wallTiles->insert_or_assign(Direction::None, std::vector<Tile*>());
+	wallTiles->insert_or_assign(Direction::East, std::vector<Tile*>());
+	wallTiles->insert_or_assign(Direction::West, std::vector<Tile*>());
+	wallTiles->insert_or_assign((Direction)(Direction::East | Direction::West), std::vector<Tile*>());
+
 	TileParseTypesFromJSON("data/tilemap/Grassland/grassTiles.json");
+
 }
 
+//Time to worry about the destructor again
 TileManager::~TileManager()
 {
 	while (!tileMap.empty()) {
@@ -873,26 +970,62 @@ TileManager::~TileManager()
 	tileMap.clear();
 	
 	while (!groundTiles->empty()) {
-		Tile* t = groundTiles->back();
-		groundTiles->pop_back();
+		std::pair<Direction, std::vector<Tile*>> p = *groundTiles->begin();
+		std::vector<Tile*> tileList = p.second;
+		
+		while (!tileList.empty()) {
+			Tile* t = tileList.back();
+			if (t)
+				delete t;
+			tileList.pop_back();
+		}
+
+		groundTiles->erase(groundTiles->begin());
 	}
 	delete groundTiles;
 
 	while (!hillTiles->empty()) {
-		Tile* t = hillTiles->back();
-		hillTiles->pop_back();
+		std::pair<Direction, std::vector<Tile*>> p = *hillTiles->begin();
+		std::vector<Tile*> tileList = p.second;
+
+		while (!tileList.empty()) {
+			Tile* t = tileList.back();
+			if(t)
+				delete t;
+			tileList.pop_back();
+		}
+
+		hillTiles->erase(hillTiles->begin());
 	}
 	delete hillTiles;
 
 	while (!platformTiles->empty()) {
-		Tile* t = platformTiles->back();
-		platformTiles->pop_back();
+		std::pair<Direction, std::vector<Tile*>> p = *platformTiles->begin();
+		std::vector<Tile*> tileList = p.second;
+
+		while (!tileList.empty()) {
+			Tile* t = tileList.back();
+			if (t)
+				delete t;
+			tileList.pop_back();
+		}
+
+		platformTiles->erase(platformTiles->begin());
 	}
 	delete platformTiles;
 
 	while (!wallTiles->empty()) {
-		Tile* t = wallTiles->back();
-		wallTiles->pop_back();
+		std::pair<Direction, std::vector<Tile*>> p = *wallTiles->begin();
+		std::vector<Tile*> tileList = p.second;
+
+		while (!tileList.empty()) {
+			Tile* t = tileList.back();
+			if (t)
+				delete t;
+			tileList.pop_back();
+		}
+
+		wallTiles->erase(wallTiles->begin());
 	}
 	delete wallTiles;
 
@@ -920,8 +1053,8 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(PerlinNoise* perli
 {
 	std::vector<float> perlin1D = perlin->PerlinNoise1D();
 
-	Vector2 dim = groundTiles->at(0)->GetPixelDimensions();
-	Tile* tmp = groundTiles->at(rand() % groundTiles->size());
+	Vector2 dim = groundTiles->at(Direction::West).at(0)->GetPixelDimensions();
+	Tile* tmp = groundTiles->at(Direction::West).at(0);
 	int rowCount = worldSize.y / tmp->GetPixelDimensions().y;
 	//ScalePerlinNoise1D(perlin1D, graphicsRef->GetScreenDimensions());
 
@@ -934,7 +1067,7 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(PerlinNoise* perli
 	for (int x = 0; x < perlin1D.size(); x++) {
 		int yIndex = (int)(perlin1D[x] * graphicsRef->GetScreenDimensions().y) % rowCount;
 			
-		tileMap.at(yIndex).at(x) = new Tile(*groundTiles->at(rand() % groundTiles->size()));
+		tileMap.at(yIndex).at(x) = new Tile(*groundTiles->at((Direction)(Direction::East| Direction::West)).at((int)(rand() % groundTiles->size())));
 		tileMap.at(yIndex).at(x)->SetGridPosition(x, yIndex);
 	}
 

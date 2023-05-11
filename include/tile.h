@@ -97,8 +97,8 @@ private:
 
 public:
 	Tile();
-	Tile(int id, std::shared_ptr<Sprite> s, Vector2 gridPosition, Vector2 pDim, Direction dir, std::shared_ptr<Graphics> g, float zRotation, SDL_Rect srcRect);
-	Tile(const Tile &oldTile);
+	Tile(int id, const std::shared_ptr<Sprite>& s, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect);
+	Tile(const Tile& oldTile);
 	Tile& operator= (const Tile& other);
 
 	~Tile();
@@ -132,16 +132,23 @@ public:
 	TileLayer												GetTileLayer() { return tileLayers; }
 
 	void													SetHillOrientation(Direction hillOrient) { hillOrientation = hillOrient; }
+
+
+	void													TestDraw();
 };
 
 class TileManager {
 private:
-	std::vector<Tile*>*										groundTiles;
-	std::vector<Tile*>*										hillTiles;
-	std::vector<Tile*>*										platformTiles;
-	std::vector<Tile*>*										wallTiles;
+	//Capping direction
+	std::unordered_map<Direction, std::vector<Tile*>>*		groundTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>*		hillTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>*		platformTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>*		wallTiles;
 	std::shared_ptr<Sprite>									spriteSheet;
 	std::vector<std::vector<Tile*>>							tileMap;
+
+	int														tileWidth;
+	int														tileHeight;
 
 	std::vector<std::vector<SDL_Color>>						spriteSheetPixels;
 
@@ -155,7 +162,7 @@ private:
 	void													TileParseTypesFromJSON(std::string json);
 					
 public:
-	TileManager(const char* filepath, std::shared_ptr<Graphics> graphics, b2World* world, Vector2 playerDimensions);
+	TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDimensions);
 	
 	~TileManager();
 
@@ -167,7 +174,7 @@ public:
 
 	void LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap);
 
-	Vector2 GetTileDimensions() { return groundTiles->at(0)->GetPixelDimensions(); }
+	Vector2 GetTileDimensions() { return Vector2(tileWidth, tileHeight); }
 
 	std::vector<std::vector<Tile*>>* GetTileMap() { return &tileMap; }
 };

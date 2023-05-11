@@ -60,7 +60,7 @@ private:
 
 
 public:
-	GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g, Vector2 playerDim);
+	GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphics, Vector2 playerDim);
 
 	~GameArea();
 

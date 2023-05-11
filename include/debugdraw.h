@@ -34,7 +34,7 @@ private:
 
 public:
 
-	DebugDraw(std::shared_ptr<Graphics> gr, Camera* cam);
+	DebugDraw(const std::shared_ptr<Graphics>& graphicsr, Camera* cam);
 	~DebugDraw();
 
 	void SetWorldDimensions(b2Vec2 dim);
@@ -42,6 +42,5 @@ public:
 	void AddEntityRef(Entity* entityRef);
 	void AddTileRef(Tile* tile) { tileRefs.push_back(tile); }
 	void AddTileMapRef(std::vector<std::vector<Tile*>>* tilemapRef);
-
 	void DrawAll();
 };

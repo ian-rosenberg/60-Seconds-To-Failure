@@ -229,13 +229,13 @@ EntityManager::EntityManager() {
 	graphics.reset();
 }
 
-EntityManager::EntityManager(Uint8 debugFlag, std::shared_ptr<Graphics> g)
+EntityManager::EntityManager(Uint8 debugFlag, const std::shared_ptr<Graphics>& graphics)
 {
 	entities = new std::vector<Entity*>();
 	inputQueue = new std::vector<Entity::InputEvent*>();
 	eventsToFire = new std::queue<Entity::InputEvent*>();
 	debugDraw = debugFlag;
-	graphics = g;
+	this->graphics = graphics;
 }
 
 EntityManager::~EntityManager()

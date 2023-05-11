@@ -91,7 +91,7 @@ Sprite::Sprite(std::shared_ptr<SDL_Texture> tex, SDL_Rect* sourceRect, Vector2 d
 	graphics = ren;
 }
 
-Sprite::Sprite(std::string fp, int width, int height, std::shared_ptr<Graphics> ren)
+Sprite::Sprite(std::string fp, int width, int height, const std::shared_ptr<Graphics>& graphics)
 {
 	filepath = fp;
 	frame = 1.0f;
@@ -103,7 +103,7 @@ Sprite::Sprite(std::string fp, int width, int height, std::shared_ptr<Graphics> 
 	scaleCenter = {};
 	rotation = {};
 	color = {};
-	graphics = ren;
+	this->graphics = graphics;
 	srcRect = { 0, 0, width, height };
 	LoadPNGImage(filepath);
 }

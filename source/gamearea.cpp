@@ -1,18 +1,18 @@
 #include "gamearea.h"
 #include "staticentity.h"
 
-GameArea::GameArea(int ID, b2Vec2 grav, std::shared_ptr<Graphics> g, Vector2 playerDim) {
+GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphics, Vector2 playerDim) {
 	Vector2 screenDim;
 	id = ID;
 	player = nullptr;
-	entityManager = new EntityManager(1, g);//enabling debug draw with parameter, renderer
+	entityManager = new EntityManager(1, graphics);//enabling debug draw with parameter, renderer
 	gravityScale = grav;
 	gravityEnabled = gravityScale.y != 0 || gravityScale.x != 0;
 	ground = {};
 	testPlatform = {};
 	testPlatformBottom = 0.0f;
 	testPlatformTop = 0.0f;
-	graphics = g;
+	this->graphics = graphics;
 	
 	screenDim = graphics->GetScreenDimensions();
 	camera = new Camera(

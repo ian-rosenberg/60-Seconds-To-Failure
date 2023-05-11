@@ -219,7 +219,7 @@ private:
 public:
 	EntityManager();
 
-	EntityManager(Uint8 debug, std::shared_ptr<Graphics> g);
+	EntityManager(Uint8 debug, const std::shared_ptr<Graphics>& graphics);
 
 	~EntityManager();
 

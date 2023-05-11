@@ -72,7 +72,7 @@ public:
 	Sprite(std::string filepath,
 		int width,
 		int height,
-		std::shared_ptr<Graphics> g);
+		const std::shared_ptr<Graphics>& graphics);
 
 	~Sprite();
 
