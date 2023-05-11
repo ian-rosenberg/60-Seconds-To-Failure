@@ -16,6 +16,9 @@
     <Filter Include="include">
       <UniqueIdentifier>{3eb32b44-bf4e-4f7c-a06f-457e4422700a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Resources">
+      <UniqueIdentifier>{91957c27-8bf9-4ab2-9d0a-b67db5e2475b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\game.cpp">
@@ -113,10 +116,5 @@
     <ClInclude Include="include\perlinnoise.h">
       <Filter>include</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="include\RSJparser.tcc">
-      <Filter>include</Filter>
-    </None>
   </ItemGroup>
 </Project>

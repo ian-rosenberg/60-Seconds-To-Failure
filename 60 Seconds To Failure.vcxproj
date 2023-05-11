@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{c0a4b3a8-f7a7-4c1b-bc9d-87aaad988f8a}</ProjectGuid>
     <RootNamespace>My60SecondsToFailure</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -71,24 +71,28 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2-2.0.20\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_image-2.0.5\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_ttf-2.0.18\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_mixer-2.0.4\include;C:\Users\Ian\source\repos\60-Seconds-To-Failure\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Ian\source\repos\60-Seconds-To-Failure\lib\Debug;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2-2.0.20\lib\x86;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_ttf-2.0.18\lib\x86;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_mixer-2.0.4\lib\x86;C:\Users\Ian\source\repos\60-Seconds-To-Failure\SDL2_image-2.0.5\lib\x86;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)include\simple_json;$(SolutionDir)SDL2_image-2.0.5\include;$(SolutionDir)SDL2_mixer-2.0.4\include;$(SolutionDir)SDL2_ttf-2.0.18\include;$(SolutionDir)SDL2-2.0.20\include;$(SolutionDir)box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\simple_json\Win32\Debug;$(SolutionDir)lib\box2d\Win32\Debug;$(SolutionDir)SDL2-2.0.20\lib\x86;$(SolutionDir)SDL2_ttf-2.0.18\lib\x86;$(SolutionDir)SDL2_mixer-2.0.4\lib\x86;$(SolutionDir)SDL2_image-2.0.5\lib\x86;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2-2.0.14\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_image-2.0.5\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_ttf-2.0.15\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_mixer-2.0.4\include;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2-2.0.14\lib\x86;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_image-2.0.5\lib\x86;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_ttf-2.0.15\lib\x86;D:\MyDocuments\GF2D Work\60STF\60-Seconds-To-Failure\SDL2_mixer-2.0.4\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)include\simple_json;$(SolutionDir)SDL2_image-2.0.5\include;$(SolutionDir)SDL2_mixer-2.0.4\include;$(SolutionDir)SDL2_ttf-2.0.18\include;$(SolutionDir)SDL2-2.0.20\include;$(SolutionDir)box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\simple_json\Win32\Release;$(SolutionDir)lib\box2d\Win32\Release;$(SolutionDir)SDL2-2.0.20\lib\x86;$(SolutionDir)SDL2_ttf-2.0.18\lib\x86;$(SolutionDir)SDL2_mixer-2.0.4\lib\x86;$(SolutionDir)SDL2_image-2.0.5\lib\x86;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\include;$(SolutionDir)\SDL2_image-2.0.5\include;$(SolutionDir)\SDL2_mixer-2.0.4\include;$(SolutionDir)\SDL2_ttf-2.0.18;$(SolutionDir)\SDL2-2.0.20\include;$(SolutionDir)\box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\sapph\source\repos\60-Seconds-To-Failure\box2d-main\build\x64\Debug;$(SolutionDir)\lib\Debug;$(SolutionDir)\SDL2-2.0.20\lib\x64;$(SolutionDir)\SDL2_ttf-2.0.18\lib\x64;$(SolutionDir)\SDL2_mixer-2.0.4\lib\x64;$(SolutionDir)\SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)include\simple_json;$(SolutionDir)SDL2_image-2.0.5\include;$(SolutionDir)SDL2_mixer-2.0.4\include;$(SolutionDir)SDL2_ttf-2.0.18\include;$(SolutionDir)SDL2-2.0.20\include;$(SolutionDir)box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\simple_json\x64\Debug;$(SolutionDir)lib\box2d\x64\Debug;$(SolutionDir)SDL2-2.0.20\lib\x64;$(SolutionDir)SDL2_ttf-2.0.18\lib\x64;$(SolutionDir)SDL2_mixer-2.0.4\lib\x64;$(SolutionDir)SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>$(SolutionDir)\box2d-main\build\bin\Release;$(SolutionDir)\lib\Debug;$(SolutionDir)\SDL2-2.0.20\lib\x64;$(SolutionDir)\SDL2_ttf-2.0.18\lib\x64;$(SolutionDir)\SDL2_mixer-2.0.4\lib\x64;$(SolutionDir)\SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
-    <IncludePath>$(SolutionDir)\include;$(SolutionDir)\SDL2_image-2.0.5\include;$(SolutionDir)\SDL2_mixer-2.0.4\include;$(SolutionDir)\SDL2_ttf-2.0.18;$(SolutionDir)\SDL2-2.0.20\include;$(SolutionDir)\box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\simple_json\x64\Release;$(SolutionDir)lib\box2d\x64\Release;$(SolutionDir)SDL2-2.0.20\lib\x64;$(SolutionDir)SDL2_ttf-2.0.18\lib\x64;$(SolutionDir)SDL2_mixer-2.0.4\lib\x64;$(SolutionDir)SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)include\simple_json;$(SolutionDir)SDL2_image-2.0.5\include;$(SolutionDir)SDL2_mixer-2.0.4\include;$(SolutionDir)SDL2_ttf-2.0.18\include;$(SolutionDir)SDL2-2.0.20\include;$(SolutionDir)box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,12 +101,13 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsCpp</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;box2d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;box2d.lib;simple_json.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,14 +119,15 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsCpp</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;box2d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;box2d.lib;simple_json.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -132,11 +138,12 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;box2d.lib;simple_json.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,13 +155,14 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;box2d.lib;simple_json.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -191,9 +199,6 @@
     <ClInclude Include="include\staticentity.h" />
     <ClInclude Include="include\tile.h" />
     <ClInclude Include="include\vectortypes.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="include\RSJparser.tcc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
