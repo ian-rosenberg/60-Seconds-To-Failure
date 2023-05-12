@@ -163,7 +163,7 @@ DebugDraw::~DebugDraw()
 	graphicsRef.reset();
 }
 
-void DebugDraw::DrawAll()
+void DebugDraw::DrawAll(float& accum)
 {
 	for (auto tile : tileRefs) {
 		Tile* thisTile = tile;

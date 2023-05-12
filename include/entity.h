@@ -189,7 +189,7 @@ public:
 
 	void SetGravityEnabled(Uint8 flag) { gravityEnabled = flag; }
 	
-	void UpdateScreenPosition();
+	void UpdateScreenPosition(float alpha);
 	
 	Vector2 GetDrawPosition() { return newDrawPosition; }
 
@@ -249,7 +249,7 @@ public:
 	/**
 	* @brief Render all entites to screen
 	*/
-	void EntityDrawAll(SDL_Rect cameraRect);
+	void EntityDrawAll(SDL_Rect cameraRect, float &accumulator);
 
 	/**
 	* @brief Update all entites

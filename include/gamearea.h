@@ -84,7 +84,7 @@ public:
 
 	void ResetSmoothStates();
 
-	void AreaDraw();
+	void AreaDraw(float accum);
 
 	EntityManager* GetEntityManager() { return entityManager; }
 

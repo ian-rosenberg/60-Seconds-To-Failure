@@ -6,6 +6,7 @@
 class Camera {
 private:
 	SDL_Rect cameraRect;
+	Vector2 prevPosition;
 	Vector4 bounds;
 	float zRot;
 

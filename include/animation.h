@@ -36,25 +36,25 @@ class Animation
 private:
 	std::string		name;
 	std::string		filepath;
+	std::shared_ptr<Graphics> graphics;
 
 protected:
 	Sprite*			sprite;
 
-	int			length;
-	int			cellWidth, cellHeight, yOffset, xOffset;
+	int				length;
+	int				cellWidth, cellHeight, yOffset, xOffset;
+	float           cFrame;
+	float           pFrame;
 
-	Vector4			colorSpecial;
 
-	float			frameRate;
-	float			frameTimer;
-	float			currentFrame;
+	Vector4			colorSpecial;	
 
 	AnimationType	animType;
 
 public:
 	Animation(const Animation & old);
 	Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics);
-	Animation(std::string n, Sprite* s, int width, int height, int xOffset, int yOffset, Vector4 color);
+	Animation(std::string n, Sprite* s, int width, int height, int xOffset, int yOffset, Vector4 color, const std::shared_ptr<Graphics>& graphics);
 	~Animation();
 
 	/**
@@ -65,8 +65,8 @@ public:
 	*/
 	AnimationReturnType AnimationNextFrame(Animation* animList);
 
-	float GetCurrentFrame() {
-		return currentFrame;
+	int GetCurrentFrame() {
+		return floor(cFrame);
 	}
 
 	int GetYOffset() {

@@ -9,11 +9,9 @@ Camera::Camera(SDL_Rect r, Vector4 bounds) {
 	zRot = 0;
 }
 
-void Camera::Move(Vector2 target, float l)
+void Camera::Move(Vector2 target, float alpha)
 {
-	cameraRect.x = std::lerp(cameraRect.x, target.x - cameraRect.w / 2, l);
-	cameraRect.y = std::lerp(cameraRect.y, target.y - cameraRect.h / 2, l);
-
-
+	cameraRect.x = (target.x - cameraRect.w / 2) * alpha + cameraRect.x * (1.0 - alpha);
+	cameraRect.y = (target.y - cameraRect.h / 2) * alpha + cameraRect.y * (1.0 - alpha);
 	//std::cout << cameraPosition.x << "," << cameraPosition.y << std::endl;
 }

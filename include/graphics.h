@@ -5,6 +5,7 @@
 #include <vectortypes.h>
 
 #define TARGET_FRAME_RATE 60.f
+#define SPRITE_ANIMATION_RATE 30.0f
 
 const double RAD2DEG = 180 / M_PI;
 const float DELTA_TIME = 1 / TARGET_FRAME_RATE;

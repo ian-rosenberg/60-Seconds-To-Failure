@@ -66,8 +66,10 @@ void GameArea::AreaThink() {
 void GameArea::AreaUpdate() {
 	if (!active)
 		return;
+
 	tileManager->UpdateMap();
 	entityManager->EntityUpdateAll();
+	camera->Move(player->GetDrawPosition(), DELTA_TIME);
 	entityManager->InputUpdate();
 }
 
@@ -171,17 +173,18 @@ void GameArea::ResetSmoothStates()
 	}
 }
 
-void GameArea::AreaDraw() {
+void GameArea::AreaDraw(float accum) {
 	Vector2 pos;
 
 	if (!active)
 		return;
 
+
+	//interpolate all ze positions
 	pos = player->GetDrawPosition();
-	camera->Move(pos, graphics->GetAccumulatorTime());
 	tileManager->DrawMap(Vector2(camera->GetRect().x, camera->GetRect().y));
-	entityManager->EntityDrawAll(camera->GetRect());
-	debugDraw->DrawAll();
+	entityManager->EntityDrawAll(camera->GetRect(), accum);
+	debugDraw->DrawAll(accum);
 }
 
 b2Vec2 GameArea::FindSpawnPointFromLeft()
@@ -227,7 +230,7 @@ void GameArea::SetPlayer(Player* p) {
 	player = p;
 	player->SetInputQueuePtr(entityManager->GetInputQueue());
 	player->SetEventsToFirePtr(entityManager->GetEventsToFire());
-	player->UpdateScreenPosition();
+	player->UpdateScreenPosition(0);
 }
 
 Uint8 GameArea::CaptureInputEvents(SDL_Event* e){

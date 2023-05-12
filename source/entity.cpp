@@ -189,10 +189,9 @@ void Entity::ToggleGrounded(int flag)
 		debugColor = { 0,255,0,255 };
 }
 
-void Entity::UpdateScreenPosition()
+void Entity::UpdateScreenPosition(float alpha)
 {
 	Vector2 p;
-	float alpha = graphics->GetAccumulatorTime();
 	//b2Vec2 bPos = body->GetPosition();
 
 	prevBodyPosition = newBodyPosition;
@@ -285,7 +284,7 @@ Entity* EntityManager::DeleteEntity(Entity* ent)
 	}
 }
 
-void EntityManager::EntityDrawAll(SDL_Rect cameraRect)
+void EntityManager::EntityDrawAll(SDL_Rect cameraRect, float &accumulator)
 {
 	SDL_Rect r;
 	Vector2 p;
@@ -297,7 +296,7 @@ void EntityManager::EntityDrawAll(SDL_Rect cameraRect)
 		it++)
 	{
 		p = (*it)->GetDrawPosition();
-		(*it)->UpdateScreenPosition();
+		(*it)->UpdateScreenPosition(accumulator);
 		(*it)->Draw(camPos);
 
 	}
