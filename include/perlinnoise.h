@@ -23,7 +23,7 @@ private:
 	int									outputSize;
 
 	int									octaves = 5;
-	float								scalingBias = 4.f;
+	float								scalingBias = 2.f;
 
 public:
 	PerlinNoise(Vector2 dimensions);

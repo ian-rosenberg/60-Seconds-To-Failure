@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-Camera::Camera(SDL_Rect r, Vector4 bounds) {
+Camera::Camera(SDL_Rect r, Vector4 bounds ){
 	cameraRect = r;
 	this->bounds = bounds;
 	zRot = 0;

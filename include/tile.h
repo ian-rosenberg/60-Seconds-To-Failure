@@ -128,6 +128,7 @@ public:
 	b2Vec2													GetBottomChainLastVertex() { return bottomChain.back(); }
 
 	b2Vec2													GetWorldPosition() { return worldPosition; }
+	Vector2													GetPixelPosition() { return pixelPosition; }
 
 	TileLayer												GetTileLayer() { return tileLayers; }
 
@@ -150,6 +151,9 @@ private:
 	int														tileWidth;
 	int														tileHeight;
 
+	int														worldRows;
+	int														worldCols;
+
 	std::vector<std::vector<SDL_Color>>						spriteSheetPixels;
 
 	std::shared_ptr<Graphics>								graphicsRef;
@@ -168,9 +172,13 @@ public:
 
 	void UpdateMap();
 
-	void DrawMap(Vector2 cameraOffset);
+	void DrawMap(Vector2 cameraOffset, SDL_Rect& cameraBounds);
+
+	bool IsInCameraBounds(Tile* t, SDL_Rect cameraBounds);
 
 	std::vector<std::vector<Tile*>>* GenerateTileMap(PerlinNoise* perlin, b2World* physicsWorld, Vector2 pDim);
+	
+	void GenerateTileMapRectArea(SDL_Rect& r);
 
 	void LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap);
 

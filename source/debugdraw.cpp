@@ -163,12 +163,17 @@ DebugDraw::~DebugDraw()
 	graphicsRef.reset();
 }
 
-void DebugDraw::DrawAll(float& accum)
+void DebugDraw::DrawAll(float& accum, SDL_Rect camRect)
 {
 	for (auto tile : tileRefs) {
 		Tile* thisTile = tile;
 
 		if (!tile)
+			continue;
+		if (Vector2 tPos = thisTile->GetPixelPosition(); !(tPos.x + thisTile->GetPixelDimensions().x >= camRect.x)
+			|| !(tPos.x< camRect.x + camRect.w)
+			|| !(tPos.y + thisTile->GetPixelDimensions().y >= camRect.y)
+			|| !(tPos.y < camRect.y + camRect.h))
 			continue;
 
 		b2Body* body = thisTile->GetBodyReference();
@@ -217,9 +222,16 @@ void DebugDraw::DrawAll(float& accum)
 	for (auto entity : entityRefs) {
 		Entity* thisEntity = entity.second;
 		b2Body* body = thisEntity->GetBody();
+		Vector2 ePos = thisEntity->GetDrawPosition();
+
 		if (!body)
 			continue;
 
+		if (Vector2 ePos = thisEntity->GetDrawPosition(); !(ePos.x + thisEntity->GetAvgPixelDimensions().x >= camRect.x)
+			|| !(ePos.x < camRect.x + camRect.w)
+			|| !(ePos.y + thisEntity->GetAvgPixelDimensions().y >= camRect.y)
+			|| !(ePos.y < camRect.y + camRect.h))
+			continue;
 		
 		for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
 			SDL_Color debugColor = thisEntity->GetDebugColor();

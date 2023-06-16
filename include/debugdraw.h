@@ -41,5 +41,5 @@ public:
 	void AddEntityRef(Entity* entityRef);
 	void AddTileRef(Tile* tile) { tileRefs.push_back(tile); }
 	void AddTileMapRef(std::vector<std::vector<Tile*>>* tilemapRef);
-	void DrawAll(float &accum);
+	void DrawAll(float &accum, SDL_Rect camRect);
 };

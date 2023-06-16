@@ -63,7 +63,7 @@ public:
 	* @param frame For timing purposes
 	* @returns A flag determining the status of the animation
 	*/
-	AnimationReturnType AnimationNextFrame(Animation* animList);
+	AnimationReturnType AnimationNextFrame();
 
 	int GetCurrentFrame() {
 		return floor(cFrame);

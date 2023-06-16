@@ -64,9 +64,9 @@ Animation::~Animation()
 		return;
 }
 
-AnimationReturnType Animation::AnimationNextFrame(Animation* anim)
+AnimationReturnType Animation::AnimationNextFrame()
 {
-	if (!anim)
+	if (!sprite)
 	{
 		std::cout << "No animation found by name!" << std::endl;
 		return AnimationReturnType::ART_ERROR;
@@ -83,15 +83,15 @@ AnimationReturnType Animation::AnimationNextFrame(Animation* anim)
 
 	cFrame = cFrame * alpha + pFrame * (1.0 - alpha);
 
-	if (cFrame >= anim->length - 1)
+	if (cFrame >= length - 1)
 	{
-		switch (anim->animType)
+		switch (animType)
 		{
 		case AnimationType::AT_LOOP:
 			cFrame = 0;
 			return AnimationReturnType::ART_LOOPING;
 		case AnimationType::AT_ONCE:
-			cFrame = 0;//fix this loop
+			cFrame = 0;
 			return AnimationReturnType::ART_END;
 		}
 	}

@@ -169,8 +169,12 @@ void Player::Draw(Vector2 cameraPosition)
 
 	//std::cout << resultPosition.x << "," << resultPosition.y << std::endl;
 	//std::cout << "Player Velocity (" << velocity.x << ", " << velocity.y << ")" << std::endl;
-
-	currentAnimation->AnimationNextFrame(currentAnimation);
+	
+	if (currentAnimation->AnimationNextFrame() == AnimationReturnType::ART_END) {
+		animState = State::State_Idle;
+		currentAnimation = GetAnimationByName("idle");
+		currentSprite = currentAnimation->GetSprite();
+	 }
 }
 
 

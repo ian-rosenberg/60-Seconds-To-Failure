@@ -56,6 +56,8 @@ private:
 	Camera*							camera;
 	DebugDraw*						debugDraw;
 
+	float							cameraFollowStrength;
+
 	void InitPhysicsWorld();
 
 

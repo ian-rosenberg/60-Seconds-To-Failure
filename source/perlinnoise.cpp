@@ -6,12 +6,16 @@ PerlinNoise::PerlinNoise(Vector2 dimensions)
 	outputHeight = dimensions.y;
 
 	outputSize = outputWidth;
-
-	srand(time(nullptr));
 }
 
 PerlinNoise::~PerlinNoise()
 {
+	noiseSeed2D.clear();
+	perlin2D.clear();
+
+
+	noiseSeed1D.clear();
+	perlin1D.clear();
 }
 
 std::vector<float> PerlinNoise::PerlinNoise1D()

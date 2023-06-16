@@ -95,7 +95,7 @@ void GameWorld::GameLoop(float & accumulator) {
 
 	while (currentEvent.type != SDL_QUIT) {
 		float frameTime = graphicsPtr->GetFrameDeltaTime() / MS;
-		std::cout << "Frame time in seconds " << frameTime << std::endl;
+		//std::cout << "Frame time in seconds " << frameTime << std::endl;
 		SDL_RenderClear(graphicsPtr->GetRenderer());
 		graphicsPtr->SetOldTime();
 		graphicsPtr->SetNewTime(SDL_GetTicks64());

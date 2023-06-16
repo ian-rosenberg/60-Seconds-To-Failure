@@ -923,7 +923,6 @@ TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& 
 	physics = world;
 
 	worldSize = graphics->GetScreenDimensions();
-	worldSize.x /= 4;
 
 	groundTiles = new std::unordered_map<Direction, std::vector<Tile*>>();
 	groundTiles->insert_or_assign(Direction::None, std::vector<Tile*>());
@@ -951,6 +950,8 @@ TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& 
 
 	TileParseTypesFromJSON("data/tilemap/Grassland/grassTiles.json");
 
+	worldRows = worldSize.y / tileHeight;
+	worldCols = worldSize.x;
 }
 
 //Time to worry about the destructor again
@@ -1038,42 +1039,81 @@ void TileManager::UpdateMap()
 {
 }
 
-void TileManager::DrawMap(Vector2 cameraOffset)
+void TileManager::DrawMap(Vector2 cameraOffset, SDL_Rect& cameraBounds)
 {
 	for (int y = 0; y < tileMap.size(); y++) {
 		for (int x = 0; x < tileMap.at(y).size(); x++) {
-			if (tileMap.at(y).at(x) != nullptr)
+			if (tileMap.at(y).at(x) != nullptr && IsInCameraBounds(tileMap.at(y).at(x), cameraBounds))
 				tileMap.at(y).at(x)->Draw(cameraOffset);
 		}
 	}
 
 }
 
+bool TileManager::IsInCameraBounds(Tile* t, SDL_Rect cameraBounds)
+{
+	Vector2 tPos = t->GetPixelPosition();
+
+	return tPos.x + tileWidth >= cameraBounds.x
+		&& tPos.x < cameraBounds.x + cameraBounds.w
+		&& tPos.y + tileHeight >= cameraBounds.y
+		&& tPos.y < cameraBounds.y + cameraBounds.h;
+}
+
 std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(PerlinNoise* perlin, b2World* physicsWorld, Vector2 pDim)
 {
-	std::vector<float> perlin1D = perlin->PerlinNoise1D();
+	int rowsToFill = 2;
 
-	Vector2 dim = groundTiles->at(Direction::West).at(0)->GetPixelDimensions();
-	Tile* tmp = groundTiles->at(Direction::West).at(0);
-	int rowCount = worldSize.y / tmp->GetPixelDimensions().y;
-	//ScalePerlinNoise1D(perlin1D, graphicsRef->GetScreenDimensions());
+	SDL_Rect r(0, 0, worldCols, rowsToFill);
+	SDL_Rect test(0, 0, 128, 128);
+	
+	GenerateTileMapRectArea(r);
 
-	for (int i = 0; i < rowCount; i++) {
-		std::vector<Tile*> tileRow;
-		tileRow.assign(perlin1D.size(), nullptr);
-		tileMap.push_back(tileRow);
+	r.y = (int)(worldSize.y / tileHeight) - rowsToFill;
+
+	GenerateTileMapRectArea(r);
+
+	/*SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 255, 0, 255);
+
+	for (int x = 0, y = 0; y < tileMap.size(); x++) {
+		if (x >= tileMap[y].size()) {
+			x = 0;
+			if (y + 1 >= tileMap.size())
+				break;
+			else
+				y++;
+		}
+		
+		if (tileMap[y][x] != nullptr) {
+			test = SDL_Rect(x * 128, y * 128, 128, 128);
+			SDL_RenderDrawRect(graphicsRef->GetRenderer(), &test);
+		}
 	}
 
+	SDL_RenderPresent(graphicsRef->GetRenderer());*/
+
+	return &tileMap;
+}
+
+void TileManager::GenerateTileMapRectArea(SDL_Rect& r)
+{
+	PerlinNoise* perlin = new PerlinNoise(Vector2(r.w,r.h));
+	std::vector<float> perlin1D = perlin->PerlinNoise1D();
+	Vector2 dim = groundTiles->at(Direction::West).at(0)->GetPixelDimensions();
+	Tile* tmp = groundTiles->at(Direction::West).at(0);
+
+	tileMap.resize((int)(worldSize.y / tileHeight));
+	for (int i = 0; i < tileMap.size(); i++)
+		tileMap.at(i).resize(r.w);
+
 	for (int x = 0; x < perlin1D.size(); x++) {
-		int yIndex = (int)(perlin1D[x] * graphicsRef->GetScreenDimensions().y) % rowCount;
-			
-		tileMap.at(yIndex).at(x) = new Tile(*groundTiles->at((Direction)(Direction::East| Direction::West)).at((int)(rand() % groundTiles->size())));
-		tileMap.at(yIndex).at(x)->SetGridPosition(x, yIndex);
+		int yIndex = (int)(perlin1D[x] * graphicsRef->GetScreenDimensions().y);
+
+		tileMap.at((int)(yIndex + r.y) % worldRows).at(x + r.x) = new Tile(*groundTiles->at((Direction)(Direction::East| Direction::West)).at((int)(rand() % groundTiles->size())));
+		tileMap.at((int)(yIndex + r.y) % worldRows).at(x + r.x)->SetGridPosition(x, yIndex);
 	}
 
 	delete perlin;
-
-	return &tileMap;
 }
 
 void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap)

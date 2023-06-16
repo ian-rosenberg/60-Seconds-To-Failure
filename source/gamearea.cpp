@@ -13,6 +13,8 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 	testPlatformBottom = 0.0f;
 	testPlatformTop = 0.0f;
 	this->graphics = graphics;
+
+	cameraFollowStrength = 0.1f;
 	
 	screenDim = graphics->GetScreenDimensions();
 	camera = new Camera(
@@ -69,7 +71,7 @@ void GameArea::AreaUpdate() {
 
 	tileManager->UpdateMap();
 	entityManager->EntityUpdateAll();
-	camera->Move(player->GetDrawPosition(), DELTA_TIME);
+	camera->Move(player->GetDrawPosition(), cameraFollowStrength);
 	entityManager->InputUpdate();
 }
 
@@ -174,6 +176,7 @@ void GameArea::ResetSmoothStates()
 }
 
 void GameArea::AreaDraw(float accum) {
+	SDL_Rect camRect = camera->GetRect();
 	Vector2 pos;
 
 	if (!active)
@@ -182,9 +185,9 @@ void GameArea::AreaDraw(float accum) {
 
 	//interpolate all ze positions
 	pos = player->GetDrawPosition();
-	tileManager->DrawMap(Vector2(camera->GetRect().x, camera->GetRect().y));
+	tileManager->DrawMap(Vector2(camera->GetRect().x, camera->GetRect().y), camRect);
 	entityManager->EntityDrawAll(camera->GetRect(), accum);
-	debugDraw->DrawAll(accum);
+	debugDraw->DrawAll(accum, camRect);
 }
 
 b2Vec2 GameArea::FindSpawnPointFromLeft()
@@ -193,15 +196,15 @@ b2Vec2 GameArea::FindSpawnPointFromLeft()
 	Vector2 tileDim = tileManager->GetTileDimensions();
 	int col = 0;
 
-	for (int row = 0; col < tilemap->at(row).size(); row++) {
-		if (row >= tilemap->size()-1) {
-			row = 0;
-			col++;
-		}
-
+	for (int row = tilemap->size()-1; row >= 0; col++) {
 		if (tilemap->at(row).at(col) != nullptr) {
 			return b2Vec2(tilemap->at(row).at(col)->GetBodyReference()->GetPosition()) 
 				- b2Vec2(0, tilemap->at(row).at(col)->GetPixelDimensions().y * MET_IN_PIX);
+		}
+
+		if (col >= tilemap->at(row).size()) {
+			row--;
+			col = 0;
 		}
 	}
 }
