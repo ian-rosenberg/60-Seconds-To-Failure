@@ -76,6 +76,10 @@ public:
 
 	~Sprite();
 
+	static std::shared_ptr<SDL_Texture> CreateRenderTexture(int width,
+		int height,
+		const std::shared_ptr<Graphics>& graphics, Uint32 fmt);
+
 	Uint8 LoadPNGImage(std::string filepath);
 
 	std::shared_ptr<SDL_Surface> LoadSurface(std::string filepath);

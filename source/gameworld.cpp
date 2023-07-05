@@ -16,7 +16,7 @@ GameWorld::GameWorld() {
 	areas = new std::vector<GameArea*>();
 	player = new Player(graphicsPtr);
 
-	InitTestArea();
+	InitPlayerPhysics();
 }
 
 GameWorld::~GameWorld() {
@@ -32,7 +32,7 @@ GameWorld::~GameWorld() {
 	graphicsPtr = nullptr;
 }
 
-void GameWorld::InitTestArea() {
+void GameWorld::InitPlayerPhysics() {
 	
 	areas->push_back(
 		new GameArea(areas->size(),

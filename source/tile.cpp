@@ -910,6 +910,95 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 	sj_free(genDesc);
 }
 
+
+//Work on carving paths
+//void TileManager::CarvePath()
+//{
+//	PerlinNoise *perlin = new PerlinNoise(Vector2(tileMap[0].size(), tileMap.size()));
+//	std::vector<float> perlin1D = perlin->PerlinNoise1D();
+//
+//
+//	for (int col = 1; col < perlin1D.size()-1; col++) {
+//		int perlinVal = (perlin1D[col] * tileMap.size());
+//		Tile* t = tileMap[perlinVal][col];
+//		int stepN = gf2d_random() * (perlinVal * -1) - 1;
+//		int stepE = gf2d_random() * (tileMap[perlinVal].size() - col) - 1;
+//		int stepS = gf2d_random() * (tileMap.size() - perlinVal) - 1;
+//		int stepW = gf2d_random() * (col * -1) - 1;
+//		
+//		tileMap[perlinVal][col] = nullptr;
+//		delete t;
+//
+//		for(int n = stepN; n < 0; n++) {
+//			t = tileMap[perlinVal+n][col];
+//			tileMap[perlinVal+n][col] = nullptr;
+//			delete t;
+//		}
+//		for (int e = stepE + col; e > 0; e--) {
+//			t = tileMap[perlinVal][e];
+//			tileMap[perlinVal][e] = nullptr;
+//			delete t;
+//		}
+//		for (int s = stepS + perlinVal; s > 0; s--) {
+//			t = tileMap[s][col];
+//			tileMap[s][col] = nullptr;
+//			delete t;
+//		}
+//		for (int w = stepW; w < 0; w++) {
+//			t = tileMap[perlinVal][col + w];
+//			tileMap[perlinVal][col + w] = nullptr;
+//			delete t;
+//		}
+//	}
+//}
+
+void TileManager::CarveCaves()
+{
+
+	double frequency = gf2d_random() * 16.0;
+	std::int32_t octaves = ceil(gf2d_random() * 8);
+	std::uint32_t seed = (unsigned short)time(nullptr);
+	const siv::PerlinNoise perlin{ seed };
+	const double fx = (frequency / worldCols);
+	const double fy = (frequency / worldRows);
+
+	frequency = std::clamp(frequency, 0.1, 32.0);
+	octaves = std::clamp(octaves, 1, 8);
+
+	//SDL_RenderClear(graphicsRef->GetRenderer());
+
+	for (std::int32_t y = 0; y < worldRows; ++y)
+	{
+		for (std::int32_t x = 0; x < worldCols; ++x)
+		{
+			const SDL_Rect r(x*64, y*64, 64, 64);
+			if (perlin.octave2D_01((x * fx), (y * fy), octaves) < .5f
+				&& !(x == 0
+					|| y == 0
+					|| x == worldCols-1
+					|| y == worldRows-1
+					)
+				) {
+				//SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 0, 0, 255);
+			
+				Tile* t = tileMap[y][x];
+				tileMap[y][x] = nullptr;
+				delete t;
+			}
+			/*else {
+
+				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 255, 0, 255);
+			}*/
+
+
+			//SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
+		}
+	}
+	//SDL_RenderPresent(graphicsRef->GetRenderer());
+
+	//SDL_RenderClear(graphicsRef->GetRenderer());
+}
+
 TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDim)
 {
 	std::vector<Tile*> tileRow;
@@ -923,6 +1012,9 @@ TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& 
 	physics = world;
 
 	worldSize = graphics->GetScreenDimensions();
+	tileMapTexture = nullptr;
+
+	tileMapTextureDrawPosition = Vector2(0, 0);
 
 	groundTiles = new std::unordered_map<Direction, std::vector<Tile*>>();
 	groundTiles->insert_or_assign(Direction::None, std::vector<Tile*>());
@@ -950,8 +1042,8 @@ TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& 
 
 	TileParseTypesFromJSON("data/tilemap/Grassland/grassTiles.json");
 
-	worldRows = worldSize.y / tileHeight;
-	worldCols = worldSize.x;
+	worldRows = worldSize.y / PIX_IN_MET;
+	worldCols = worldSize.x / PIX_IN_MET;
 }
 
 //Time to worry about the destructor again
@@ -1032,6 +1124,8 @@ TileManager::~TileManager()
 
 	spriteSheet.reset();
 
+	tileMapTexture.reset();
+
 	graphicsRef.reset();
 }
 
@@ -1041,12 +1135,16 @@ void TileManager::UpdateMap()
 
 void TileManager::DrawMap(Vector2 cameraOffset, SDL_Rect& cameraBounds)
 {
-	for (int y = 0; y < tileMap.size(); y++) {
-		for (int x = 0; x < tileMap.at(y).size(); x++) {
-			if (tileMap.at(y).at(x) != nullptr && IsInCameraBounds(tileMap.at(y).at(x), cameraBounds))
-				tileMap.at(y).at(x)->Draw(cameraOffset);
-		}
-	}
+	Vector2 sDim = graphicsRef->GetScreenDimensions();
+	SDL_Rect srcRect(cameraOffset.x, cameraOffset.y, sDim.x, sDim.y);
+
+	srcRect.x = std::clamp(cameraOffset.x, 0.0, worldCols * tileWidth * 1.0);
+	srcRect.y = std::clamp(cameraOffset.y, 0.0, worldRows * tileHeight * 1.0);
+
+	SDL_RenderCopy(graphicsRef->GetRenderer(),
+		tileMapTexture.get(),
+		&srcRect,
+		nullptr);
 
 }
 
@@ -1060,60 +1158,64 @@ bool TileManager::IsInCameraBounds(Tile* t, SDL_Rect cameraBounds)
 		&& tPos.y < cameraBounds.y + cameraBounds.h;
 }
 
-std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(PerlinNoise* perlin, b2World* physicsWorld, Vector2 pDim)
+std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWorld, Vector2 pDim)
 {
-	int rowsToFill = 2;
-
-	SDL_Rect r(0, 0, worldCols, rowsToFill);
-	SDL_Rect test(0, 0, 128, 128);
+	SDL_Renderer* ren = graphicsRef->GetRenderer();
+	Uint32 fmt;
 	
-	GenerateTileMapRectArea(r);
+	bounds = Vector4(0, 0, worldCols * tileWidth, worldRows * tileHeight);
 
-	r.y = (int)(worldSize.y / tileHeight) - rowsToFill;
+	tileMap.resize(worldRows);
+	
+	for(int y = 0; y < tileMap.size(); y++)
+		tileMap[y].resize(worldCols);
 
-	GenerateTileMapRectArea(r);
-
-	/*SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 255, 0, 255);
-
-	for (int x = 0, y = 0; y < tileMap.size(); x++) {
-		if (x >= tileMap[y].size()) {
-			x = 0;
-			if (y + 1 >= tileMap.size())
-				break;
-			else
-				y++;
-		}
+	for (int row = 0; row < tileMap.size(); row++) {
+		for (int col = 0; col < tileMap[row].size(); col++) {
+			tileMap[row][col] = new Tile(
+				*groundTiles->at(
+					(Direction)(Direction::East | Direction::West)
+				).at(
+					(int)(rand() % groundTiles->size())
+				));
 		
-		if (tileMap[y][x] != nullptr) {
-			test = SDL_Rect(x * 128, y * 128, 128, 128);
-			SDL_RenderDrawRect(graphicsRef->GetRenderer(), &test);
+			tileMap[row][col]->SetGridPosition(col, row);
 		}
 	}
 
-	SDL_RenderPresent(graphicsRef->GetRenderer());*/
+	CarveCaves();
+
+	//Carve out walkable tunnel
+	//for (int i = 0; i < MAX_TUNNELS; i += (int)(gf2d_random() * MAX_TUNNELS)/2)
+		//CarvePath();
+
+	SDL_QueryTexture(spriteSheet.get()->GetTexture().get(), &fmt, nullptr, nullptr, nullptr);
+
+	tileMapTexture = Sprite::CreateRenderTexture(worldCols* tileWidth, worldRows* tileHeight, graphicsRef, fmt);
+	SDL_Texture* tex = tileMapTexture.get();
+	SDL_Texture* spriteSheetTexture = spriteSheet->GetTexture().get();
+
+	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+
+	SDL_RenderClear(ren);
+	SDL_SetRenderTarget(ren, tex);
+
+	for (int y = 0; y < tileMap.size(); y++) {
+		for (int x = 0; x < tileMap[y].size(); x++) {
+
+			SDL_Rect rect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+
+			if (tileMap[y][x] != nullptr) {
+				SDL_Rect sR = tileMap[y][x]->GetSourceRect();
+				SDL_RenderCopy(ren, spriteSheetTexture, &sR, &rect);
+			}
+		}
+	}
+	
+	SDL_SetRenderTarget(ren, nullptr);
+	SDL_RenderClear(ren);
 
 	return &tileMap;
-}
-
-void TileManager::GenerateTileMapRectArea(SDL_Rect& r)
-{
-	PerlinNoise* perlin = new PerlinNoise(Vector2(r.w,r.h));
-	std::vector<float> perlin1D = perlin->PerlinNoise1D();
-	Vector2 dim = groundTiles->at(Direction::West).at(0)->GetPixelDimensions();
-	Tile* tmp = groundTiles->at(Direction::West).at(0);
-
-	tileMap.resize((int)(worldSize.y / tileHeight));
-	for (int i = 0; i < tileMap.size(); i++)
-		tileMap.at(i).resize(r.w);
-
-	for (int x = 0; x < perlin1D.size(); x++) {
-		int yIndex = (int)(perlin1D[x] * graphicsRef->GetScreenDimensions().y);
-
-		tileMap.at((int)(yIndex + r.y) % worldRows).at(x + r.x) = new Tile(*groundTiles->at((Direction)(Direction::East| Direction::West)).at((int)(rand() % groundTiles->size())));
-		tileMap.at((int)(yIndex + r.y) % worldRows).at(x + r.x)->SetGridPosition(x, yIndex);
-	}
-
-	delete perlin;
 }
 
 void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap)
@@ -1138,6 +1240,8 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 			}
 			Tile* prev = nullptr;
 			Tile* next = nullptr;
+			Tile* above = nullptr;
+			Tile* below = nullptr;
 
 			//Check if there are adjacent tiles EXCEPT NORTH AND SOUTH of tile
 			if (x - 1 >= 0 && y - 1 >= 0 && tileMap.at(y - 1).at(x - 1) != nullptr) {
@@ -1149,6 +1253,12 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 			else if (x - 1 >= 0 && y + 1 < tileMap.size() && tileMap.at(y + 1).at(x - 1) != nullptr) {
 				prev = tileMap.at(y + 1).at(x - 1);
 			}
+
+			if (y - 1 >= 0 && tileMap.at(y - 1).at(x) != nullptr)
+				above = tileMap.at(y - 1).at(x);
+
+			if (y + 1 < tileMap.size() && tileMap.at(y + 1).at(x) != nullptr)
+				below = tileMap.at(y + 1).at(x);
 
 			if (!prev) {
 				tpg = tile->GetTopChainLastVertex();
@@ -1179,13 +1289,14 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 				bpg = next->GetBottomChainFirstVertex();
 			}
 
-			tile->CreateTileBody(
-				physics,
-				tpg, 
-				tng,
-				bpg,
-				bng
-			);
+			if (!prev || !next || !above || !below)
+				tile->CreateTileBody(
+					physics,
+					tpg, 
+					tng,
+					bpg,
+					bng
+				);
 			x++;
 		}
 		y++;

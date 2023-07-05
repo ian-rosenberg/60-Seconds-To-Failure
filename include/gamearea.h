@@ -7,7 +7,6 @@
 #include <player.h>
 #include <camera.h>
 #include <tile.h>
-#include <perlinnoise.h>
 #include <contactlistener.h>
 
 #include <box2d/box2d.h>
@@ -32,6 +31,8 @@ private:
 	b2Vec2							gravityScale;
 	b2World*						areaPhysics;
 
+	Vector2							playerPixelDimensions;
+
 	TileManager*					tileManager;
 
 	//Test ground vars
@@ -50,8 +51,6 @@ private:
 	const float						timeStep = 1.f / 60.f;
 	const int32						velocityIterations = 6;
 	const int32						positionIterations = 2;
-
-	PerlinNoise*					perlinNoiseMap;
 
 	Camera*							camera;
 	DebugDraw*						debugDraw;

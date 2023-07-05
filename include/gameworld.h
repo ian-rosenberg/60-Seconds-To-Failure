@@ -18,7 +18,7 @@ public:
 
 	const std::shared_ptr<Graphics>& graphicsetGraphics() { return graphicsPtr; }
 
-	void InitTestArea();
+	void InitPlayerPhysics();
 
 	void GameLoop(float & accumulator);
 };

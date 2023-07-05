@@ -17,15 +17,13 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 	cameraFollowStrength = 0.1f;
 	
 	screenDim = graphics->GetScreenDimensions();
+
 	camera = new Camera(
-		SDL_Rect(0, 
-			0, 
+		SDL_Rect(0,
+			0,
 			screenDim.x,
-			screenDim.y), 
-		Vector4(-screenDim.x*2, 
-			-screenDim.y * 2, 
-			screenDim.x * 2, 
-			screenDim.y * 2));
+			screenDim.y),
+		Vector4(0,0,0,0));
 
 	debugDraw = new DebugDraw(graphics, camera);
 
@@ -36,13 +34,15 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 		areaPhysics, 
 		playerDim);
 
-	perlinNoiseMap = new PerlinNoise(Vector2(100, 20));
+	std::vector<std::vector<Tile*>>* tilemap = tileManager->GenerateTileMap(areaPhysics, playerDim);
 
-	std::vector<std::vector<Tile*>>* tilemap = tileManager->GenerateTileMap(perlinNoiseMap, areaPhysics, playerDim);
+	camera->SetBounds(tileManager->GetBounds());
 
 	tileManager->LinkTilemapGhostVertices(tilemap);
 
 	debugDraw->AddTileMapRef(tilemap);
+
+	playerPixelDimensions = playerDim;
 }
 
 GameArea::~GameArea() {
@@ -177,36 +177,39 @@ void GameArea::ResetSmoothStates()
 
 void GameArea::AreaDraw(float accum) {
 	SDL_Rect camRect = camera->GetRect();
-	Vector2 pos;
 
 	if (!active)
 		return;
 
 
 	//interpolate all ze positions
-	pos = player->GetDrawPosition();
 	tileManager->DrawMap(Vector2(camera->GetRect().x, camera->GetRect().y), camRect);
 	entityManager->EntityDrawAll(camera->GetRect(), accum);
 	debugDraw->DrawAll(accum, camRect);
 }
 
+
 b2Vec2 GameArea::FindSpawnPointFromLeft()
 {
 	std::vector<std::vector<Tile*>>* tilemap = tileManager->GetTileMap();
-	Vector2 tileDim = tileManager->GetTileDimensions();
-	int col = 0;
+	Vector2 pDim = playerPixelDimensions;
+	int col = 1;
 
-	for (int row = tilemap->size()-1; row >= 0; col++) {
-		if (tilemap->at(row).at(col) != nullptr) {
-			return b2Vec2(tilemap->at(row).at(col)->GetBodyReference()->GetPosition()) 
-				- b2Vec2(0, tilemap->at(row).at(col)->GetPixelDimensions().y * MET_IN_PIX);
+	for (int row = tilemap->size() - 2; col < tilemap[row].size()-1; row--) {
+		if (row < 1) {
+			row = tilemap->size()-2;
+			col++;
 		}
+		
+		if (tilemap->at(row).at(col) != nullptr && tilemap->at(row-1).at(col) == nullptr) {
+			Vector2 worldSpawn(col * tileManager->GetTileDimensions().x, (row - 1) * tileManager->GetTileDimensions().y);
+			graphics->Vector2PixelsToMeters(worldSpawn);
 
-		if (col >= tilemap->at(row).size()) {
-			row--;
-			col = 0;
+			return b2Vec2(worldSpawn.x + pDim.x / 2, worldSpawn.y);
 		}
 	}
+
+	return b2Vec2(0,0);
 }
 
 void GameArea::InitPhysicsWorld()

@@ -108,6 +108,25 @@ Sprite::Sprite(std::string fp, int width, int height, const std::shared_ptr<Grap
 	LoadPNGImage(filepath);
 }
 
+std::shared_ptr<SDL_Texture> Sprite::CreateRenderTexture(int width, int height, const std::shared_ptr<Graphics>& graphics, Uint32 fmt)
+{
+	SDL_Rect srcRect = { 0,0,width,height };
+
+	std::shared_ptr<SDL_Texture> texture = std::shared_ptr<SDL_Texture>(SDL_CreateTexture(graphics->GetRenderer(), fmt, SDL_TEXTUREACCESS_TARGET, width, height),
+		[](SDL_Texture* ptr) { SDL_DestroyTexture(ptr); });
+
+	SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+
+	if (!texture.get())
+	{
+		printf_s("Unable to create blank texture! SDL Error: %s\n", SDL_GetError());
+
+		return NULL;
+	}
+
+	return texture;
+}
+
 Sprite::~Sprite()
 {
 	texture.reset();

@@ -4,11 +4,12 @@
 
 #include <box2d/box2d.h>
 #include <animation.h>
-#include <perlinnoise.h>
+#include "PerlinNoise.hpp"
 
 
 const int VERTICES_PER_EDGE = 2;
 const int MAX_EDGES = 4;
+const int MAX_TUNNELS = 6;
 
 
 enum Direction : unsigned short{
@@ -136,6 +137,8 @@ public:
 
 
 	void													TestDraw();
+
+	SDL_Rect												GetSourceRect() { return sourceRect; }
 };
 
 class TileManager {
@@ -146,6 +149,12 @@ private:
 	std::unordered_map<Direction, std::vector<Tile*>>*		platformTiles;
 	std::unordered_map<Direction, std::vector<Tile*>>*		wallTiles;
 	std::shared_ptr<Sprite>									spriteSheet;
+
+	std::shared_ptr<SDL_Texture>							tileMapTexture;
+	Vector2													tileMapTextureDrawPosition;
+
+	Vector4													bounds;
+
 	std::vector<std::vector<Tile*>>							tileMap;
 
 	int														tileWidth;
@@ -162,9 +171,15 @@ private:
 	
 	Vector2													playerDimensions;
 	Vector2													worldSize;
+
+	SDL_Rect												cameraBounds;
 								
 	void													TileParseTypesFromJSON(std::string json);
-					
+			
+	void													CarvePath();
+
+	void													CarveCaves();
+
 public:
 	TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDimensions);
 	
@@ -176,7 +191,7 @@ public:
 
 	bool IsInCameraBounds(Tile* t, SDL_Rect cameraBounds);
 
-	std::vector<std::vector<Tile*>>* GenerateTileMap(PerlinNoise* perlin, b2World* physicsWorld, Vector2 pDim);
+	std::vector<std::vector<Tile*>>* GenerateTileMap(b2World* physicsWorld, Vector2 pDim);
 	
 	void GenerateTileMapRectArea(SDL_Rect& r);
 
@@ -185,4 +200,6 @@ public:
 	Vector2 GetTileDimensions() { return Vector2(tileWidth, tileHeight); }
 
 	std::vector<std::vector<Tile*>>* GetTileMap() { return &tileMap; }
+
+	Vector4 GetBounds() { return bounds; }
 };
