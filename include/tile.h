@@ -180,6 +180,8 @@ private:
 
 	void													CarveCaves();
 
+	void													CreateMapRenderTarget();
+
 public:
 	TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDimensions);
 	

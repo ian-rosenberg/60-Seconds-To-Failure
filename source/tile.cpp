@@ -999,6 +999,38 @@ void TileManager::CarveCaves()
 	//SDL_RenderClear(graphicsRef->GetRenderer());
 }
 
+void TileManager::CreateMapRenderTarget()
+{
+	Uint32 fmt;
+	SDL_Renderer* ren = graphicsRef->GetRenderer();
+	SDL_Texture* spriteSheetTexture = spriteSheet->GetTexture().get();
+	SDL_QueryTexture(spriteSheet.get()->GetTexture().get(), &fmt, nullptr, nullptr, nullptr);
+
+	tileMapTexture = Sprite::CreateRenderTexture(worldCols * tileWidth, worldRows * tileHeight, graphicsRef, fmt);
+	SDL_Texture* tex = tileMapTexture.get();
+	
+
+	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+
+	SDL_RenderClear(ren);
+	SDL_SetRenderTarget(ren, tex);
+
+	for (int y = 0; y < tileMap.size(); y++) {
+		for (int x = 0; x < tileMap[y].size(); x++) {
+
+			SDL_Rect rect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+
+			if (tileMap[y][x] != nullptr) {
+				SDL_Rect sR = tileMap[y][x]->GetSourceRect();
+				SDL_RenderCopy(ren, spriteSheetTexture, &sR, &rect);
+			}
+		}
+	}
+
+	SDL_SetRenderTarget(ren, nullptr);
+	SDL_RenderClear(ren);
+}
+
 TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDim)
 {
 	std::vector<Tile*> tileRow;
@@ -1189,32 +1221,6 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 	//for (int i = 0; i < MAX_TUNNELS; i += (int)(gf2d_random() * MAX_TUNNELS)/2)
 		//CarvePath();
 
-	SDL_QueryTexture(spriteSheet.get()->GetTexture().get(), &fmt, nullptr, nullptr, nullptr);
-
-	tileMapTexture = Sprite::CreateRenderTexture(worldCols* tileWidth, worldRows* tileHeight, graphicsRef, fmt);
-	SDL_Texture* tex = tileMapTexture.get();
-	SDL_Texture* spriteSheetTexture = spriteSheet->GetTexture().get();
-
-	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-
-	SDL_RenderClear(ren);
-	SDL_SetRenderTarget(ren, tex);
-
-	for (int y = 0; y < tileMap.size(); y++) {
-		for (int x = 0; x < tileMap[y].size(); x++) {
-
-			SDL_Rect rect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
-
-			if (tileMap[y][x] != nullptr) {
-				SDL_Rect sR = tileMap[y][x]->GetSourceRect();
-				SDL_RenderCopy(ren, spriteSheetTexture, &sR, &rect);
-			}
-		}
-	}
-	
-	SDL_SetRenderTarget(ren, nullptr);
-	SDL_RenderClear(ren);
-
 	return &tileMap;
 }
 
@@ -1292,14 +1298,21 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 			if (!prev || !next || !above || !below)
 				tile->CreateTileBody(
 					physics,
-					tpg, 
+					tpg,
 					tng,
 					bpg,
 					bng
 				);
+			else {
+				delete tile;
+				tileMap.at(y).at(x) = nullptr;
+			}
+			
 			x++;
 		}
 		y++;
 	}
+
+	CreateMapRenderTarget();
 }
 
