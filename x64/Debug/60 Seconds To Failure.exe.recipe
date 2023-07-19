@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\sapph\source\repos\60-Seconds-To-Failure\x64\Debug\60 Seconds To Failure.exe</FullPath>
+      <FullPath>C:\Users\sapph\source\repos\60-Seconds-To-Failure\Build\x64\Debug\60 Seconds To Failure.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

@@ -18,7 +18,7 @@ public:
 
 	const std::shared_ptr<Graphics>& graphicsetGraphics() { return graphicsPtr; }
 
-	void InitPlayerPhysics();
+	void InitPlayerPhysics(b2Vec2 spawn);
 
 	void GameLoop(float & accumulator);
 };

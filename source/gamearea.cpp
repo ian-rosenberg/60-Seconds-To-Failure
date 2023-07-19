@@ -3,6 +3,7 @@
 
 GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphics, Vector2 playerDim) {
 	Vector2 screenDim;
+	Vector2 spawn;
 	id = ID;
 	player = nullptr;
 	entityManager = new EntityManager(1, graphics);//enabling debug draw with parameter, renderer
@@ -35,6 +36,8 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 		playerDim);
 
 	std::vector<std::vector<Tile*>>* tilemap = tileManager->GenerateTileMap(areaPhysics, playerDim);
+
+	playerSpawn = tileManager->FindSpawnPointFromLeft();
 
 	camera->SetBounds(tileManager->GetBounds());
 
@@ -186,30 +189,6 @@ void GameArea::AreaDraw(float accum) {
 	tileManager->DrawMap(Vector2(camera->GetRect().x, camera->GetRect().y), camRect);
 	entityManager->EntityDrawAll(camera->GetRect(), accum);
 	debugDraw->DrawAll(accum, camRect);
-}
-
-
-b2Vec2 GameArea::FindSpawnPointFromLeft()
-{
-	std::vector<std::vector<Tile*>>* tilemap = tileManager->GetTileMap();
-	Vector2 pDim = playerPixelDimensions;
-	int col = 1;
-
-	for (int row = tilemap->size() - 2; col < tilemap[row].size()-1; row--) {
-		if (row < 1) {
-			row = tilemap->size()-2;
-			col++;
-		}
-		
-		if (tilemap->at(row).at(col) != nullptr && tilemap->at(row-1).at(col) == nullptr) {
-			Vector2 worldSpawn(col * tileManager->GetTileDimensions().x, (row - 1) * tileManager->GetTileDimensions().y);
-			graphics->Vector2PixelsToMeters(worldSpawn);
-
-			return b2Vec2(worldSpawn.x + pDim.x / 2, worldSpawn.y);
-		}
-	}
-
-	return b2Vec2(0,0);
 }
 
 void GameArea::InitPhysicsWorld()
