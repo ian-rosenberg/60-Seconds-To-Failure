@@ -169,7 +169,6 @@
     <ClCompile Include="source\actor.cpp" />
     <ClCompile Include="source\animation.cpp" />
     <ClCompile Include="source\camera.cpp" />
-    <ClCompile Include="source\drunkard.cpp" />
     <ClCompile Include="source\contactListener.cpp" />
     <ClCompile Include="source\debugdraw.cpp" />
     <ClCompile Include="source\entity.cpp" />
@@ -177,6 +176,7 @@
     <ClCompile Include="source\gamearea.cpp" />
     <ClCompile Include="source\gameworld.cpp" />
     <ClCompile Include="source\graphics.cpp" />
+    <ClCompile Include="source\perlinnoise.cpp" />
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\sprite.cpp" />
     <ClCompile Include="source\staticentity.cpp" />
@@ -187,13 +187,13 @@
     <ClInclude Include="include\actor.h" />
     <ClInclude Include="include\animation.h" />
     <ClInclude Include="include\camera.h" />
-    <ClInclude Include="include\drunkard.h" />
     <ClInclude Include="include\contactlistener.h" />
     <ClInclude Include="include\debugdraw.h" />
     <ClInclude Include="include\entity.h" />
     <ClInclude Include="include\gamearea.h" />
     <ClInclude Include="include\gameworld.h" />
     <ClInclude Include="include\graphics.h" />
+    <ClInclude Include="include\perlinnoise.h" />
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\sprite.h" />
     <ClInclude Include="include\staticentity.h" />

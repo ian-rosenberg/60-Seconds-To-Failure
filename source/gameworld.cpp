@@ -16,16 +16,7 @@ GameWorld::GameWorld() {
 	areas = new std::vector<GameArea*>();
 	player = new Player(graphicsPtr);
 
-	areas->push_back(
-		new GameArea(areas->size(),
-			b2Vec2(0.0f,
-				10.f * PIX_IN_MET),
-			graphicsPtr,
-			player->GetAvgPixelDimensions()));
-
-	currentArea = areas->at(0);
-
-	InitPlayerPhysics(currentArea->GetPlayerSpawn());
+	InitPlayerPhysics();
 }
 
 GameWorld::~GameWorld() {
@@ -41,14 +32,25 @@ GameWorld::~GameWorld() {
 	graphicsPtr = nullptr;
 }
 
-void GameWorld::InitPlayerPhysics(b2Vec2 spawn) {
+void GameWorld::InitPlayerPhysics() {
+	
+	areas->push_back(
+		new GameArea(areas->size(),
+			b2Vec2(0.0f,
+				10.f * PIX_IN_MET),
+			graphicsPtr,
+			player->GetAvgPixelDimensions()));
+
+	currentArea = areas->at(0);
+
 	// Actor
 	{
+		b2Vec2 pos = currentArea->FindSpawnPointFromLeft();
 		b2Vec2 d = player->GetWorldDimensions();
 		b2BodyDef bd;
 		bd.type = b2_dynamicBody;
 		bd.fixedRotation = true;
-		bd.position.Set(spawn.x, spawn.y);
+		bd.position.Set(pos.x,pos.y);
 		player->SetBody(currentArea->GetWorldPtr()->CreateBody(&bd));
 
 		b2FixtureDef fd;

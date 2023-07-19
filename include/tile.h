@@ -4,6 +4,7 @@
 
 #include <box2d/box2d.h>
 #include <animation.h>
+#include "PerlinNoise.hpp"
 
 
 const int VERTICES_PER_EDGE = 2;
@@ -152,8 +153,6 @@ private:
 	std::shared_ptr<SDL_Texture>							tileMapTexture;
 	Vector2													tileMapTextureDrawPosition;
 
-	Vector2													spawn;
-
 	Vector4													bounds;
 
 	std::vector<std::vector<Tile*>>							tileMap;
@@ -205,6 +204,4 @@ public:
 	std::vector<std::vector<Tile*>>* GetTileMap() { return &tileMap; }
 
 	Vector4 GetBounds() { return bounds; }
-
-	b2Vec2 FindSpawnPointFromLeft();
 };

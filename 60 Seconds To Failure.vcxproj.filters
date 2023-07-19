@@ -66,7 +66,7 @@
     <ClCompile Include="source\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\drunkard.cpp">
+    <ClCompile Include="source\perlinnoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,7 +113,7 @@
     <ClInclude Include="include\camera.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\drunkard.h">
+    <ClInclude Include="include\perlinnoise.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

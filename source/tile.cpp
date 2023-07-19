@@ -1,6 +1,4 @@
 #include "tile.h"
-#include <drunkard.h>
-#include <algorithm>
 
 extern "C" {
 #include "simple_json.h"
@@ -956,33 +954,49 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 
 void TileManager::CarveCaves()
 {
-	DrunkardsWalk* caveWalk = new DrunkardsWalk(worldCols, worldRows);
-	std::vector<std::pair<int,int>> walk = caveWalk->Walk();
-	spawn = Vector2{ (walk[0].first * tileWidth * 1.0) + (tileWidth/2), (walk[0].second * tileHeight * 1.0) + (tileHeight/2)};
 
-	graphicsRef->Vector2PixelsToMeters(spawn);
+	double frequency = gf2d_random() * 16.0;
+	std::int32_t octaves = ceil(gf2d_random() * 8);
+	std::uint32_t seed = (unsigned short)time(nullptr);
+	const siv::PerlinNoise perlin{ seed };
+	const double fx = (frequency / worldCols);
+	const double fy = (frequency / worldRows);
 
-	SDL_RenderClear(graphicsRef->GetRenderer());
+	frequency = std::clamp(frequency, 0.1, 32.0);
+	octaves = std::clamp(octaves, 1, 8);
 
-	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 0, 0, 255);
+	//SDL_RenderClear(graphicsRef->GetRenderer());
 
-	for (std::pair<int,int> coord : walk)
+	for (std::int32_t y = 0; y < worldRows; ++y)
 	{
-		const SDL_Rect r(coord.first, coord.second, 1, 1);
+		for (std::int32_t x = 0; x < worldCols; ++x)
+		{
+			const SDL_Rect r(x*64, y*64, 64, 64);
+			if (perlin.octave2D_01((x * fx), (y * fy), octaves) < .5f
+				&& !(x == 0
+					|| y == 0
+					|| x == worldCols-1
+					|| y == worldRows-1
+					)
+				) {
+				//SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 0, 0, 255);
 			
-		Tile* t = tileMap[coord.second][coord.first];
-		tileMap[coord.second][coord.first] = nullptr;
-		delete t;
+				Tile* t = tileMap[y][x];
+				tileMap[y][x] = nullptr;
+				delete t;
+			}
+			/*else {
+
+				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 255, 0, 255);
+			}*/
 
 
-		SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
+			//SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
+		}
 	}
+	//SDL_RenderPresent(graphicsRef->GetRenderer());
 
-	SDL_RenderPresent(graphicsRef->GetRenderer());
-
-	SDL_RenderClear(graphicsRef->GetRenderer());
-
-	delete caveWalk;
+	//SDL_RenderClear(graphicsRef->GetRenderer());
 }
 
 void TileManager::CreateMapRenderTarget()
@@ -1300,10 +1314,5 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 	}
 
 	CreateMapRenderTarget();
-}
-
-b2Vec2 TileManager::FindSpawnPointFromLeft()
-{
-	return b2Vec2(spawn.x,spawn.y);
 }
 

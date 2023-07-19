@@ -1,29 +1,29 @@
 #pragma once
 
-struct Vector2 {
+typedef struct {
 	double x;
 	double y;
-};
+}Vector2;
 
-struct Vector3{
+typedef struct {
 	double x;
 	double y;
 	double z;
-};
+}Vector3;
 
-struct Vector4{
+typedef struct {
 	double x;
 	double y;
 	double z;
 	double w;
-};
+}Vector4;
 
-struct Rect{
+typedef struct {
 	float x;
 	float y;
 	float w;
 	float h;
-};
+}Rect;
 
 Vector2 vector2(int x, int y);
 Vector3 vector3(int x, int y, int z);

@@ -32,7 +32,6 @@ private:
 	b2World*						areaPhysics;
 
 	Vector2							playerPixelDimensions;
-	b2Vec2							playerSpawn;
 
 	TileManager*					tileManager;
 
@@ -96,5 +95,5 @@ public:
 
 	b2Vec2 GetGravityScale() { return gravityScale; }
 
-	b2Vec2 GetPlayerSpawn() { return playerSpawn; }
+	b2Vec2 FindSpawnPointFromLeft();
 };

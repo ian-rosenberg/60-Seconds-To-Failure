@@ -1,73 +1,45 @@
 ﻿  tile.cpp
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\graphics.h(54,42): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\animation.h(69,15): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(32,33): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(55,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(77,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(77,20): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(79,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(87,29): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(87,19): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(100,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(100,20): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(102,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(110,29): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(110,19): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(140,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(140,20): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(142,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(150,29): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(150,19): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(163,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(163,20): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(165,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(173,29): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(173,19): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(228,6): warning C4101: 'row': unreferenced local variable
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(228,11): warning C4101: 'col': unreferenced local variable
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(226,9): warning C4101: 'vert': unreferenced local variable
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(289,64): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(289,34): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(302,25): warning C4305: '=': truncation from 'double' to 'float'
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(306,18): warning C4305: '=': truncation from 'double' to 'float'
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(310,25): warning C4305: '=': truncation from 'double' to 'float'
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(325,81): warning C4267: 'argument': conversion from 'size_t' to 'int32', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(332,87): warning C4267: 'argument': conversion from 'size_t' to 'int32', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(340,3): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(344,116): warning C4267: 'argument': conversion from 'size_t' to 'int32', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(352,3): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(357,115): warning C4267: 'argument': conversion from 'size_t' to 'int32', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(283,10): warning C4101: 'tV': unreferenced local variable
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(407,48): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(407,28): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(538,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(538,14): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(515,8): warning C4101: 'xNew': unreferenced local variable
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(515,14): warning C4101: 'yNew': unreferenced local variable
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(679,7): warning C4838: conversion from 'uint32_t' to 'int' requires a narrowing conversion
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(680,7): warning C4838: conversion from 'uint32_t' to 'int' requires a narrowing conversion
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(708,33): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(719,7): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(599,11): warning C4101: 'srcRect': unreferenced local variable
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(753,14): warning C4101: 'hillOrient': unreferenced local variable
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1063,26): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1064,26): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1023,8): warning C4101: 'newTile': unreferenced local variable
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1157,31): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1157,47): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1157,55): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1157,63): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1159,24): warning C4244: '=': conversion from 'const _Ty' to 'int', possible loss of data
-          with
-          [
-              _Ty=double
-          ]
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1160,24): warning C4244: '=': conversion from 'const _Ty' to 'int', possible loss of data
-          with
-          [
-              _Ty=double
-          ]
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1182,9): warning C4101: 'fmt': unreferenced local variable
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1307,29): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(1307,21): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  60 Seconds To Failure.vcxproj -> C:\Users\sapph\source\repos\60-Seconds-To-Failure\Build\x64\Debug\60 Seconds To Failure.exe
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\graphics.h(53,42): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\graphics.h(55,54): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(72,46): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(82,39): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(169,53): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(171,53): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(176,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(212,36): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(380,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(386,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(598,53): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(600,53): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(605,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(33,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(57,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(97,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(121,32): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(156,27): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(157,25): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(160,31): warning C4244: '-=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(174,28): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(178,31): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(211,80): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(211,42): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(222,25): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(226,18): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(230,25): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(265,127): warning C4267: 'argument': conversion from 'size_t' to 'int32', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(201,9): warning C4101: 'pg': unreferenced local variable
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(202,9): warning C4101: 'ng': unreferenced local variable
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(199,8): warning C4101: 'temp': unreferenced local variable
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(386,18): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(385,18): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(449,3): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(453,3): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(457,3): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(476,36): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(476,36): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(476,62): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(476,62): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(516,11): warning C4101: 'srcRect': unreferenced local variable
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\source\tile.cpp(612,2): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\60-Seconds-To-Failure\include\RSJparser.tcc(65): warning C4715: 'to_string': not all control paths return a value
+  60 Seconds To Failure.vcxproj -> C:\Users\sapph\source\repos\60-Seconds-To-Failure\x64\Debug\60 Seconds To Failure.exe
