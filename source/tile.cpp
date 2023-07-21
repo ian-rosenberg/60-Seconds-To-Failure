@@ -1281,18 +1281,13 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 				bpg = next->GetBottomChainFirstVertex();
 			}
 
-			if (!prev || !next || !above || !below)
-				tile->CreateTileBody(
-					physics,
-					tpg,
-					tng,
-					bpg,
-					bng
-				);
-			else {
-				delete tile;
-				tileMap.at(y).at(x) = nullptr;
-			}
+			tile->CreateTileBody(
+				physics,
+				tpg,
+				tng,
+				bpg,
+				bng
+			);
 			
 			x++;
 		}
