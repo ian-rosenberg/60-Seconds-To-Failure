@@ -4,7 +4,6 @@
 
 #include <box2d/box2d.h>
 #include <animation.h>
-#include "PerlinNoise.hpp"
 
 
 const int VERTICES_PER_EDGE = 2;
@@ -12,7 +11,7 @@ const int MAX_EDGES = 4;
 const int MAX_TUNNELS = 6;
 
 
-enum Direction : unsigned short{
+enum Direction : unsigned short {
 	North = 0,
 	East = 1,
 	South = 2,
@@ -20,7 +19,7 @@ enum Direction : unsigned short{
 	None = 8
 };
 
-enum TileLayer : unsigned short{
+enum TileLayer : unsigned short {
 	Ground = 0,
 	Hill = 1,
 	Wall = 2,
@@ -68,7 +67,7 @@ private:
 	b2Vec2													worldCenter;
 	Vector2													pixelCenter;
 
-	b2Body*													physicsBody;
+	b2Body* physicsBody;
 	Direction												capDirection;
 
 	std::shared_ptr<Graphics>								graphicsRef;
@@ -82,10 +81,10 @@ private:
 	std::vector<b2Vec2>										eastCap;
 	std::vector<b2Vec2>										westCap;
 
-	b2Fixture*												topFix;
-	b2Fixture*												bottomFix;
-	b2Fixture*												eastFix;
-	b2Fixture*												westFix;
+	b2Fixture* topFix;
+	b2Fixture* bottomFix;
+	b2Fixture* eastFix;
+	b2Fixture* westFix;
 
 	std::vector<TileConnection>								possibleConnections;
 	TileLayer												tileLayers;
@@ -119,7 +118,7 @@ public:
 
 	Vector2													GetPixelDimensions() { return pixelDimensions; }
 
-	b2Body*													GetBodyReference() { return physicsBody; }
+	b2Body* GetBodyReference() { return physicsBody; }
 
 	SDL_Color												GetDebugColor() { return debugColor; }
 
@@ -144,14 +143,16 @@ public:
 class TileManager {
 private:
 	//Capping direction
-	std::unordered_map<Direction, std::vector<Tile*>>*		groundTiles;
-	std::unordered_map<Direction, std::vector<Tile*>>*		hillTiles;
-	std::unordered_map<Direction, std::vector<Tile*>>*		platformTiles;
-	std::unordered_map<Direction, std::vector<Tile*>>*		wallTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>* groundTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>* hillTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>* platformTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>* wallTiles;
 	std::shared_ptr<Sprite>									spriteSheet;
 
 	std::shared_ptr<SDL_Texture>							tileMapTexture;
 	Vector2													tileMapTextureDrawPosition;
+
+	Vector2													spawn;
 
 	Vector4													bounds;
 
@@ -166,16 +167,16 @@ private:
 	std::vector<std::vector<SDL_Color>>						spriteSheetPixels;
 
 	std::shared_ptr<Graphics>								graphicsRef;
-		
-	b2World*												physics;
-	
+
+	b2World* physics;
+
 	Vector2													playerDimensions;
 	Vector2													worldSize;
 
 	SDL_Rect												cameraBounds;
-								
+
 	void													TileParseTypesFromJSON(std::string json);
-			
+
 	void													CarvePath();
 
 	void													CarveCaves();
@@ -184,7 +185,7 @@ private:
 
 public:
 	TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDimensions);
-	
+
 	~TileManager();
 
 	void UpdateMap();
@@ -194,7 +195,7 @@ public:
 	bool IsInCameraBounds(Tile* t, SDL_Rect cameraBounds);
 
 	std::vector<std::vector<Tile*>>* GenerateTileMap(b2World* physicsWorld, Vector2 pDim);
-	
+
 	void GenerateTileMapRectArea(SDL_Rect& r);
 
 	void LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap);
@@ -204,4 +205,6 @@ public:
 	std::vector<std::vector<Tile*>>* GetTileMap() { return &tileMap; }
 
 	Vector4 GetBounds() { return bounds; }
+
+	b2Vec2 FindSpawnPointFromLeft();
 };
