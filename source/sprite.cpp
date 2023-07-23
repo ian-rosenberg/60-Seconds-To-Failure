@@ -127,6 +127,47 @@ std::shared_ptr<SDL_Texture> Sprite::CreateRenderTexture(int width, int height, 
 	return texture;
 }
 
+std::vector<std::vector<SDL_Color>> Sprite::GetPixelData(const char* filepath, SDL_Rect* r, const std::shared_ptr<Graphics>& graphics)
+{
+	std::vector<std::vector<SDL_Color>> pixels;
+	SDL_Surface* surf = IMG_Load(filepath);
+	int x, y;
+	SDL_PixelFormat* fmt;
+	std::vector<std::vector<SDL_Color>> pixelResults;
+	SDL_Color pixel;
+	std::vector<SDL_Color> resultLine;
+	int bpp;
+
+	SDL_LockSurface(surf);
+
+	fmt = surf->format;
+	bpp = surf->format->BytesPerPixel;
+	//cols then rows
+	for (y = 0; y < surf->h; y++)
+	{
+		resultLine.clear();
+		for (x = 0; x < surf->w; x++)
+		{
+			Uint32 p = GetPixel(surf, x, y);
+
+			SDL_GetRGBA(p,
+				fmt,
+				&pixel.r,
+				&pixel.g,
+				&pixel.b,
+				&pixel.a);
+			resultLine.push_back(pixel);
+		}
+		pixelResults.push_back(resultLine);
+	}
+
+	SDL_UnlockSurface(surf);
+
+	return pixelResults;
+
+	return pixels;
+}
+
 Sprite::~Sprite()
 {
 	texture.reset();
@@ -181,44 +222,6 @@ std::shared_ptr<SDL_Texture> Sprite::GetTexture()
 	return texture;
 }
 
-std::vector<std::vector<SDL_Color>> Sprite::GetPixelData()
-{
-	int x, y;
-	SDL_PixelFormat* fmt;
-	std::vector<std::vector<SDL_Color>> pixelResults;
-	SDL_Color pixel;
-	std::vector<SDL_Color> resultLine;
-	int bpp;
-
-	SDL_LockSurface(surf.get());
-
-	fmt = surf.get()->format;
-	bpp = surf.get()->format->BytesPerPixel;
-	//cols then rows
-	for (y = 0; y < surf.get()->h; y++)
-	{
-		resultLine.clear();
-		for (x = 0; x < surf.get()->w; x++)
-		{
-			Uint32 p = GetPixel(surf, x, y);
-
-			SDL_GetRGBA(p,
-				fmt,
-				&pixel.r,
-				&pixel.g,
-				&pixel.b,
-				&pixel.a);
-			resultLine.push_back(pixel);
-		}
-		pixelResults.push_back(resultLine);
-	}
-
-	SDL_UnlockSurface(surf.get());
-
-	return pixelResults;
-}
-
-
 void Sprite::RotateTextureZ(float theta)
 {
 	SDL_Renderer* ren = graphics->GetRenderer();
@@ -258,7 +261,7 @@ bool Sprite::CheckIfViableTexture(SDL_Rect sR)
 	for (int y = sR.y, x = sR.x; y < sR.h+sR.y && x < sR.w+sR.x; x++, y++) {
 		SDL_Color p(0);
 
-		pix = GetPixel(surf, x, y);
+		pix = GetPixel(surf.get(), x, y);
 
 		SDL_GetRGBA(pix, 
 			surf.get()->format,
@@ -277,7 +280,7 @@ bool Sprite::CheckIfViableTexture(SDL_Rect sR)
 	for (int y = sR.y, x = sR.x + sR.w - 1; y < sR.h+sR.y && x >= sR.x; x--, y++) {	
 		SDL_Color p(0);
 
-		pix = GetPixel(surf, x, y);
+		pix = GetPixel(surf.get(), x, y);
 
 		SDL_GetRGBA(pix,
 			surf.get()->format,
@@ -311,7 +314,7 @@ SDL_Color Sprite::translate_color(Uint32 int_color)
 }
 
 //from SDL docs
-Uint32 Sprite::GetPixel(std::shared_ptr<SDL_Surface> surface, int x, int y)
+Uint32 Sprite::GetPixel(SDL_Surface* surface, int x, int y)
 {
 	int bpp = surface->format->BytesPerPixel;
 	/* Here p is the address to the pixel we want to retrieve */

@@ -48,17 +48,17 @@ public:
 		std::shared_ptr<Graphics> ren);		
 	
 	Sprite(std::shared_ptr<SDL_Texture> tex,
-
 		SDL_Rect* sourceRect,
-
 		Vector2 drawPosition,
-
 		Vector3 rotation,
-
 		Vector2 flip,
-
 		Vector4 colorShift,
 		std::shared_ptr<Graphics> ren, std::string fp);
+
+	Sprite(SDL_Texture* t,
+		SDL_Rect* sourceRect,
+		std::shared_ptr<Graphics> ren);
+
 
 	Sprite(std::string filepath,
 		int imgWidth,
@@ -80,6 +80,12 @@ public:
 		int height,
 		const std::shared_ptr<Graphics>& graphics, Uint32 fmt);
 
+	static std::vector<std::vector<SDL_Color>> GetPixelData(const char* filepath, SDL_Rect* r, const std::shared_ptr<Graphics>& graphics);
+
+	static SDL_Color translate_color(Uint32 int_color);
+
+	static Uint32 GetPixel(SDL_Surface* surface, int x, int y);
+
 	Uint8 LoadPNGImage(std::string filepath);
 
 	std::shared_ptr<SDL_Surface> LoadSurface(std::string filepath);
@@ -90,11 +96,6 @@ public:
 
 	std::string GetFilePath() { return (std::string)filepath; }
 
-	std::vector<std::vector<SDL_Color>> GetPixelData();
-
-	SDL_Color translate_color(Uint32 int_color);
-
-	Uint32 GetPixel(std::shared_ptr<SDL_Surface> surface, int x, int y);
 
 	int GetXOffset() { return xOffset; }
 	int GetYOffset() { return yOffset; }

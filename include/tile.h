@@ -138,15 +138,18 @@ public:
 	void													TestDraw();
 
 	SDL_Rect												GetSourceRect() { return sourceRect; }
+	Direction												GetHillDirection() { return hillOrientation; }
+	std::vector<std::vector<SDL_Color>>						GetTilePixels();
 };
 
 class TileManager {
 private:
 	//Capping direction
-	std::unordered_map<Direction, std::vector<Tile*>>* groundTiles;
-	std::unordered_map<Direction, std::vector<Tile*>>* hillTiles;
-	std::unordered_map<Direction, std::vector<Tile*>>* platformTiles;
-	std::unordered_map<Direction, std::vector<Tile*>>* wallTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>*		groundTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>*		northEastHillTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>*		southEastHillTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>*		platformTiles;
+	std::unordered_map<Direction, std::vector<Tile*>>*		wallTiles;
 	std::shared_ptr<Sprite>									spriteSheet;
 
 	std::shared_ptr<SDL_Texture>							tileMapTexture;
@@ -179,6 +182,7 @@ private:
 
 	void													CarvePath();
 
+	void													FillHills();
 	void													CarveCaves();
 
 	void													CreateMapRenderTarget();
@@ -205,6 +209,8 @@ public:
 	std::vector<std::vector<Tile*>>* GetTileMap() { return &tileMap; }
 
 	Vector4 GetBounds() { return bounds; }
+
+	inline bool InBounds(int x, int y) { return x > 1 && x < worldCols-1 && y > 1 && y < worldRows-1; }
 
 	b2Vec2 FindSpawnPointFromLeft();
 };
