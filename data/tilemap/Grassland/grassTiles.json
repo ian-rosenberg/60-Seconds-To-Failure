@@ -13,6 +13,6 @@
   "tileheight": 128,
   "tilewidth": 128,
   "direction": "north",
-  "startX": 143,
-  "startY": 5
+  "startIndex": 1,
+  "endIndex": 79
 }

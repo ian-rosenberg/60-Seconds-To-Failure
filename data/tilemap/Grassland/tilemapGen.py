@@ -191,6 +191,7 @@ while tileIndex in range(1, tileCount+1):
 
     leftAvgSlope = np.average(slopes)
     
+    
     #########################
     #########################
     ##DETERMINE CONNECTIONS##
@@ -209,7 +210,7 @@ while tileIndex in range(1, tileCount+1):
     #  | |
     #   -
     #
-    if topAvgSlope == 0:
+    if np.floor(topAvgSlope) == 0:
         layers.append("ground")
         layers.append("wall")
         #
@@ -217,7 +218,7 @@ while tileIndex in range(1, tileCount+1):
         #  | |
         #   -
         #
-        if leftAvgSlope == 0:
+        if np.floor(leftAvgSlope) == 0:
             jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "hill", "ground", "wall"
@@ -246,9 +247,6 @@ while tileIndex in range(1, tileCount+1):
             #   -
             #
             elif leftAvgSlope > 0:
-                layers.append("hill")
-                if "wall" in layers:
-                    layers.remove("wall")
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "ground", "wall"
@@ -263,7 +261,7 @@ while tileIndex in range(1, tileCount+1):
         #  | |
         #   -
         #
-        if rightAvgSlope == 0:
+        if np.floor(rightAvgSlope) == 0:
             jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "hill", "ground", "wall"
@@ -339,7 +337,7 @@ while tileIndex in range(1, tileCount+1):
             #  | |
             #   -
             #
-            elif leftAvgSlope == 0:
+            elif np.floor(leftAvgSlope) == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "ground", "wall"
@@ -380,7 +378,7 @@ while tileIndex in range(1, tileCount+1):
             #  | |
             #   -
             #    
-            elif rightAvgSlope == 0:
+            elif np.floor(rightAvgSlope) == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "ground", "wall"
@@ -458,7 +456,7 @@ while tileIndex in range(1, tileCount+1):
             #  | |
             #   -
             #    
-            elif rightAvgSlope == 0:
+            elif np.floor(rightAvgSlope) == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "wall"
@@ -483,13 +481,13 @@ while tileIndex in range(1, tileCount+1):
     #  | |
     #   -
     #   *
-    if bottomAvgSlope == 0:
+    if np.floor(bottomAvgSlope) == 0:
         #
         #   _
         #  | |
         # * -
         #
-        if leftAvgSlope == 0:
+        if np.floor(leftAvgSlope) == 0:
             jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "hill", "ground", "wall"
@@ -532,7 +530,7 @@ while tileIndex in range(1, tileCount+1):
         #  | |
         #   - *
         #
-        if rightAvgSlope == 0:
+        if np.floor(rightAvgSlope) == 0:
             jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "hill", "ground"
@@ -604,7 +602,7 @@ while tileIndex in range(1, tileCount+1):
             #  | |
             # * /
             #
-            elif leftAvgSlope == 0:
+            elif np.floor(leftAvgSlope) == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "hill", "ground"
@@ -646,7 +644,7 @@ while tileIndex in range(1, tileCount+1):
             #  | /
             #   / *
             #    
-            elif rightAvgSlope == 0:
+            elif np.floor(rightAvgSlope) == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground"
@@ -680,7 +678,7 @@ while tileIndex in range(1, tileCount+1):
             #  | |
             # * \
             #
-            elif leftAvgSlope == 0:
+            elif np.floor(leftAvgSlope) == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground", "wall"
@@ -721,7 +719,7 @@ while tileIndex in range(1, tileCount+1):
             #  | |
             #   \ *
             #    
-            elif rightAvgSlope == 0:
+            elif np.floor(rightAvgSlope) == 0:
                 jsonObj["possibleConnects"].append({
                     "allowedLayers" : [
                         "ground", "hill"
@@ -741,7 +739,7 @@ while tileIndex in range(1, tileCount+1):
     # *| |
     #   -
     #   
-    if leftAvgSlope == 0:
+    if np.floor(leftAvgSlope) == 0:
         jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "ground", "hill", "wall"
@@ -782,7 +780,7 @@ while tileIndex in range(1, tileCount+1):
     #  | |*
     #   -
     #   
-    if rightAvgSlope == 0:
+    if np.floor(rightAvgSlope) == 0:
         jsonObj["possibleConnects"].append({
                 "allowedLayers" : [
                     "ground", "hill", "wall"

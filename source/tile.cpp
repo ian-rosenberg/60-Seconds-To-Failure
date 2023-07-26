@@ -918,9 +918,11 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 				southEastHillTiles->at((Direction)(Direction::East | Direction::West)).push_back(tF);
 				southEastHillTiles->at(Direction::None).push_back(t);
 			}
-
-
-			
+			SDL_Rect r(0, 0, 128, 128);
+			SDL_Rect sR = t->GetSourceRect();
+			SDL_RenderClear(graphicsRef->GetRenderer());
+			SDL_RenderCopy(graphicsRef->GetRenderer(), spriteSheet->GetTexture().get(), &sR, &r);
+			SDL_RenderPresent(graphicsRef->GetRenderer());
 		}
 		else {
 			delete xMirrorHillTileE;
@@ -1238,7 +1240,7 @@ TileManager::~TileManager()
 
 		northEastHillTiles->erase(northEastHillTiles->begin());
 	}
-	delete southEastHillTiles;
+	delete northEastHillTiles;
 
 	while (!platformTiles->empty()) {
 		std::pair<Direction, std::vector<Tile*>> p = *platformTiles->begin();
@@ -1364,22 +1366,26 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 			Tile* next = nullptr;
 			Tile* above = nullptr;
 			Tile* below = nullptr;
+			Tile* twoPrev = nullptr;
+			Tile* twoNext = nullptr;
+			Tile* twoAbove = nullptr;
+			Tile* twoBelow = nullptr;
 
 			//Check if there are adjacent tiles EXCEPT NORTH AND SOUTH of tile
-			if (x - 1 >= 0 && y - 1 >= 0 && tileMap.at(y - 1).at(x - 1) != nullptr) {
+			if (x - 1 >= 0 && y - 1 >= 0 && tileMap.at(y - 1).at(x - 1) != nullptr && tileMap.at(y - 1).at(x - 1)->GetBodyReference()) {
 				prev = tileMap.at(y - 1).at(x - 1);
 			}
-			else if (x - 1 >= 0 && tileMap.at(y).at(x - 1) != nullptr) {
+			else if (x - 1 >= 0 && tileMap.at(y).at(x - 1) != nullptr && tileMap.at(y).at(x - 1)->GetBodyReference()) {
 				prev = tileMap.at(y).at(x - 1);
 			}
-			else if (x - 1 >= 0 && y + 1 < tileMap.size() && tileMap.at(y + 1).at(x - 1) != nullptr) {
+			else if (x - 1 >= 0 && y + 1 < tileMap.size() && tileMap.at(y + 1).at(x - 1) != nullptr && tileMap.at(y + 1).at(x - 1)->GetBodyReference()) {
 				prev = tileMap.at(y + 1).at(x - 1);
 			}
 
-			if (y - 1 >= 0 && tileMap.at(y - 1).at(x) != nullptr)
+			if (y - 1 >= 0 && tileMap.at(y - 1).at(x) != nullptr && tileMap.at(y - 1).at(x)->GetBodyReference())
 				above = tileMap.at(y - 1).at(x);
 
-			if (y + 1 < tileMap.size() && tileMap.at(y + 1).at(x) != nullptr)
+			if (y + 1 < tileMap.size() && tileMap.at(y + 1).at(x) != nullptr && tileMap.at(y + 1).at(x)->GetBodyReference())
 				below = tileMap.at(y + 1).at(x);
 
 			if (!prev) {
@@ -1392,13 +1398,13 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 			}
 
 
-			if (x + 1 < tileMap.at(y).size() && y - 1 >= 0 && tileMap.at(y - 1).at(x + 1) != nullptr) {
+			if (x + 1 < tileMap.at(y).size() && y - 1 >= 0 && tileMap.at(y - 1).at(x + 1) != nullptr && tileMap.at(y - 1).at(x + 1)->GetBodyReference()) {
 				next = tileMap.at(y - 1).at(x + 1);
 			}
-			else if (x + 1 < tileMap.at(y).size() && tileMap.at(y).at(x + 1) != nullptr) {
+			else if (x + 1 < tileMap.at(y).size() && tileMap.at(y).at(x + 1) != nullptr && tileMap.at(y).at(x + 1)->GetBodyReference()) {
 				next = tileMap.at(y).at(x + 1);
 			}
-			else if (x + 1 < tileMap.at(y).size() && y + 1 < tileMap.size() && tileMap.at(y + 1).at(x + 1) != nullptr) {
+			else if (x + 1 < tileMap.at(y).size() && y + 1 < tileMap.size() && tileMap.at(y + 1).at(x + 1) != nullptr && tileMap.at(y + 1).at(x + 1)->GetBodyReference()) {
 				next = tileMap.at(y + 1).at(x + 1);
 			}
 
@@ -1411,14 +1417,16 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 				bpg = next->GetBottomChainFirstVertex();
 			}
 
+			if (above && next && prev && below)
+				continue;
+
 			tile->CreateTileBody(
-				physics,
-				tpg,
-				tng,
-				bpg,
-				bng
-			);
-			
+					physics,
+					tpg,
+					tng,
+					bpg,
+					bng
+				);
 			x++;
 		}
 		y++;
