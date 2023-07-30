@@ -11,20 +11,20 @@ const int MAX_EDGES = 4;
 const int MAX_TUNNELS = 6;
 
 
-enum Direction : unsigned short {
-	North = 0,
-	East = 1,
-	South = 2,
-	West = 4,
-	None = 8
+enum Direction : uint16_t {
+	North = 1 << 0,
+	East = 1 << 2,
+	South = 1 << 3,
+	West = 1 << 4,
+	None = 1 << 5,
 };
 
-enum TileLayer : unsigned short {
-	Ground = 0,
-	Hill = 1,
-	Wall = 2,
-	Platform = 4,
-	Empty = 8
+enum TileLayer : uint16_t {
+	Ground = 1 << 6,
+	Hill = 1 << 7,
+	Wall = 1 << 8,
+	Platform = 1 << 9,
+	Empty = 1 << 10
 };
 
 typedef struct TileConnection_S {
@@ -182,7 +182,7 @@ private:
 
 	void													CarvePath();
 
-	void													FillHills();
+	void													FillHills(std::vector<std::pair<int, int>>& caveWalk);
 	void													CarveCaves();
 
 	void													CreateMapRenderTarget();
@@ -213,4 +213,6 @@ public:
 	inline bool InBounds(int x, int y) { return x > 1 && x < worldCols-1 && y > 1 && y < worldRows-1; }
 
 	b2Vec2 FindSpawnPointFromLeft();
+
+	std::vector<std::vector<SDL_Color>> CopyRectOfTilePixelsFromTexture(SDL_Rect* sR);
 };

@@ -113,7 +113,6 @@ void GameWorld::GameLoop(float & accumulator) {
 
 			currentArea->PhysicsSteps(DELTA_TIME);
 
-
 			accumulator -= DELTA_TIME;
 		}
 		graphicsPtr->SetAccumulatorTime(accumulator / DELTA_TIME);

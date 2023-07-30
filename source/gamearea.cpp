@@ -195,7 +195,7 @@ b2Vec2 GameArea::FindSpawnPointFromLeft()
 	Vector2 pDim = playerPixelDimensions;
 	int col = 1;
 
-	for (int row = tilemap->size() - 2; col < tilemap[row].size()-1; row--) {
+	for (int row = tilemap->size() - 2; col < tilemap[row].size()-2; row--) {
 		if (row < 1) {
 			row = tilemap->size()-2;
 			col++;

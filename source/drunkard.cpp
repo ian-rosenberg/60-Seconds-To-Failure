@@ -5,12 +5,12 @@ void DrunkardsWalk::Step(int x, int y)
 {
 	std::pair<int, int> pair(x, y);
 	float coverable = ((width - 1) * (height - 1));
-	float coverage = std::clamp(gf2d_random(), 0.05f, 0.2f);
+	float coverage = std::clamp(gf2d_random(), 0.05f, 0.1f);
 	float covered = visited.size() / coverable;
 	
 	while (covered < coverage) {
 
-		switch ((int)floor(gf2d_random() * 4)) {
+		switch ((int)(gf2d_random() * 10) % 4) {
 		case 0: 
 			pair.first += 1;
 			break;
@@ -55,7 +55,7 @@ DrunkardsWalk::~DrunkardsWalk()
 std::vector<std::pair<int, int>> DrunkardsWalk::Walk()
 {	
 	std::vector<std::pair<int, int>> walked;
-	int corner = ceil(gf2d_random() * 4);
+	int corner = ceil((int)(gf2d_random() * 10) % 4);
 	int cx, cy;
 	int curWalk = 1;
 
@@ -83,7 +83,7 @@ std::vector<std::pair<int, int>> DrunkardsWalk::Walk()
 
 	}
 
-	Step(ceil(gf2d_random() * width)-1, ceil(gf2d_random() * height)-1);
+	Step(ceil((int)(gf2d_random() * 10) % width)-1, ceil((int)(gf2d_random() * 10) % height)-1);
 
 	walked.reserve(visited.size());
 	for (auto it = visited.begin(); it != visited.end();)
