@@ -1,9 +1,11 @@
 #pragma once
+#include "drunkard.h"
+#include "animation.h"
+
 #include <unordered_map>
 #include <utility>
 
 #include <box2d/box2d.h>
-#include <animation.h>
 
 
 const int VERTICES_PER_EDGE = 2;
@@ -215,4 +217,5 @@ public:
 	b2Vec2 FindSpawnPointFromLeft();
 
 	std::vector<std::vector<SDL_Color>> CopyRectOfTilePixelsFromTexture(SDL_Rect* sR);
+	std::unordered_set<std::pair<int,int>, PairHash> GetWalkPerimeter(std::vector<std::pair<int, int>>& caveWalk);
 };

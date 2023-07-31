@@ -281,6 +281,14 @@ void Tile::SetGridPosition(int col, int row)
 		col * 1.0 * sourceRect.w,
 		row * 1.0 * sourceRect.h
 	};
+
+	if (physicsBody) {
+		Vector2 pos = pixelPosition;
+		graphicsRef->Vector2PixelsToMeters(pos);
+		b2Vec2 bPos(pos.x, pos.y);
+		physicsBody->SetTransform(bPos, 0.f);
+	}
+
 }
 
 void Tile::CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2Vec2 bng)
@@ -1060,152 +1068,101 @@ void TileManager::FillHills(std::vector<std::pair<int,int>>& caveWalk)
 		if (x + 1 < tileMap.at(y).size() - 1 && tileMap.at(y).at(x + 1) != nullptr)
 			east = tileMap.at(y).at(x + 1);
 
+		if (se && sw) {
+			if (!(east != nullptr) != !(west != nullptr)) {
+				if (!east) {
+					Tile* randomHill = southEastHillTiles->at((Direction)(Direction::West | Direction::East))
+						.at(si);
+					sR = randomHill->GetSourceRect();
+					pixels = CopyRectOfTilePixelsFromTexture(&sR);
 
-		if (north && south && east && west) {
+					randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
+					tileMap[y][x] = new Tile(*randomHill);
+				}
+				else {
+					Tile* randomHill = northEastHillTiles->at((Direction)(Direction::West | Direction::East))
+						.at(ni);
+					sR = randomHill->GetSourceRect();
+					pixels = CopyRectOfTilePixelsFromTexture(&sR);
+
+					randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
+					tileMap[y][x] = new Tile(*randomHill);
+				}
+			}
+		}
+		else if (!se && sw) {
+			if (!(east != nullptr) != !(west != nullptr)) {
+				if (!east) {
+					Tile* randomHill = southEastHillTiles->at((Direction)(Direction::West | Direction::East))
+						.at(si);
+					sR = randomHill->GetSourceRect();
+					pixels = CopyRectOfTilePixelsFromTexture(&sR);
+
+					randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
+					tileMap[y][x] = new Tile(*randomHill);
+				}
+				else {
+					Tile* randomHill = northEastHillTiles->at((Direction)(Direction::West | Direction::East))
+						.at(ni);
+					sR = randomHill->GetSourceRect();
+					pixels = CopyRectOfTilePixelsFromTexture(&sR);
+
+					randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
+					tileMap[y][x] = new Tile(*randomHill);
+				}
+			}
+		}
+		else {
 			continue;
 		}
-		else if (!north && south) {
-			if (se && sw) {
-				if (!(east != nullptr) != !(west != nullptr)) {
-					if (!east) {
-						Tile* randomHill = southEastHillTiles->at((Direction)(Direction::West | Direction::East))
-							.at(si);
-						sR = randomHill->GetSourceRect();
-						pixels = CopyRectOfTilePixelsFromTexture(&sR);
-
-						randomHill->SetGridPosition(x, y);
-						randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
-						tileMap[y][x] = new Tile(*randomHill);
-					}
-					else {
-						Tile* randomHill = northEastHillTiles->at((Direction)(Direction::West | Direction::East))
-							.at(ni);
-						sR = randomHill->GetSourceRect();
-						pixels = CopyRectOfTilePixelsFromTexture(&sR);
-
-						randomHill->SetGridPosition(x, y);
-						randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
-						tileMap[y][x] = new Tile(*randomHill);
-					}
-				}
-			}
-			else if (!se && sw) {
-				if (!(east != nullptr) != !(west != nullptr)) {
-					if (!east) {
-						Tile* randomHill = southEastHillTiles->at((Direction)(Direction::West | Direction::East))
-							.at(si);
-						sR = randomHill->GetSourceRect();
-						pixels = CopyRectOfTilePixelsFromTexture(&sR);
-
-						randomHill->SetGridPosition(x, y);
-						randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
-						tileMap[y][x] = new Tile(*randomHill);
-					}
-					else {
-						Tile* randomHill = northEastHillTiles->at((Direction)(Direction::West | Direction::East))
-							.at(ni);
-						sR = randomHill->GetSourceRect();
-						pixels = CopyRectOfTilePixelsFromTexture(&sR);
-
-						randomHill->SetGridPosition(x, y);
-						randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
-						tileMap[y][x] = new Tile(*randomHill);
-					}
-				}
-			}
-			else {
-				if (!(east != nullptr) != !(west != nullptr)) {
-					if (!east) {
-						Tile* randomHill = northEastHillTiles->at((Direction)(Direction::West | Direction::East))
-							.at(ni);
-						sR = randomHill->GetSourceRect();
-						pixels = CopyRectOfTilePixelsFromTexture(&sR);
-
-						randomHill->SetGridPosition(x, y);
-						randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
-						tileMap[y][x] = new Tile(*randomHill);
-					}
-					else {
-						Tile* randomHill = southEastHillTiles->at((Direction)(Direction::West | Direction::East))
-							.at(si);
-						sR = randomHill->GetSourceRect();
-						pixels = CopyRectOfTilePixelsFromTexture(&sR);
-
-						randomHill->SetGridPosition(x, y);
-						randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
-						tileMap[y][x] = new Tile(*randomHill);
-					}
-				}
-			}
-		}
+		
 
 
 		dR = SDL_Rect(x, y, 1, 1);
 
 		SDL_RenderDrawRect(graphicsRef->GetRenderer(), &dR);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		/*if (!ne && !nw) {
-			if (east && !west) {
-				Tile* randomHill = northEastHillTiles->at((Direction)(Direction::West | Direction::East))
-					.at(ni);
-				sR = randomHill->GetSourceRect();
-				pixels = CopyRectOfTilePixelsFromTexture(&sR);
-
-				randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
-				tileMap[y][x] = new Tile(*randomHill);
-			}
-
-			if (!east && west) {
-				Tile* randomHill = southEastHillTiles->at((Direction)(Direction::West | Direction::East))
-					.at(si);
-				sR = randomHill->GetSourceRect();
-				pixels = CopyRectOfTilePixelsFromTexture(&sR);
-
-				randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
-				tileMap[y][x] = new Tile(*randomHill);
-			}
-		}
-		else if (ne && !nw) {
-			Tile* randomHill = northEastHillTiles->at((Direction)(Direction::West | Direction::East))
-				.at(ni);
-			sR = randomHill->GetSourceRect();
-			pixels = CopyRectOfTilePixelsFromTexture(&sR);
-
-			randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
-			tileMap[y - 1][x] = new Tile(*randomHill);
-		}
-		else if (!ne && nw){
-			Tile* randomHill = southEastHillTiles->at((Direction)(Direction::West | Direction::East))
-				.at(si);
-			sR = randomHill->GetSourceRect();
-			pixels = CopyRectOfTilePixelsFromTexture(&sR);
-
-			randomHill->TilePhysicsInit(physics, playerDimensions, pixels);
-			tileMap[y - 1][x] = new Tile(*randomHill);
-		}
-		else {
-			continue;
-		}*/
-		//}
+		SDL_RenderPresent(graphicsRef->GetRenderer());
 	}
+}
+
+std::unordered_set<std::pair<int, int>, PairHash> TileManager::GetWalkPerimeter(std::vector<std::pair<int, int>>& caveWalk)
+{
+	std::unordered_set<std::pair<int, int>, PairHash>p;
+	int x, y;
+
+	for (std::pair<int, int> step : caveWalk) {
+		x = step.first;
+		y = step.second;
+
+		//N Neighbor
+		if (InBounds(x, y - 1) && tileMap[y - 1][x] && !p.contains(std::pair<int, int>(x, y - 1)))
+			p.insert(std::pair<int, int>(x, y - 1));
+		//E Neighbor
+		if (InBounds(x + 1, y) && tileMap[y][x + 1] && !p.contains(std::pair<int, int>(x, y - 1)))
+			p.insert(std::pair<int, int>(x + 1, y));
+		//S Neighbor
+		if (InBounds(x, y + 1) && tileMap[y + 1][x] && !p.contains(std::pair<int, int>(x, y - 1)))
+			p.insert(std::pair<int, int>(x, y + 1));
+		//W Neighbor
+		if (InBounds(x - 1, y) && tileMap[y][x - 1] && !p.contains(std::pair<int, int>(x, y - 1)))
+			p.insert(std::pair<int, int>(x - 1, y));
+
+		//NE Neighbor
+		if (InBounds(x + 1, y - 1) && tileMap[y - 1][x + 1] && !p.contains(std::pair<int, int>(x, y - 1)))
+			p.insert(std::pair<int, int>(x + 1, y - 1));
+		//SE Neighbor
+		if (InBounds(x + 1, y + 1) && tileMap[y + 1][x + 1] && !p.contains(std::pair<int, int>(x, y - 1)))
+			p.insert(std::pair<int, int>(x + 1, y + 1));
+		//SW Neighbor
+		if (InBounds(x - 1, y + 1) && tileMap[y + 1][x - 1] && !p.contains(std::pair<int, int>(x, y - 1)))
+			p.insert(std::pair<int, int>(x - 1, y + 1));
+		//NW Neighbor
+		if (InBounds(x - 1, y - 1) && tileMap[y - 1][x - 1] && !p.contains(std::pair<int, int>(x, y - 1)))
+			p.insert(std::pair<int, int>(x - 1, y - 1));
+
+	}
+
+	return p;
 }
 
 void TileManager::CarveCaves()
@@ -1213,6 +1170,7 @@ void TileManager::CarveCaves()
 
 	DrunkardsWalk* caveWalk = new DrunkardsWalk(worldCols, worldRows);
 	std::vector<std::pair<int, int>> walk = caveWalk->Walk();
+	std::unordered_set<std::pair<int, int>, PairHash> walkPerimeter;
 	spawn = Vector2{ (walk[0].first * tileWidth * 1.0) + (tileWidth / 2), (walk[0].second * tileHeight * 1.0) + (tileHeight / 2) };
 
 	graphicsRef->Vector2PixelsToMeters(spawn);
@@ -1233,7 +1191,18 @@ void TileManager::CarveCaves()
 		SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
 	}
 
+	SDL_RenderPresent(graphicsRef->GetRenderer());
+
+	walkPerimeter = GetWalkPerimeter(walk);
+
+	walk.clear();
+
+	walk.reserve(walkPerimeter.size());
+	for (auto it = walkPerimeter.begin(); it != walkPerimeter.end();)
+		walk.push_back(std::move(walkPerimeter.extract(it++).value()));
+
 	FillHills(walk);
+
 
 	delete caveWalk;
 
@@ -1537,8 +1506,8 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 				bpg = nw->GetBottomChainLastVertex();
 			}
 			else if (sw) {
-				tpg = sw->GetTopChainFirstVertex();
-				bpg = sw->GetBottomChainFirstVertex();
+				tpg = sw->GetTopChainLastVertex();
+				bpg = sw->GetBottomChainLastVertex();
 			}
 			else{
 				tpg = tile->GetTopChainFirstVertex();
@@ -1569,6 +1538,9 @@ void TileManager::LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tile
 					bpg,
 					bng
 				);
+
+			if ((tile->GetHillDirection() & Direction::None) == 0)
+				tile->SetGridPosition(x, y);
 		}
 	}
 
