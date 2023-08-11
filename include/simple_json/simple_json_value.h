@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef __SIMPLE_JSON_VALUE_H__
 #define __SIMPLE_JSON_VALUE_H__
 
@@ -64,8 +60,4 @@ SJString *sj_string_to_json_string(SJson *string);
  */
 SJString *sj_value_to_json_string(SJson *json);
 
-#endif
-
-#ifdef __cplusplus
- }
 #endif

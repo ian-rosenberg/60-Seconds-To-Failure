@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef __SIMPLE_JSON_TYPES_H__
 #define __SIMPLE_JSON_TYPES_H__
 
@@ -23,8 +19,4 @@ typedef unsigned __int64 uint64_t;
 
 #endif
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif

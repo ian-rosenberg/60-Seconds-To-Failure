@@ -1,0 +1,18 @@
+﻿  simple_json.c
+C:\Users\sapph\source\repos\simple_json\src\simple_json.c(95,17): warning C4267: '=': conversion from 'size_t' to 'long', possible loss of data
+  simple_json_array.c
+  simple_json_error.c
+  simple_json_list.c
+  simple_json_object.c
+  simple_json_parse.c
+C:\Users\sapph\source\repos\simple_json\src\simple_json_parse.c(145,48): warning C4267: 'function': conversion from 'size_t' to 'long', possible loss of data
+  simple_json_string.c
+C:\Users\sapph\source\repos\simple_json\src\simple_json_string.c(47,18): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\sapph\source\repos\simple_json\src\simple_json_string.c(57,22): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\simple_json\src\simple_json_string.c(144,18): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\simple_json\src\simple_json_string.c(156,26): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\simple_json\src\simple_json_string.c(183,26): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\simple_json\src\simple_json_string.c(253,21): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sapph\source\repos\simple_json\src\simple_json_string.c(276,20): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Generating Code...
+  simple_json.vcxproj -> C:\Users\sapph\source\repos\simple_json_REDO\simple_json\x64\Debug\simple_json.lib

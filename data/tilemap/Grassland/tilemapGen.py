@@ -44,7 +44,8 @@ while tileIndex in range(1, tileCount+1):
                 "layers" : [],
                 "tileIndex" : tileIndex,
                 "xLocation": int(tileWidth * int(tileIndex % cols) + spacing * int(tileIndex % cols) + margin),                        
-                "yLocation": int(tileHeight * int(tileIndex / cols) + spacing * int(tileIndex / cols) + margin)                     
+                "yLocation": int(tileHeight * int(tileIndex / cols) + spacing * int(tileIndex / cols) + margin),
+                "slopes":[]
                 }
 
     slopes = {
@@ -90,6 +91,7 @@ while tileIndex in range(1, tileCount+1):
         i += 1
         
     topAvgSlope = np.average(slopes)
+    jsonObj["slopes"].append(topAvgSlope)
     
     ####################################
     #2.--------------------------------#
@@ -124,6 +126,7 @@ while tileIndex in range(1, tileCount+1):
         i += 1
         
     rightAvgSlope = np.average(slopes)
+    jsonObj["slopes"].append(rightAvgSlope)
             
     ######################################
     #3.----------------------------------#
@@ -157,6 +160,7 @@ while tileIndex in range(1, tileCount+1):
         i += 1
         
     bottomAvgSlope = np.average(slopes)
+    jsonObj["slopes"].append(bottomAvgSlope)
 
     ##################################
     #4.------------------------------#
@@ -190,6 +194,7 @@ while tileIndex in range(1, tileCount+1):
         i += 1
 
     leftAvgSlope = np.average(slopes)
+    jsonObj["slopes"].append(leftAvgSlope)
     
     
     #########################

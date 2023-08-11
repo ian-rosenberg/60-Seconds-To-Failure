@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{c0a4b3a8-f7a7-4c1b-bc9d-87aaad988f8a}</ProjectGuid>
     <RootNamespace>My60SecondsToFailure</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -84,14 +84,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)include;$(SolutionDir)include\simple_json;$(SolutionDir)SDL2_image-2.0.5\include;$(SolutionDir)SDL2_mixer-2.0.4\include;$(SolutionDir)SDL2_ttf-2.0.18\include;$(SolutionDir)SDL2-2.0.20\include;$(SolutionDir)box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\simple_json\x64\Debug;$(SolutionDir)lib\box2d\x64\Debug;$(SolutionDir)SDL2-2.0.20\lib\x64;$(SolutionDir)SDL2_ttf-2.0.18\lib\x64;$(SolutionDir)SDL2_mixer-2.0.4\lib\x64;$(SolutionDir)SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)include\simple_json;$(SolutionDir)SDL2_image-2.6.3\include;$(SolutionDir)SDL2_mixer-2.6.3\include;$(SolutionDir)SDL2_ttf-2.20.2\include;$(SolutionDir)SDL2-2.28.2\include;$(SolutionDir)box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\simple_json\x64\Debug;$(SolutionDir)lib\box2d\x64\Debug;$(SolutionDir)SDL2-2.28.2\lib\x64;$(SolutionDir)SDL2_ttf-2.20.2\lib\x64;$(SolutionDir)SDL2_mixer-2.6.3\lib\x64;$(SolutionDir)SDL2_image-2.6.3\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>$(SolutionDir)lib\simple_json\x64\Release;$(SolutionDir)lib\box2d\x64\Release;$(SolutionDir)SDL2-2.0.20\lib\x64;$(SolutionDir)SDL2_ttf-2.0.18\lib\x64;$(SolutionDir)SDL2_mixer-2.0.4\lib\x64;$(SolutionDir)SDL2_image-2.0.5\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)include;$(SolutionDir)include\simple_json;$(SolutionDir)SDL2_image-2.0.5\include;$(SolutionDir)SDL2_mixer-2.0.4\include;$(SolutionDir)SDL2_ttf-2.0.18\include;$(SolutionDir)SDL2-2.0.20\include;$(SolutionDir)box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\simple_json\x64\Release;$(SolutionDir)lib\box2d\x64\Release;$(SolutionDir)SDL2-2.28.2\lib\x64;$(SolutionDir)SDL2_ttf-2.20.2\lib\x64;$(SolutionDir)SDL2_mixer-2.6.3\lib\x64;$(SolutionDir)SDL2_image-2.6.3\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)include\simple_json;$(SolutionDir)SDL2-2.28.2\include;$(SolutionDir)SDL2_image-2.6.3\include;$(SolutionDir)box2d-main\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)SDL2_mixer-2.6.3\include;$(SolutionDir)SDL2_ttf-2.20.2\include</IncludePath>
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -171,12 +171,12 @@
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\contactListener.cpp" />
     <ClCompile Include="source\debugdraw.cpp" />
+    <ClCompile Include="source\drunkard.cpp" />
     <ClCompile Include="source\entity.cpp" />
     <ClCompile Include="source\game.cpp" />
     <ClCompile Include="source\gamearea.cpp" />
     <ClCompile Include="source\gameworld.cpp" />
     <ClCompile Include="source\graphics.cpp" />
-    <ClCompile Include="source\perlinnoise.cpp" />
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\sprite.cpp" />
     <ClCompile Include="source\staticentity.cpp" />
@@ -189,11 +189,11 @@
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\contactlistener.h" />
     <ClInclude Include="include\debugdraw.h" />
+    <ClInclude Include="include\drunkard.h" />
     <ClInclude Include="include\entity.h" />
     <ClInclude Include="include\gamearea.h" />
     <ClInclude Include="include\gameworld.h" />
     <ClInclude Include="include\graphics.h" />
-    <ClInclude Include="include\perlinnoise.h" />
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\sprite.h" />
     <ClInclude Include="include\staticentity.h" />

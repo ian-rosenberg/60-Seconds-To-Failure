@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef __SIMPLE_JSON_ARRAY_H__
 #define __SIMPLE_JSON_ARRAY_H__
 
@@ -32,8 +28,4 @@ SJString *sj_array_get_nth_as_string(SJson *array,int n);
  */
 SJString *sj_array_to_json_string(SJson *array);
 
-#endif
-
-#ifdef __cplusplus
- }
 #endif

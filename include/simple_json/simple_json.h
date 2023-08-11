@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef __SIMPLE_JSON_H__
 #define __SIMPLE_JSON_H__
 
@@ -362,9 +358,4 @@ void sj_enable_debug();
  * @note it is disabled by default
  */
 void sj_disable_debug();
-
-#endif
-
-#ifdef __cplusplus
- }
 #endif

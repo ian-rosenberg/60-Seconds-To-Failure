@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef __SIMPLE_JSON_OBJECT_H__
 #define __SIMPLE_JSON_OBJECT_H__
 
@@ -22,8 +18,5 @@ void sj_object_insert(SJson *object,const char *key,SJson *value);
  */
 SJString *sj_object_to_json_string(SJson *object);
 
-#endif
 
-#ifdef __cplusplus
- }
 #endif

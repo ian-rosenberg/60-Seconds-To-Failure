@@ -95,11 +95,12 @@ private:
 
 	//Rotation in degrees for SDL2
 	float													zRot;
+	float													*slopes;
 
 
 public:
 	Tile();
-	Tile(int id, const std::shared_ptr<Sprite>& s, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect);
+	Tile(int id, const std::shared_ptr<Sprite>& s, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect, float* slopes);
 	Tile(const Tile& oldTile);
 	Tile& operator= (const Tile& other);
 
@@ -120,7 +121,7 @@ public:
 
 	Vector2													GetPixelDimensions() { return pixelDimensions; }
 
-	b2Body* GetBodyReference() { return physicsBody; }
+	b2Body*													GetBodyReference() { return physicsBody; }
 
 	SDL_Color												GetDebugColor() { return debugColor; }
 
@@ -141,17 +142,44 @@ public:
 
 	SDL_Rect												GetSourceRect() { return sourceRect; }
 	Direction												GetHillDirection() { return hillOrientation; }
+	Direction												GetCappingDirection() { return capDirection; }
 	std::vector<std::vector<SDL_Color>>						GetTilePixels();
+
+	float*													GetSlopes() { return slopes; }
+	void													FlipChain(SDL_RendererFlip flip, std::vector<b2Vec2>& chain);
+};
+
+class TileCollection {
+private:
+	struct TileNode {
+		Direction direction;
+
+		std::vector<Tile*> tiles;
+		TileNode* child;
+	};
+
+	TileNode* root;
+
+	bool AddDirection(Direction dir);
+
+public:
+	TileCollection();
+	~TileCollection();
+
+	//Creates an entry for the capping direction of the tilewhen it returns false, 
+	bool AddTile(Tile* newTile);
+	std::vector<Tile*>* FindTilesOfDirection(Direction dir);
+	Tile* FindNthTileOfDirection(Direction dir, uint16_t index);
 };
 
 class TileManager {
 private:
 	//Capping direction
-	std::unordered_map<Direction, std::vector<Tile*>>*		groundTiles;
-	std::unordered_map<Direction, std::vector<Tile*>>*		northEastHillTiles;
-	std::unordered_map<Direction, std::vector<Tile*>>*		southEastHillTiles;
-	std::unordered_map<Direction, std::vector<Tile*>>*		platformTiles;
-	std::unordered_map<Direction, std::vector<Tile*>>*		wallTiles;
+	TileCollection*		groundTiles;
+	TileCollection*		northEastHillTiles;
+	TileCollection*		southEastHillTiles;
+	TileCollection*		platformTiles;
+
 	std::shared_ptr<Sprite>									spriteSheet;
 
 	std::shared_ptr<SDL_Texture>							tileMapTexture;

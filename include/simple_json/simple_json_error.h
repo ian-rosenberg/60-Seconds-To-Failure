@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef __SIMPLE_JSON_ERROR_H__
 #define __SIMPLE_JSON_ERROR_H__
 
@@ -32,8 +28,4 @@ char *sj_get_error();
  */
 void sj_set_error(char *error,...);
 
-#endif
-
-#ifdef __cplusplus
- }
 #endif

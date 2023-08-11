@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef __SIMPLE_JSON_PARSE_H__
 #define __SIMPLE_JSON_PARSE_H__
 
@@ -16,8 +12,4 @@ extern "C" {
 SJson *sj_parse_buffer(char *string,unsigned long length);
 
 
-#endif
-
-#ifdef __cplusplus
- }
 #endif

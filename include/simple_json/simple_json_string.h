@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef __SIMPLE_JSON_STRING_H__
 #define __SIMPLE_JSON_STRING_H__
 
@@ -140,8 +136,5 @@ int sj_string_as_float(SJString *string,float *output);
  */
 int sj_string_as_bool(SJString *string,short int *output);
 
-#endif
 
-#ifdef __cplusplus
- }
 #endif

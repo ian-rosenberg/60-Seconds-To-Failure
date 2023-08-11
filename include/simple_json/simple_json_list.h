@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef __SIMPLE_JSON_LIST_H__
 #define __SIMPLE_JSON_LIST_H__
 
@@ -91,8 +87,4 @@ int sj_list_delete_data(SJList *list,void *data);
  */
 unsigned int sj_list_get_count(SJList *list);
 
-#endif
-
-#ifdef __cplusplus
- }
 #endif
