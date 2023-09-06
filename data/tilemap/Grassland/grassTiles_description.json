@@ -4,7 +4,8 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "wall",
+                "platform"
             ],
             "possibleConnects": [
                 {
@@ -90,8 +91,6 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "ground",
-                "wall",
                 "platform"
             ],
             "possibleConnects": [
@@ -255,8 +254,6 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "ground",
-                "wall",
                 "platform"
             ],
             "possibleConnects": [
@@ -341,8 +338,6 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "ground",
-                "wall",
                 "platform"
             ],
             "possibleConnects": [
@@ -776,7 +771,8 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "wall",
+                "platform"
             ],
             "possibleConnects": [
                 {
@@ -862,8 +858,6 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "ground",
-                "wall",
                 "platform"
             ],
             "possibleConnects": [
@@ -940,8 +934,6 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "ground",
-                "wall",
                 "platform"
             ],
             "possibleConnects": [
@@ -1185,8 +1177,6 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "ground",
-                "wall",
                 "platform"
             ],
             "possibleConnects": [
@@ -1420,8 +1410,6 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "ground",
-                "wall",
                 "platform"
             ],
             "possibleConnects": [
@@ -1668,13 +1656,15 @@
             "yLocation": 281
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -1731,14 +1721,13 @@
             "yLocation": 281
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -1804,13 +1793,15 @@
             "yLocation": 281
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -1956,8 +1947,6 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "ground",
-                "wall",
                 "platform"
             ],
             "possibleConnects": [
@@ -2214,14 +2203,13 @@
             "yLocation": 419
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -2543,13 +2531,15 @@
             "yLocation": 419
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -2693,13 +2683,15 @@
             "yLocation": 419
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -2930,14 +2922,13 @@
             "yLocation": 557
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -3001,7 +2992,8 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "wall",
+                "platform"
             ],
             "possibleConnects": [
                 {
@@ -3172,14 +3164,13 @@
             "yLocation": 557
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -3414,13 +3405,15 @@
             "yLocation": 557
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -3477,14 +3470,13 @@
             "yLocation": 557
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -3545,13 +3537,15 @@
             "yLocation": 557
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -3608,13 +3602,15 @@
             "yLocation": 695
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -3671,13 +3667,15 @@
             "yLocation": 695
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -3821,14 +3819,13 @@
             "yLocation": 695
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -4063,14 +4060,13 @@
             "yLocation": 695
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -4131,14 +4127,13 @@
             "yLocation": 695
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -4199,14 +4194,13 @@
             "yLocation": 695
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -4267,14 +4261,13 @@
             "yLocation": 833
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -4683,13 +4676,15 @@
             "yLocation": 833
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -4746,13 +4741,15 @@
             "yLocation": 833
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -4809,14 +4806,13 @@
             "yLocation": 833
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -4879,8 +4875,6 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "ground",
-                "wall",
                 "platform"
             ],
             "possibleConnects": [
@@ -4963,13 +4957,15 @@
             "yLocation": 971
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -5026,13 +5022,15 @@
             "yLocation": 971
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -5089,13 +5087,15 @@
             "yLocation": 971
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -5152,13 +5152,15 @@
             "yLocation": 971
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -5215,13 +5217,15 @@
             "yLocation": 971
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -5278,13 +5282,15 @@
             "yLocation": 971
         },
         {
-            "hillOrientation": "Southeast",
+            "hillOrientation": "Northeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
+                        "hill",
+                        "ground",
                         "wall"
                     ],
                     "x": 1,
@@ -5428,14 +5434,13 @@
             "yLocation": 971
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -5496,14 +5501,13 @@
             "yLocation": 971
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -5564,14 +5568,13 @@
             "yLocation": 1109
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -5632,14 +5635,13 @@
             "yLocation": 1109
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -5700,14 +5702,13 @@
             "yLocation": 1109
         },
         {
-            "hillOrientation": "Northeast",
+            "hillOrientation": "Southeast",
             "layers": [
                 "hill"
             ],
             "possibleConnects": [
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -5771,7 +5772,8 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall"
+                "wall",
+                "platform"
             ],
             "possibleConnects": [
                 {
@@ -5944,8 +5946,6 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "ground",
-                "wall",
                 "platform"
             ],
             "possibleConnects": [

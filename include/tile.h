@@ -13,20 +13,46 @@ const int MAX_EDGES = 4;
 const int MAX_TUNNELS = 6;
 
 
-enum Direction : uint16_t {
-	North = 1 << 0,
-	East = 1 << 2,
-	South = 1 << 3,
-	West = 1 << 4,
-	None = 1 << 5,
+enum Direction{
+	North = 1 << 2,
+	East = 1 << 3,
+	South = 1 << 4,
+	West = 1 << 5,
+	None = 1 << 6
 };
 
-enum TileLayer : uint16_t {
-	Ground = 1 << 6,
-	Hill = 1 << 7,
-	Wall = 1 << 8,
-	Platform = 1 << 9,
-	Empty = 1 << 10
+inline Direction operator|(Direction a, Direction b) {
+	return (Direction)(int(a) | int(b));
+}
+
+inline Direction& operator|=(Direction a, Direction b) {
+	a = a | b;
+	return a;
+}
+
+inline Direction operator&(Direction a, Direction b) {
+	return Direction(int(a) & int(b));
+}
+
+inline Direction operator&=(Direction a, Direction b) {
+	a = a & b;
+	return a;
+}
+
+inline bool operator==(Direction a, Direction b) {
+	return (int)a == (int)b;
+}
+
+inline bool operator!=(Direction a, Direction b) {
+	return (int)a != (int)b;
+}
+
+enum TileLayer{
+	Ground = 1 << 7,
+	Hill = 1 << 8,
+	Wall = 1 << 9,
+	Platform = 1 << 10,
+	Empty = 1 << 11
 };
 
 typedef struct TileConnection_S {
@@ -95,7 +121,7 @@ private:
 
 	//Rotation in degrees for SDL2
 	float													zRot;
-	float													*slopes;
+	float*													slopes;
 
 
 public:
@@ -112,6 +138,7 @@ public:
 	void													CreatePhysicsEdges(std::vector<std::vector<SDL_Color>>& pixels, Vector2 playerDim);
 	void													CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2Vec2 bng);
 	void													SetCappingDirection(Direction capping);
+	void													ClearCappingDirections();
 	void													DecideCapping(std::vector<std::vector<SDL_Color>>& pixels);
 	void													TilePhysicsInit(b2World* world, Vector2 playerDim, std::vector<std::vector<SDL_Color>>& pixels);
 	void													SetSpriteDirection(Direction dir) { direction = dir; }
@@ -147,27 +174,30 @@ public:
 
 	float*													GetSlopes() { return slopes; }
 	void													FlipChain(SDL_RendererFlip flip, std::vector<b2Vec2>& chain);
+
+	SDL_RendererFlip										GetFlipFlags() { return flipFlags; }
+
+	float													GetZRotation() { return zRot; }
+
 };
+
+typedef struct TileNode {
+	Direction direction;
+
+	std::vector<Tile*> tiles;
+	TileNode* child;
+}TileNode_S;
 
 class TileCollection {
 private:
-	struct TileNode {
-		Direction direction;
-
-		std::vector<Tile*> tiles;
-		TileNode* child;
-	};
-
 	TileNode* root;
-
-	bool AddDirection(Direction dir);
 
 public:
 	TileCollection();
 	~TileCollection();
 
 	//Creates an entry for the capping direction of the tilewhen it returns false, 
-	bool AddTile(Tile* newTile);
+	void AddTile(Tile* newTile);
 	std::vector<Tile*>* FindTilesOfDirection(Direction dir);
 	Tile* FindNthTileOfDirection(Direction dir, uint16_t index);
 };
@@ -230,8 +260,6 @@ public:
 
 	std::vector<std::vector<Tile*>>* GenerateTileMap(b2World* physicsWorld, Vector2 pDim);
 
-	void GenerateTileMapRectArea(SDL_Rect& r);
-
 	void LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap);
 
 	Vector2 GetTileDimensions() { return Vector2(tileWidth, tileHeight); }
@@ -242,7 +270,6 @@ public:
 
 	inline bool InBounds(int x, int y) { return x > 1 && x < worldCols-1 && y > 1 && y < worldRows-1; }
 
-	b2Vec2 FindSpawnPointFromLeft();
 
 	std::vector<std::vector<SDL_Color>> CopyRectOfTilePixelsFromTexture(SDL_Rect* sR);
 	std::unordered_set<std::pair<int,int>, PairHash> GetWalkPerimeter(std::vector<std::pair<int, int>>& caveWalk);

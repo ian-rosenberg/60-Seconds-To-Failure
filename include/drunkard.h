@@ -6,7 +6,7 @@
 
 struct PairHash {
 	inline std::size_t operator()(const std::pair<int, int>& v) const {
-		return v.first * 17 + v.second;
+		return v.first + 1 * 17 + v.second + 1 * 19;
 	}
 };
 
