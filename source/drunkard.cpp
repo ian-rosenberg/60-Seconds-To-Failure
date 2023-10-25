@@ -61,8 +61,8 @@ std::vector<std::pair<int, int>> DrunkardsWalk::Walk()
 
 	switch (corner) {
 	case 1:	
-		cx = 2;
-		cy = 2;
+		cx = rand() % (width / 4);
+		cy = rand() % (height / 4);
 		break;
 	case 2:	
 		cx = width - 2;

@@ -100,7 +100,7 @@ private:
 
 	std::shared_ptr<Graphics>								graphicsRef;
 
-	std::shared_ptr<Sprite>									spriteSheet;
+	std::shared_ptr<Sprite>									sprite;
 
 	SDL_Rect												sourceRect;
 
@@ -126,7 +126,7 @@ private:
 
 public:
 	Tile();
-	Tile(int id, const std::shared_ptr<Sprite>& s, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect, float* slopes);
+	Tile(int id, Sprite* srcSheet, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect, float* slopes);
 	Tile(const Tile& oldTile);
 	Tile& operator= (const Tile& other);
 
@@ -135,12 +135,11 @@ public:
 	void													AddPossibleConnection(Vector2 v, TileLayer layer, Direction hillDir);
 	void													RotateChain(std::vector<b2Vec2>& chain, float angle);
 	void													Draw(Vector2 cameraOffset);
-	void													CreatePhysicsEdges(std::vector<std::vector<SDL_Color>>& pixels, Vector2 playerDim);
+	void													CreatePhysicsEdges(Vector2 playerDim);
 	void													CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2Vec2 bng);
 	void													SetCappingDirection(Direction capping);
-	void													ClearCappingDirections();
-	void													DecideCapping(std::vector<std::vector<SDL_Color>>& pixels);
-	void													TilePhysicsInit(b2World* world, Vector2 playerDim, std::vector<std::vector<SDL_Color>>& pixels);
+	void													DecideCapping();
+	void													TilePhysicsInit(b2World* world, Vector2 playerDim);
 	void													SetSpriteDirection(Direction dir) { direction = dir; }
 	void													SetSDL_RendererFlipFlags(SDL_RendererFlip flip);
 	void													SetTileLayer(TileLayer layers) { tileLayers = layers; }
@@ -152,12 +151,18 @@ public:
 
 	SDL_Color												GetDebugColor() { return debugColor; }
 
-	b2Vec2													GetTopChainFirstVertex() { return topChain.front(); }
-	b2Vec2													GetTopChainLastVertex() { return topChain.back(); }
-	b2Vec2													GetBottomChainFirstVertex() { return bottomChain.front(); }
-	b2Vec2													GetBottomChainLastVertex() { return bottomChain.back(); }
+	//b2Vec2													GetTopChainFirstVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? topChain.front() : topChain.back(); }
+	//b2Vec2													GetTopChainLastVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? topChain.back() : topChain.front(); }
+	//b2Vec2													GetBottomChainFirstVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.front() : bottomChain.back(); }
+	//b2Vec2													GetBottomChainLastVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.back() : bottomChain.front(); }
 
-	b2Vec2													GetWorldPosition() { return worldPosition; }
+		
+	b2Vec2												GetTopChainFirstVertex() { return topChain.front(); }
+	b2Vec2												GetTopChainLastVertex() { return topChain.back(); }
+	b2Vec2												GetBottomChainFirstVertex() { return bottomChain.front(); }
+	b2Vec2												GetBottomChainLastVertex() { return bottomChain.back(); }
+																																					 
+	b2Vec2													GetWorldPosition() { return worldPosition; }											 
 	Vector2													GetPixelPosition() { return pixelPosition; }
 
 	TileLayer												GetTileLayer() { return tileLayers; }
@@ -173,7 +178,7 @@ public:
 	std::vector<std::vector<SDL_Color>>						GetTilePixels();
 
 	float*													GetSlopes() { return slopes; }
-	void													FlipChain(SDL_RendererFlip flip, std::vector<b2Vec2>& chain);
+	void													FlipChain(std::vector<b2Vec2>& chain);
 
 	SDL_RendererFlip										GetFlipFlags() { return flipFlags; }
 
@@ -210,9 +215,9 @@ private:
 	TileCollection*		southEastHillTiles;
 	TileCollection*		platformTiles;
 
-	std::shared_ptr<Sprite>									spriteSheet;
+	Sprite*													spriteSheet;
 
-	std::shared_ptr<SDL_Texture>							tileMapTexture;
+	SDL_Texture*											tileMapTexture;
 	Vector2													tileMapTextureDrawPosition;
 
 	Vector2													spawn;

@@ -9,6 +9,9 @@
 #include "graphics.h"
 
 class Sprite {
+private:
+	void							ClipSourceRectPixels();
+
 protected:
 	std::string						filepath;
 	int								frame;
@@ -17,6 +20,7 @@ protected:
 	int								frameWidth;
 	int								frameHeight;
 
+	SDL_RendererFlip				flipFlags;
 	Vector2							flip;
 	Vector2							scale;
 	Vector2							scaleCenter;
@@ -45,20 +49,19 @@ public:
 		int offset,
 		int frameWidth,
 		int frameHeight,
-		std::shared_ptr<Graphics> ren);		
+		const std::shared_ptr<Graphics>& ren);		
 	
-	Sprite(std::shared_ptr<SDL_Texture> tex,
+	Sprite(SDL_Texture* tex,
 		SDL_Rect* sourceRect,
 		Vector2 drawPosition,
 		Vector3 rotation,
 		Vector2 flip,
 		Vector4 colorShift,
-		std::shared_ptr<Graphics> ren, std::string fp);
+		const std::shared_ptr<Graphics>& ren, std::string fp);
 
 	Sprite(SDL_Texture* t,
 		SDL_Rect* sourceRect,
-		std::shared_ptr<Graphics> ren);
-
+		const std::shared_ptr<Graphics>& ren);
 
 	Sprite(std::string filepath,
 		int imgWidth,
@@ -67,20 +70,24 @@ public:
 		int height,
 		int yOffset,
 		int xOffset, 
-		std::shared_ptr<Graphics> ren);
+		const std::shared_ptr<Graphics>& ren);
 
 	Sprite(std::string filepath,
 		int width,
 		int height,
 		const std::shared_ptr<Graphics>& graphics);
 
+	Sprite& operator= (const Sprite& other);
+
 	~Sprite();
 
-	static std::shared_ptr<SDL_Texture> CreateRenderTexture(int width,
+	static SDL_Texture* CreateRenderTexture(int width,
 		int height,
 		const std::shared_ptr<Graphics>& graphics, Uint32 fmt);
 
 	static std::vector<std::vector<SDL_Color>> GetPixelData(const char* filepath, SDL_Rect* r, const std::shared_ptr<Graphics>& graphics);
+
+	static std::vector<std::vector<SDL_Color>> GetPixelData(const std::shared_ptr<Graphics>& graphics, Sprite* s);
 
 	static SDL_Color translate_color(Uint32 int_color);
 
@@ -88,9 +95,9 @@ public:
 
 	Uint8 LoadPNGImage(std::string filepath);
 
-	std::shared_ptr<SDL_Surface> LoadSurface(std::string filepath);
+	SDL_Surface* LoadSurface(std::string filepath);
 
-	std::shared_ptr<SDL_Texture> GetTexture();
+	SDL_Texture* GetTexture();
 
 	void RotateTextureZ(float theta);
 
@@ -120,13 +127,13 @@ public:
 
 	void Draw(Vector2 drawPosition,
 		SDL_Rect srcRect,
-		Vector2* scale,
-		Vector2* scaleCenter,
-		Vector4* colorShift, SDL_RendererFlip flipFlags);
+		SDL_RendererFlip flipFlags);
 
 	void DrawSpriteImage(Sprite* image, Vector2 position, int width, int height);
 
 	Sprite* MakeFlippedTexture(SDL_RendererFlip flip);
 
 	bool CheckIfViableTexture(SDL_Rect sR);
+
+	void UpdateSrcRect(SDL_Rect r);
 };
