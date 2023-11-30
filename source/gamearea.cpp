@@ -38,8 +38,6 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 
 	camera->SetBounds(tileManager->GetBounds());
 
-	tileManager->LinkTilemapGhostVertices(tilemap);
-
 	debugDraw->AddTileMapRef(tilemap);
 
 	playerPixelDimensions = playerDim;

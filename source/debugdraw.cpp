@@ -17,38 +17,30 @@ void DebugDraw::DrawPolygon(b2Body* bodyRef, const b2Vec2* vertices, int32 verte
 	b2Vec2 t;
 	Vector2 a = {},
 		b = {};
+	std::vector<SDL_Vertex> sdlVerts;
+	SDL_Renderer* ren = graphicsRef->GetRenderer();
 
 	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 255, 0, 255);
-
-	for (int i = 0, j = 1; j < vertexCount; i++, j++) {
+	
+	for (int i = 0; i < vertexCount; i++) {
+		SDL_Vertex v;
 		t = bodyRef->GetWorldPoint((*(vertices + i)));
 		a = Vector2(t.x, t.y);
 		graphicsRef->Vector2MetersToPixels(a);
 
 		a.x -= camX;
 		a.y -= camY;
+		v.color = SDL_Color(0, 255, 0, 255);
+		v.position = { (float)a.x, (float)a.y };
 
-		t = bodyRef->GetWorldPoint((*(vertices + j)));
-		b = Vector2(t.x, t.y);
-		graphicsRef->Vector2MetersToPixels(b);
-
-		b.x -= camX;
-		b.y -= camY;
-
-		SDL_RenderDrawLine(graphicsRef->GetRenderer(), a.x, a.y, b.x, b.y);
+		sdlVerts.push_back(v);
 	}
 
-	a = b;
+	sdlVerts.push_back(sdlVerts[0]);
 
-
-	t = bodyRef->GetWorldPoint(*vertices);
-	b = Vector2(t.x, t.y);
-	graphicsRef->Vector2MetersToPixels(b);
-
-	b.x -= camX;
-	b.y -= camY;
+	for (int i = 0, j = 1; j < sdlVerts.size(); i++, j++)
+		SDL_RenderDrawLine(ren, sdlVerts[i].position.x, sdlVerts[i].position.y, sdlVerts[j].position.x, sdlVerts[j].position.y);
 	
-	SDL_RenderDrawLine(graphicsRef->GetRenderer(), a.x, a.y, b.x, b.y);
 
 	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 0, 0, 0);
 }

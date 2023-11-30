@@ -322,6 +322,9 @@ Sprite* Sprite::MakeFlippedTexture(SDL_RendererFlip flip)
 		SDL_CreateTexture(ren, fmt, SDL_TEXTUREACCESS_TARGET, frameWidth, frameHeight),
 		[](SDL_Texture* ptr) {SDL_DestroyTexture(ptr); }
 	);
+
+	SDL_SetTextureBlendMode(flippedCopy->texture.get(), SDL_BLENDMODE_BLEND);
+
 	SDL_RenderClear(ren);
 	SDL_SetRenderTarget(ren, texture.get());
 	SDL_RenderCopyEx(ren, texture.get(), &srcRect, nullptr, 0.f, &ctr, flip);

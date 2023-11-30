@@ -95,7 +95,9 @@ private:
 	b2Vec2													worldCenter;
 	Vector2													pixelCenter;
 
-	b2Body* physicsBody;
+	b2Body*													physicsBody;
+	b2Fixture*												fixture;
+
 	Direction												capDirection;
 
 	std::shared_ptr<Graphics>								graphicsRef;
@@ -109,10 +111,6 @@ private:
 	std::vector<b2Vec2>										eastCap;
 	std::vector<b2Vec2>										westCap;
 
-	b2Fixture* topFix;
-	b2Fixture* bottomFix;
-	b2Fixture* eastFix;
-	b2Fixture* westFix;
 
 	std::vector<TileConnection>								possibleConnections;
 	TileLayer												tileLayers;
@@ -136,7 +134,7 @@ public:
 	void													RotateChain(std::vector<b2Vec2>& chain, float angle);
 	void													Draw(Vector2 cameraOffset);
 	void													CreatePhysicsEdges(Vector2 playerDim);
-	void													CreateTileBody(b2World* world, b2Vec2 tpg, b2Vec2 tng, b2Vec2 bpg, b2Vec2 bng);
+	void													CreateTileBody(b2World* world);
 	void													SetCappingDirection(Direction capping);
 	void													DecideCapping();
 	void													TilePhysicsInit(b2World* world, Vector2 playerDim);
@@ -157,10 +155,10 @@ public:
 	//b2Vec2													GetBottomChainLastVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.back() : bottomChain.front(); }
 
 		
-	b2Vec2												GetTopChainFirstVertex() { return topChain.front(); }
-	b2Vec2												GetTopChainLastVertex() { return topChain.back(); }
-	b2Vec2												GetBottomChainFirstVertex() { return bottomChain.front(); }
-	b2Vec2												GetBottomChainLastVertex() { return bottomChain.back(); }
+	b2Vec2													GetTopChainFirstVertex() { return topChain.front(); }
+	b2Vec2													GetTopChainLastVertex() { return topChain.back(); }
+	b2Vec2													GetBottomChainFirstVertex() { return bottomChain.front(); }
+	b2Vec2													GetBottomChainLastVertex() { return bottomChain.back(); }
 																																					 
 	b2Vec2													GetWorldPosition() { return worldPosition; }											 
 	Vector2													GetPixelPosition() { return pixelPosition; }
@@ -183,7 +181,7 @@ public:
 	SDL_RendererFlip										GetFlipFlags() { return flipFlags; }
 
 	float													GetZRotation() { return zRot; }
-
+	b2Fixture*												GetShapeFixture(){ return fixture; }
 };
 
 typedef struct TileNode {
@@ -252,6 +250,8 @@ private:
 
 	void													CreateMapRenderTarget();
 
+	void													SetTileMapBodies();
+		
 public:
 	TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDimensions);
 
