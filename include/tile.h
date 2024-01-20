@@ -12,7 +12,6 @@ const int VERTICES_PER_EDGE = 2;
 const int MAX_EDGES = 4;
 const int MAX_TUNNELS = 6;
 
-
 enum Direction{
 	North = 1 << 2,
 	East = 1 << 3,
@@ -89,6 +88,8 @@ private:
 	Vector2													pixelDimensions;
 	b2Vec2													worldDimensions;
 
+	int														gridX;
+	int														gridY;
 	Vector2													pixelPosition;
 	b2Vec2													worldPosition;
 
@@ -115,6 +116,7 @@ private:
 	std::vector<TileConnection>								possibleConnections;
 	TileLayer												tileLayers;
 	Direction												hillOrientation;
+
 
 
 	//Rotation in degrees for SDL2
@@ -168,7 +170,7 @@ public:
 	void													SetHillOrientation(Direction hillOrient) { hillOrientation = hillOrient; }
 
 
-	void													TestDraw();
+	void													TestDraw(const SDL_Rect& cameraBounds);
 
 	SDL_Rect												GetSourceRect() { return sourceRect; }
 	Direction												GetHillDirection() { return hillOrientation; }
@@ -182,6 +184,7 @@ public:
 
 	float													GetZRotation() { return zRot; }
 	b2Fixture*												GetShapeFixture(){ return fixture; }
+	Coord										GetGridPosition() { return Coord(gridX,gridY); }
 };
 
 typedef struct TileNode {
@@ -245,7 +248,7 @@ private:
 
 	void													CarvePath();
 
-	void													FillHills(std::vector<std::pair<int, int>>& caveWalk);
+	void													FillHills(std::vector<Coord>& caveWalk);
 	void													CarveCaves();
 
 	void													CreateMapRenderTarget();
@@ -265,17 +268,20 @@ public:
 
 	std::vector<std::vector<Tile*>>* GenerateTileMap(b2World* physicsWorld, Vector2 pDim);
 
-	void LinkTilemapGhostVertices(std::vector<std::vector<Tile*>>* tilemap);
-
 	Vector2 GetTileDimensions() { return Vector2(tileWidth, tileHeight); }
 
 	std::vector<std::vector<Tile*>>* GetTileMap() { return &tileMap; }
 
 	Vector4 GetBounds() { return bounds; }
 
-	inline bool InBounds(int x, int y) { return x > 1 && x < worldCols-1 && y > 1 && y < worldRows-1; }
+	bool IsOfPlatform(int x, int y);
+	
+	bool IsInBounds(int x, int y);
 
+	void PlatformDFS(std::vector<std::vector<int>>& pmap, int x, int y, int & platformFlag);
 
 	std::vector<std::vector<SDL_Color>> CopyRectOfTilePixelsFromTexture(SDL_Rect* sR);
-	std::unordered_set<std::pair<int,int>, PairHash> GetWalkPerimeter(std::vector<std::pair<int, int>>& caveWalk);
+	std::unordered_set<Coord, PairHash> GetWalkPerimeter(std::vector<Coord>& caveWalk);
+
+	void PrintMapToConsole(std::vector<std::vector<int>> const & pmap);
 };
