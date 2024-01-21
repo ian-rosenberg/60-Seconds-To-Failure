@@ -32,3 +32,7 @@
 *.app
 /.vs
 /images/Grassland/Tiles
+/Build/x64
+/Release
+/x64
+/60 Seconds To Failure.vcxproj.filters
