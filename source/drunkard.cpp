@@ -1,7 +1,7 @@
 #include "drunkard.h"
 #include <algorithm>
 
-void DrunkardsWalk::Step(int x, int y)
+void DrunkardsWalk::Step(int x, int y, Coord& lastStep)
 {
 	Coord pair(x, y);
 	float coverable = ((width - 1) * (height - 1));
@@ -38,6 +38,7 @@ void DrunkardsWalk::Step(int x, int y)
 			visited.insert(pair);
 
 		covered = visited.size() / coverable;
+		lastStep = pair;
 	}
 }
 
@@ -52,9 +53,10 @@ DrunkardsWalk::~DrunkardsWalk()
 	visited.clear();
 }
 
-std::vector<Coord> DrunkardsWalk::Walk()
+std::vector<Coord> DrunkardsWalk::Walk(int numIterations)
 {	
 	std::vector<Coord> walked;
+	Coord lastStep(0, 0);
 	int corner = ceil((int)(gf2d_random() * 10) % 4);
 	int cx, cy;
 	int curWalk = 1;
@@ -83,24 +85,19 @@ std::vector<Coord> DrunkardsWalk::Walk()
 
 	}
 
-	Step(cx, cy);
+	lastStep = { cx,cy };
 
-	walked.reserve(visited.size());
-	for (auto it = visited.begin(); it != visited.end();)
-		walked.push_back(std::move(visited.extract(it++).value()));
+	for (int i = 0; i < numIterations; i++) {
+		Step(cx, cy, lastStep);
 
-	return walked;
-}
+		walked.reserve(visited.size());
+		for (auto it = visited.begin(); it != visited.end();)
+			walked.push_back(std::move(visited.extract(it++).value()));
 
-std::vector<Coord> DrunkardsWalk::Walk(Coord start)
-{	
-	std::vector<Coord> walked;
+		cx = lastStep.X;
+		cy = lastStep.Y;
 
-	Step(start.X, start.Y);
-
-	walked.reserve(visited.size());
-	for (auto it = visited.begin(); it != visited.end();)
-		walked.push_back(std::move(visited.extract(it++).value()));
+	}
 
 	return walked;
 }

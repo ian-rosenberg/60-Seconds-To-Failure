@@ -1,7 +1,28 @@
-﻿  perlinnoise.cpp
-  Generating code
-  2 of 2273 functions (<0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  60 Seconds To Failure.vcxproj -> C:\Users\sapph\source\repos\60-Seconds-To-Failure\x64\Release\60 Seconds To Failure.exe
+﻿  actor.cpp
+  animation.cpp
+  camera.cpp
+  contactListener.cpp
+C:\Users\sapph\Source\Repos\ian-rosenberg\60-Seconds-To-Failure\include\contactlistener.h(14,2): warning C4091: 'typedef ': ignored on left of 'Contact' when no variable is declared
+  debugdraw.cpp
+  drunkard.cpp
+  entity.cpp
+  game.cpp
+C:\Users\sapph\Source\Repos\ian-rosenberg\60-Seconds-To-Failure\include\contactlistener.h(14,2): warning C4091: 'typedef ': ignored on left of 'Contact' when no variable is declared
+  gamearea.cpp
+C:\Users\sapph\Source\Repos\ian-rosenberg\60-Seconds-To-Failure\include\contactlistener.h(14,2): warning C4091: 'typedef ': ignored on left of 'Contact' when no variable is declared
+  gameworld.cpp
+C:\Users\sapph\Source\Repos\ian-rosenberg\60-Seconds-To-Failure\include\contactlistener.h(14,2): warning C4091: 'typedef ': ignored on left of 'Contact' when no variable is declared
+  graphics.cpp
+C:\Users\sapph\source\repos\ian-rosenberg\60-Seconds-To-Failure\source\graphics.cpp(22,32): warning C4806: '&': unsafe operation: no value of type 'bool' promoted to type 'IMG_InitFlags' can equal the given constant
+  player.cpp
+  sprite.cpp
+C:\Users\sapph\source\repos\ian-rosenberg\60-Seconds-To-Failure\source\sprite.cpp(311,72): warning C4838: conversion from 'Uint32' to 'Uint8' requires a narrowing conversion
+C:\Users\sapph\source\repos\ian-rosenberg\60-Seconds-To-Failure\source\sprite.cpp(311,105): warning C4838: conversion from 'Uint32' to 'Uint8' requires a narrowing conversion
+C:\Users\sapph\source\repos\ian-rosenberg\60-Seconds-To-Failure\source\sprite.cpp(460,15): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
+C:\Users\sapph\source\repos\ian-rosenberg\60-Seconds-To-Failure\source\sprite.cpp(461,15): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
+  staticentity.cpp
+  tile.cpp
+C:\Users\sapph\source\repos\ian-rosenberg\60-Seconds-To-Failure\source\tile.cpp(704,7): warning C4838: conversion from 'uint32_t' to 'int' requires a narrowing conversion
+C:\Users\sapph\source\repos\ian-rosenberg\60-Seconds-To-Failure\source\tile.cpp(705,7): warning C4838: conversion from 'uint32_t' to 'int' requires a narrowing conversion
+  vectortypes.cpp
+LINK : fatal error LNK1181: cannot open input file 'simple_json.lib'

@@ -34,11 +34,9 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 		areaPhysics, 
 		playerDim);
 
-	std::vector<std::vector<Tile*>>* tilemap = tileManager->GenerateTileMap(areaPhysics, playerDim);
-
 	camera->SetBounds(tileManager->GetBounds());
 
-	debugDraw->AddTileMapRef(tilemap);
+	debugDraw->AddTileMapRef(tileManager->GenerateTileMap(areaPhysics, playerDim));
 
 	playerPixelDimensions = playerDim;
 }

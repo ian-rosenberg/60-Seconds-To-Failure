@@ -14,6 +14,6 @@ public:
 	GaussianBlur(int kernelSize);
 	~GaussianBlur();
 
-	void BlurTileMap(std::vector<std::vector<int>>* tileMap);
+	void BlurTileMap(std::vector<std::vector<int>>& tileMap);
 };
 

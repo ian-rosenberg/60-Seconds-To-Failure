@@ -24,15 +24,14 @@ private:
 
 	std::unordered_set<Coord, PairHash>  				visited;
 
-	void												Step(int x, int y);
+	void												Step(int x, int y, Coord &lastStep);
 public:
 
 	DrunkardsWalk(int w, int h);
 
 	~DrunkardsWalk();
 
-	std::vector<Coord> Walk();
-	std::vector<Coord> Walk(Coord start);
+	std::vector<Coord> Walk(int numIterations);
 
 	int InBounds(int &x, int &y);
 };

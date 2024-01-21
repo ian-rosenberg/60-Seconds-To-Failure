@@ -246,15 +246,14 @@ private:
 
 	void													TileParseTypesFromJSON(std::string json);
 
-	void													CarvePath();
+	void													CarveCaves(std::vector<std::vector<int>>& pseudoMap);
+	void													CreatePlatforms(std::vector<std::vector<int>>& pseudoMap, std::vector<Coord>& platformStarts);
+	void													FillHills(std::vector<std::vector<int>>& pseudoMap, std::vector<Coord>& platformTops);
+	//void													FillCeiling(std::vector<std::vector<int>>& pseudoMap);
 
-	void													FillHills(std::vector<Coord>& caveWalk);
-	void													CarveCaves();
-
+	void													CreateTileMapBodies(std::vector<std::vector<int>>& pseudoMap);
 	void													CreateMapRenderTarget();
-
-	void													SetTileMapBodies();
-		
+			
 public:
 	TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDimensions);
 

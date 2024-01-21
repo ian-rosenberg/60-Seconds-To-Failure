@@ -17,7 +17,11 @@ extern "C" {
 #define EDGE_COUNT 2
 #define MAX_CAPS 2
 #define GAUSSIAN_FILTER_SIZE 3
-
+#define DRUNK_WALK_MAX 5
+#define DRUNK_WALK_MIN 1
+#define PLATFORM_TOP_EDGE_MIN 3
+#define PLATFORM_TOP_EDGE_MAX 9
+				  
 void Tile::CreatePhysicsEdges(Vector2 playerDimensions)
 {
 	std::vector<std::vector<SDL_Color>> pixels;
@@ -1060,353 +1064,312 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 	sj_free(genDesc);
 }
 
-
-//Work on carving paths
-//void TileManager::CarvePath()
+//void TileManager::FillHills(std::vector<std::vector<int>>& pseudoMap, std::vector<Coord>& platformTops)
 //{
-//	PerlinNoise *perlin = new PerlinNoise(Vector2(tileMap[0].size(), tileMap.size()));
-//	std::vector<float> perlin1D = perlin->PerlinNoise1D();
+//	std::vector<std::vector<Tile*>> platformsFound;
+//	std::vector<std::vector<Tile*>> platforms;
+//	std::unordered_set<Tile*> platformTopSingles;
+//	std::vector<Tile*> allocatedSpots;
+//	std::vector<Tile*> viableBodies;
+//	std::vector<Tile*> neTiles = *northEastHillTiles->FindTilesOfDirection((Direction)(East | West));
+//	std::vector<Tile*> seTiles = *southEastHillTiles->FindTilesOfDirection((Direction)(East | West));
+//
+//	for (int y = 0; y < pseudoMap.size(); y++) {
+//		for (int x = 0; x < pseudoMap[y].size(); x++) {
+//			std::vector<Tile*> visitedPlatform;
+//			if (pseudoMap[y][x] == 1)
+//			{
+//				int platform = 1;
+//				//PrintMapToConsole(pseudoMap);
+//
+//				PlatformDFS(pseudoMap, x, y, platform);
+//
+//				for (int y = 0; y < pseudoMap.size(); y++) {
+//					for (int x = 0; x < pseudoMap[y].size(); x++) {
+//						if (pseudoMap[y][x] == 2) {
+//							visitedPlatform.push_back(tileMap[y][x]);
+//							pseudoMap[y][x] = 0;
+//							SDL_Rect r = { x * 5,y * 5,5,5 };
+//							SDL_RenderDrawRect(graphicsRef->GetRenderer(), &r);
+//						}
+//					}
+//				}
+//
+//				if (platform == 1) {
+//					std::cout << "Platform found starting at " << x << "," << y << std::endl;
+//
+//					platformsFound.push_back(visitedPlatform);
+//
+//					SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 0, 255, 255);
+//				}
+//				else {
+//					std::cout << " NO platform found at " << x << "," << y << std::endl;
+//				}
 //
 //
-//	for (int col = 1; col < perlin1D.size()-1; col++) {
-//		int perlinVal = (perlin1D[col] * tileMap.size());
-//		Tile* t = tileMap[perlinVal][col];
-//		int stepN = (int)(gf2d_random() * 10) % (perlinVal * -1) - 1;
-//		int stepE = (int)(gf2d_random() * 10) % (tileMap[perlinVal].size() - col) - 1;
-//		int stepS = (int)(gf2d_random() * 10) % (tileMap.size() - perlinVal) - 1;
-//		int stepW = (int)(gf2d_random() * 10) % (col * -1) - 1;
-//		
-//		tileMap[perlinVal][col] = nullptr;
-//		delete t;
 //
-//		for(int n = stepN; n < 0; n++) {
-//			t = tileMap[perlinVal+n][col];
-//			tileMap[perlinVal+n][col] = nullptr;
-//			delete t;
-//		}
-//		for (int e = stepE + col; e > 0; e--) {
-//			t = tileMap[perlinVal][e];
-//			tileMap[perlinVal][e] = nullptr;
-//			delete t;
-//		}
-//		for (int s = stepS + perlinVal; s > 0; s--) {
-//			t = tileMap[s][col];
-//			tileMap[s][col] = nullptr;
-//			delete t;
-//		}
-//		for (int w = stepW; w < 0; w++) {
-//			t = tileMap[perlinVal][col + w];
-//			tileMap[perlinVal][col + w] = nullptr;
-//			delete t;
+//				SDL_RenderPresent(graphicsRef->GetRenderer());
+//
+//				//PrintMapToConsole(pseudoMap);
+//
+//				if (platform == 1)
+//					platformsFound.push_back(visitedPlatform);
+//				//PrintTileMapToConsole(1);
+//			}
 //		}
 //	}
+//
+//	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 255, 255, 255);
+//
+//
+//	for (auto coord : perimeter) {
+//		for (int x = coord.X; x < tileMap[coord.Y].size()
+//			&& tileMap[coord.Y][x] != nullptr
+//			&& IsInBounds(coord.X, coord.Y - 1)
+//			&& tileMap[coord.Y - 1][x] == nullptr
+//			&& IsInBounds(coord.X, coord.Y - 2)
+//			&& tileMap[coord.Y - 2][x] == nullptr; x++)
+//		{
+//			platformTopSingles.insert(tileMap[coord.Y][x]);
+//
+//			for (auto tile : platformTopSingles) {
+//				Coord c = tile->GetGridPosition();
+//				pseudoMap[c.Y][c.X] = 4;
+//			}
+//
+//			SDL_Rect r = { x * 5, coord.Y * 5,5,5 };
+//			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
+//
+//		}
+//
+//		SDL_RenderPresent(graphicsRef->GetRenderer());
+//	}
+//
+//
+//
+//	for (auto platform : platformsFound) {
+//		for (auto tile : platform) {
+//			Coord pos = tile->GetGridPosition();
+//			for (int x = pos.X; x < tileMap[pos.Y].size() && tileMap[pos.Y][x] != nullptr; x++) {
+//				if (IsInBounds(pos.X, pos.Y - 1)
+//					&& IsInBounds(pos.X, pos.Y - 2)
+//					&& tileMap[pos.Y - 1][x] == nullptr
+//					&& tileMap[pos.Y - 2][x] == nullptr)
+//				{
+//					platformTopSingles.insert(tileMap[pos.Y][x]);
+//
+//					for (auto tile : platformTopSingles) {
+//						Coord c = tile->GetGridPosition();
+//						pseudoMap[c.Y][c.X] = 4;
+//					}
+//
+//					SDL_Rect r = { x * 5, pos.Y * 5,5,5 };
+//					SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
+//				}
+//
+//			}
+//
+//			SDL_RenderPresent(graphicsRef->GetRenderer());
+//		}
+//	}
+//
+//
+//	for (int y = 0; y < pseudoMap.size(); y++){
+//		for (int x = 0; x < pseudoMap[y].size(); x++){
+//			std::cout << pseudoMap[y][x];
+//	}
+//		std::cout << std::endl;
+//	}
+//
+//	for (auto tile : platformTopSingles) {
+//		std::vector<Tile*>rowTiles;
+//		Coord start = tile->GetGridPosition();
+//		bool foundTile = false;
+//		for (auto foundRow : platforms) {
+//			if (std::find(foundRow.begin(), foundRow.end(), tile) != foundRow.end()) {
+//				foundTile = true;
+//				break;
+//			}
+//		}
+//
+//		if (!foundTile) {
+//			for (int xL = start.X - 1, xLOffset = start.X - 2; IsInBounds(xL, start.Y) && tileMap[start.Y][xL]; xL--, xLOffset--) {
+//				rowTiles.emplace(rowTiles.begin(), tileMap[start.Y][xL]);
+//
+//				if (!IsInBounds(start.Y, xLOffset) || !tileMap[start.Y][xLOffset] || pseudoMap[start.Y][xLOffset] != 4) {
+//					break;
+//				}
+//			}
+//
+//			for (int xR = start.X, xROffset = start.X + 1; IsInBounds(xR, start.Y) && tileMap[start.Y][xR]; xR++, xROffset++) {
+//				rowTiles.push_back(tileMap[start.Y][xR]);
+//				
+//				if (!IsInBounds(start.Y, xROffset) || !tileMap[start.Y][xROffset] || pseudoMap[start.Y][xROffset] != 4) {
+//					break;
+//				}
+//			}
+//
+//			auto sortRuleLambda = [](Tile* const& s1, Tile* const& s2) -> bool
+//				{
+//					return s1->GetGridPosition().X < s2->GetGridPosition().X;
+//				};
+//
+//
+//			std::sort(rowTiles.begin(), rowTiles.end(), sortRuleLambda);
+//
+//			platforms.push_back(rowTiles);
+//		}
+//	}
+//
+//	auto sortRuleLambda = [](std::vector<Tile*> const& s1, std::vector<Tile*> const& s2) -> bool
+//		{
+//			return s1[0]->GetGridPosition().Y < s2[0]->GetGridPosition().Y;
+//		};
+//
+//
+//	std::sort(platforms.begin(), platforms.end(), sortRuleLambda);
+//
+//
+//	for (auto platform : platforms) {
+//		SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), rand() % 256, rand() % 256, rand() % 256, 255);
+//
+//		for (Tile* t : platform) {
+//			Coord coord = t->GetGridPosition();
+//			SDL_Rect r = { coord.X * 5, coord.Y * 5,5,5 };
+//			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
+//		}
+//		SDL_RenderPresent(graphicsRef->GetRenderer());
+//	}
+//
+//
+//	for (auto platform : platforms) {
+//		Coord fNW, fNE, bNW, bNE, front, back;
+//		Coord lCoord, rCoord;
+//		Tile* leftCorner = nullptr;
+//		Tile* rightCorner = nullptr;
+//		int slopeIterator;
+//		int rint = (rand() % platform.size()) + 1;
+//		int freq = platform.size() / rint;
+//		int fi = 0;
+//		int i = 0;
+//		bool up = false;
+//
+//		front = platform.front()->GetGridPosition();
+//		back = platform.back()->GetGridPosition();
+//
+//		fNW = { front.X - 1, front.Y - 1 };
+//		fNE = { front.X + 1, front.Y - 1 };
+//		bNW = { back.X - 1, back.Y - 1 };
+//		bNE = { back.X + 1, back.Y - 1 };
+//
+//		slopeIterator = rint;
+//
+//		lCoord = front;
+//		rCoord = back;
+//
+//		i = lCoord.X;
+//
+//		if (IsInBounds(fNW.X, fNW.Y) && IsInBounds(fNE.X, fNE.Y) && !tileMap[fNW.Y][fNW.X] != !tileMap[fNE.Y][fNE.X]) {
+//			leftCorner = (tileMap[fNW.Y][fNW.X]) ? tileMap[fNW.Y][fNW.X] : tileMap[fNE.Y][fNE.X];
+//		}
+//
+//		if (IsInBounds(bNW.X, bNW.Y) && IsInBounds(bNE.X, bNE.Y) && !tileMap[bNW.Y][bNW.X] != !tileMap[bNE.Y][bNE.X]) {
+//			rightCorner = (tileMap[bNW.Y][bNW.X]) ? tileMap[bNW.Y][bNW.X] : tileMap[bNE.Y][bNE.X];
+//		}
+//
+//		if (leftCorner)
+//			up = true;
+//
+//
+//		for (; fi <= freq; fi++) {
+//			for (; i < lCoord.X + rint/freq && slopeIterator >= 0 && i < rCoord.X && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator--) {
+//				tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
+//				tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
+//				tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
+//				allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
+//			}
+//
+//			if (i >= rCoord.X)
+//				break;
+//
+//			lCoord.X += rint/2 - 1;
+//			up = !up;
+//			for (; i < lCoord.X + rint/freq && slopeIterator < neTiles.size() && i < rCoord.X && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator++) {
+//				tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
+//				tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
+//				tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
+//				allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
+//			}
+//
+//			up = !up;
+//		}
+//
+//		if (platform.size() % rint > 0) {
+//			if (!up) {
+//				for (;i <= rCoord.X && slopeIterator < neTiles.size() && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator++) {
+//					tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
+//					tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
+//					tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
+//					allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
+//				}
+//			}
+//			else {
+//				for (;i <= rCoord.X && slopeIterator >= 0 && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator--) {
+//					tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
+//					tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
+//					tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
+//					allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
+//				}
+//			}
+//		}
+//			
+//	}
+//
+//	std::cout << "Hills filled, and bodies created!" << std::endl;
 //}
 
-void TileManager::FillHills(std::vector<Coord>& perimeter)
+void TileManager::CreatePlatforms(std::vector<std::vector<int>>& pseudoMap, std::vector<Coord>& platformStarts)
 {
-	std::vector<std::vector<Tile*>> platformsFound;
-	std::vector<std::vector<Tile*>> platforms;
-	std::unordered_set<Tile*> platformTopSingles;
-	std::vector<Tile*> allocatedSpots;
-	std::vector<Tile*> viableBodies;
-	std::vector<std::vector<int>> pseudoMap;
-	std::vector<Tile*> neTiles = *northEastHillTiles->FindTilesOfDirection((Direction)(East | West));
-	std::vector<Tile*> seTiles = *southEastHillTiles->FindTilesOfDirection((Direction)(East | West));
-
-	for (int y = 0; y < tileMap.size(); y++) {
-		std::vector<int>row;
-		for (int x = 0; x < tileMap[y].size(); x++) {
-			row.push_back((tileMap[y][x] ? 1 : 0));
-		}
-		pseudoMap.push_back(row);
-	}
-
-	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 0, 255, 255);
-
 	for (int y = 0; y < pseudoMap.size(); y++) {
 		for (int x = 0; x < pseudoMap[y].size(); x++) {
-			std::vector<Tile*> visitedPlatform;
-			/*
-				CASE 1
-				Floating Platform
-					Step 1:
-						DFS for empty perimeter to determine platform ( At least 1 empty space between platform tile and ground )
-					Step 2:
-						-----Check longest continguous width of platform > 1---- Not correct
-					Step 3:
-						Fill west to east and break randomly
-					Step 4:
-						Check random break spot and decide how much width is left
-					Step 5:
-						Fill east to west until end FROM break spot
-
-			*/
-			if (pseudoMap[y][x] == 1)
-			{
-				int platform = 1;
-				//PrintMapToConsole(pseudoMap);
-
-				PlatformDFS(pseudoMap, x, y, platform);
-
-				for (int y = 0; y < pseudoMap.size(); y++) {
-					for (int x = 0; x < pseudoMap[y].size(); x++) {
-						if (pseudoMap[y][x] == 2) {
-							visitedPlatform.push_back(tileMap[y][x]);
-							pseudoMap[y][x] = 0;
-							SDL_Rect r = { x * 5,y * 5,5,5 };
-							SDL_RenderDrawRect(graphicsRef->GetRenderer(), &r);
-						}
-					}
-				}
-
-				if (platform == 1) {
-					std::cout << "Platform found starting at " << x << "," << y << std::endl;
-
-					platformsFound.push_back(visitedPlatform);
-
-					SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 0, 255, 255);
-				}
-				else {
-					std::cout << " NO platform found at " << x << "," << y << std::endl;
-				}
-
-
-
-				SDL_RenderPresent(graphicsRef->GetRenderer());
-
-				//PrintMapToConsole(pseudoMap);
-
-				if (platform == 1)
-					platformsFound.push_back(visitedPlatform);
-				//PrintTileMapToConsole(1);
-			}
-		}
-	}
-
-	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 255, 255, 255);
-
-
-	for (auto coord : perimeter) {
-		for (int x = coord.X; x < tileMap[coord.Y].size()
-			&& tileMap[coord.Y][x] != nullptr
-			&& IsInBounds(coord.X, coord.Y - 1)
-			&& tileMap[coord.Y - 1][x] == nullptr
-			&& IsInBounds(coord.X, coord.Y - 2)
-			&& tileMap[coord.Y - 2][x] == nullptr; x++)
-		{
-			platformTopSingles.insert(tileMap[coord.Y][x]);
-
-			for (auto tile : platformTopSingles) {
-				Coord c = tile->GetGridPosition();
-				pseudoMap[c.Y][c.X] = 4;
-			}
-
-			SDL_Rect r = { x * 5, coord.Y * 5,5,5 };
-			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
-
-		}
-
-		SDL_RenderPresent(graphicsRef->GetRenderer());
-	}
-
-
-
-	for (auto platform : platformsFound) {
-		for (auto tile : platform) {
-			Coord pos = tile->GetGridPosition();
-			for (int x = pos.X; x < tileMap[pos.Y].size() && tileMap[pos.Y][x] != nullptr; x++) {
-				if (IsInBounds(pos.X, pos.Y - 1)
-					&& IsInBounds(pos.X, pos.Y - 2)
-					&& tileMap[pos.Y - 1][x] == nullptr
-					&& tileMap[pos.Y - 2][x] == nullptr)
-				{
-					platformTopSingles.insert(tileMap[pos.Y][x]);
-
-					for (auto tile : platformTopSingles) {
-						Coord c = tile->GetGridPosition();
-						pseudoMap[c.Y][c.X] = 4;
-					}
-
-					SDL_Rect r = { x * 5, pos.Y * 5,5,5 };
-					SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
-				}
-
-			}
-
-			SDL_RenderPresent(graphicsRef->GetRenderer());
-		}
-	}
-
-
-	for (int y = 0; y < pseudoMap.size(); y++){
-		for (int x = 0; x < pseudoMap[y].size(); x++){
-			std::cout << pseudoMap[y][x];
-	}
-		std::cout << std::endl;
-	}
-
-	for (auto tile : platformTopSingles) {
-		std::vector<Tile*>rowTiles;
-		Coord start = tile->GetGridPosition();
-		bool foundTile = false;
-		for (auto foundRow : platforms) {
-			if (std::find(foundRow.begin(), foundRow.end(), tile) != foundRow.end()) {
-				foundTile = true;
-				break;
-			}
-		}
-
-		if (!foundTile) {
-			for (int xL = start.X - 1, xLOffset = start.X - 2; IsInBounds(xL, start.Y) && tileMap[start.Y][xL]; xL--, xLOffset--) {
-				rowTiles.emplace(rowTiles.begin(), tileMap[start.Y][xL]);
-
-				if (!IsInBounds(start.Y, xLOffset) || !tileMap[start.Y][xLOffset] || pseudoMap[start.Y][xLOffset] != 4) {
-					break;
-				}
-			}
-
-			for (int xR = start.X, xROffset = start.X + 1; IsInBounds(xR, start.Y) && tileMap[start.Y][xR]; xR++, xROffset++) {
-				rowTiles.push_back(tileMap[start.Y][xR]);
-				
-				if (!IsInBounds(start.Y, xROffset) || !tileMap[start.Y][xROffset] || pseudoMap[start.Y][xROffset] != 4) {
-					break;
-				}
-			}
-
-			auto sortRuleLambda = [](Tile* const& s1, Tile* const& s2) -> bool
-				{
-					return s1->GetGridPosition().X < s2->GetGridPosition().X;
-				};
-
-
-			std::sort(rowTiles.begin(), rowTiles.end(), sortRuleLambda);
-
-			platforms.push_back(rowTiles);
-		}
-	}
-
-	auto sortRuleLambda = [](std::vector<Tile*> const& s1, std::vector<Tile*> const& s2) -> bool
-		{
-			return s1[0]->GetGridPosition().Y < s2[0]->GetGridPosition().Y;
-		};
-
-
-	std::sort(platforms.begin(), platforms.end(), sortRuleLambda);
-
-
-	for (auto platform : platforms) {
-		SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), rand() % 256, rand() % 256, rand() % 256, 255);
-
-		for (Tile* t : platform) {
-			Coord coord = t->GetGridPosition();
-			SDL_Rect r = { coord.X * 5, coord.Y * 5,5,5 };
-			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
-		}
-		SDL_RenderPresent(graphicsRef->GetRenderer());
-	}
-
-
-	for (auto platform : platforms) {
-		Coord fNW, fNE, bNW, bNE, front, back;
-		Coord lCoord, rCoord;
-		Tile* leftCorner = nullptr;
-		Tile* rightCorner = nullptr;
-		int slopeIterator;
-		int rint = (rand() % platform.size()) + 1;
-		int freq = platform.size() / rint;
-		int fi = 0;
-		int i = 0;
-		bool up = false;
-
-		front = platform.front()->GetGridPosition();
-		back = platform.back()->GetGridPosition();
-
-		fNW = { front.X - 1, front.Y - 1 };
-		fNE = { front.X + 1, front.Y - 1 };
-		bNW = { back.X - 1, back.Y - 1 };
-		bNE = { back.X + 1, back.Y - 1 };
-
-		slopeIterator = rint;
-
-		lCoord = front;
-		rCoord = back;
-
-		i = lCoord.X;
-
-		if (IsInBounds(fNW.X, fNW.Y) && IsInBounds(fNE.X, fNE.Y) && !tileMap[fNW.Y][fNW.X] != !tileMap[fNE.Y][fNE.X]) {
-			leftCorner = (tileMap[fNW.Y][fNW.X]) ? tileMap[fNW.Y][fNW.X] : tileMap[fNE.Y][fNE.X];
-		}
-
-		if (IsInBounds(bNW.X, bNW.Y) && IsInBounds(bNE.X, bNE.Y) && !tileMap[bNW.Y][bNW.X] != !tileMap[bNE.Y][bNE.X]) {
-			rightCorner = (tileMap[bNW.Y][bNW.X]) ? tileMap[bNW.Y][bNW.X] : tileMap[bNE.Y][bNE.X];
-		}
-
-		if (leftCorner)
-			up = true;
-
-
-		for (; fi <= freq; fi++) {
-			for (; i < lCoord.X + rint/freq && slopeIterator >= 0 && i < rCoord.X && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator--) {
-				tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
-				tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
-				tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
-				allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
-			}
-
-			if (i >= rCoord.X)
-				break;
-
-			lCoord.X += rint/2 - 1;
-			up = !up;
-			for (; i < lCoord.X + rint/freq && slopeIterator < neTiles.size() && i < rCoord.X && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator++) {
-				tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
-				tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
-				tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
-				allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
-			}
-
-			up = !up;
-		}
-
-		if (platform.size() % rint > 0) {
-			if (!up) {
-				for (;i <= rCoord.X && slopeIterator < neTiles.size() && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator++) {
-					tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
-					tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
-					tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
-					allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
-				}
-			}
-			else {
-				for (;i <= rCoord.X && slopeIterator >= 0 && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator--) {
-					tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
-					tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
-					tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
-					allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
-				}
-			}
-		}
+			bool valid = true;
+			int randWidth = rand(), randHeight = rand();
 			
+			if (pseudoMap[y][x] == 0) {
+				
+				randWidth = std::clamp(randWidth, PLATFORM_TOP_EDGE_MIN, PLATFORM_TOP_EDGE_MAX);
+				randHeight = std::clamp(randHeight, PLATFORM_TOP_EDGE_MIN, PLATFORM_TOP_EDGE_MAX);
+
+				for (int iy = y - ((randHeight / 2)), ix = x - ((randWidth / 2)); iy < y + ((randHeight / 2)) + 1 && valid; ix++) {
+					if (ix > x + (randWidth / 2)) {
+						iy++;
+						ix = x -((randWidth / 2));
+					}
+
+					if (!IsInBounds(ix, iy) || pseudoMap[iy][ix] != 0)
+						valid = false;
+				}
+
+				if (!valid)
+					continue;
+				
+				for (int iy = y - ((randHeight / 2)), ix = x - ((randWidth / 2)); iy < y + ((randHeight / 2)) + 1 && valid; ix++) {
+					if (ix > x + (randWidth / 2)) {
+						iy++;
+						ix = x - ((randWidth / 2));
+					}
+					
+					pseudoMap[y][x] = 2;
+				}
+			}
+
+			platformStarts.push_back({ y - ((randHeight / 2)), x - ((randWidth / 2)) });
+
+			continue;
+		}
 	}
 
-	for (Coord c : perimeter) {
-		if (std::find(allocatedSpots.begin(), allocatedSpots.end(), tileMap[c.Y][c.X]) == allocatedSpots.end())
-			allocatedSpots.push_back(tileMap[c.Y][c.X]);
-	}
-
-	for (auto tile : allocatedSpots) {
-		if(std::find(viableBodies.begin(), viableBodies.end(), tile) == viableBodies.end())
-			viableBodies.push_back(tile);
-	}
-
-	for (Tile* tile : viableBodies) {
-		if(!tile->GetBodyReference())
-			tile->CreateTileBody(physics);
-	}
-
-
-
-	std::cout << "Hills filled, and bodies created!" << std::endl;
+	PrintMapToConsole(pseudoMap);
 }
 
 std::unordered_set<Coord, PairHash> TileManager::GetWalkPerimeter(std::vector<Coord>& caveWalk)
@@ -1503,17 +1466,14 @@ void TileManager::PrintMapToConsole(std::vector<std::vector<int>> const & pmap =
 	}
 }
 
-void TileManager::CarveCaves()
+void TileManager::CarveCaves(std::vector<std::vector<int>>& pseudoMap)
 {
 	GaussianBlur* blurStage = new GaussianBlur(GAUSSIAN_FILTER_SIZE);
 	DrunkardsWalk* caveWalk = new DrunkardsWalk(worldCols, worldRows);
-	std::vector<Coord> walk = caveWalk->Walk();
-	walk = caveWalk->Walk(walk.back());
+	std::vector<Coord> walk = caveWalk->Walk((rand() % DRUNK_WALK_MAX) + DRUNK_WALK_MIN);
 	std::unordered_set<Coord, PairHash> walkPerimeter;
-	std::vector<Coord> walkPerimeterCoords;
 	spawn = Vector2{ (walk[0].X * tileWidth * 1.0) + (tileWidth / 2), (walk[0].Y * tileHeight * 1.0) + (tileHeight / 2) };
 	SDL_Rect testDraw{};
-	std::vector<std::vector<int>> pseudoMap;
 
 
 	graphicsRef->Vector2PixelsToMeters(spawn);
@@ -1532,6 +1492,7 @@ void TileManager::CarveCaves()
 
 		delete t;
 
+		pseudoMap[coord.Y][coord.X] = 0;
 
 		SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
 	}
@@ -1541,9 +1502,7 @@ void TileManager::CarveCaves()
 	walkPerimeter = GetWalkPerimeter(walk);
 
 	walk.clear();
-
 	
-
 	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 255, 0, 255);
 
 	for (auto w : walkPerimeter) {
@@ -1554,20 +1513,7 @@ void TileManager::CarveCaves()
 
 	SDL_RenderPresent(graphicsRef->GetRenderer());
 	
-
-	for (int y = 0; y < tileMap.size(); y++) {
-		std::vector<int>row;
-		for (int x = 0; x < tileMap[y].size(); x++) {
-			row.push_back(tileMap[y][x] ? 1 : 0);
-		}
-		pseudoMap.push_back(row);
-	}
-	
-
-	blurStage->BlurTileMap(&pseudoMap);
-
-
-
+	blurStage->BlurTileMap(pseudoMap);
 
 	for (int y = 0; y < pseudoMap.size(); y++) {
 		for (int x = 0; x < pseudoMap[y].size(); x++) {
@@ -1582,19 +1528,7 @@ void TileManager::CarveCaves()
 	}
  	SDL_RenderPresent(graphicsRef->GetRenderer());
 
-
-	FillHills(walk);
-
 	delete caveWalk;
-
-	while (!pseudoMap.empty()) {
-		std::vector<int*> row;
-		while (!row.empty()) {
-			int* end = row.back();
-			row.pop_back();
-			delete end;
-		}
-	}
 }
 
 void TileManager::CreateMapRenderTarget()
@@ -1628,6 +1562,10 @@ void TileManager::CreateMapRenderTarget()
 
 	SDL_SetRenderTarget(ren, nullptr);
 	SDL_RenderClear(ren);
+}
+
+void TileManager::CreateTileMapBodies(std::vector<std::vector<int>>& pseudoMap)
+{
 }
 
 TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDim)
@@ -1727,7 +1665,8 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 	SDL_Renderer* ren = graphicsRef->GetRenderer();
 	Uint32 fmt;
 	std::vector<Tile*>* groundTilesFullCapped = groundTiles->FindTilesOfDirection((Direction)(Direction::East|Direction::West));
-	
+	std::vector<std::vector<int>> pseudoMap;
+	std::vector<Coord> platformStarts;
 	bounds = Vector4(0, 0, worldCols * tileWidth, worldRows * tileHeight);
 
 	tileMap.resize(worldRows);
@@ -1736,6 +1675,7 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 		tileMap[y].resize(worldCols);
 
 	for (int row = 0; row < tileMap.size(); row++) {
+		std::vector<int> pRow;
 		for (int col = 0; col < tileMap[row].size(); col++) {
 			tileMap[row][col] = new Tile(
 				*groundTilesFullCapped->at(
@@ -1744,16 +1684,18 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 			);
 		
 			tileMap[row][col]->SetGridPosition(col, row);
+			pRow.push_back(1);
 		}
+		pseudoMap.push_back(pRow);
 	}
 
-	CarveCaves();
+	CarveCaves(pseudoMap);
+
+	CreatePlatforms(pseudoMap, platformStarts);
+
+	//FillHills(pseudoMap, platformStarts);
 
 	CreateMapRenderTarget();
-
-	//Carve out walkable tunnel
-	//for (int i = 0; i < MAX_TUNNELS; i += (int)((int)(gf2d_random() * 10) % MAX_TUNNELS)/2)
-		//CarvePath();
 
 	return &tileMap;
 }

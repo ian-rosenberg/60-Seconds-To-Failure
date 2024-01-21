@@ -51,13 +51,13 @@ GaussianBlur::~GaussianBlur()
     gKernel.clear();
 }
 
-void GaussianBlur::BlurTileMap(std::vector<std::vector<int>>* tileMap)
+void GaussianBlur::BlurTileMap(std::vector<std::vector<int>>& tileMap)
 {
     std::vector<std::vector<int>> blurred;
     int tileMapWidth, tileMapHeight;
     int halfKernelSize = kernelSize / 2;
-    tileMapHeight = tileMap->size();
-    tileMapWidth = (*tileMap)[0].size(); 
+    tileMapHeight = tileMap.size();
+    tileMapWidth = tileMap[0].size(); 
 
     FilterCreate();
 
@@ -70,7 +70,7 @@ void GaussianBlur::BlurTileMap(std::vector<std::vector<int>>* tileMap)
             for (int ty = -halfKernelSize; ty < halfKernelSize; ty++) {
                 for (int tx = -halfKernelSize; tx < halfKernelSize; tx++) {
                     if(tx + gx >= 0 && tx + gx < tileMapWidth && ty + gy >=0 && ty + gy < tileMapHeight)
-                        sum += (*tileMap)[ty + gy][tx + gx] * gKernel[ty + halfKernelSize][tx + halfKernelSize];
+                        sum += tileMap[ty + gy][tx + gx] * gKernel[ty + halfKernelSize][tx + halfKernelSize];
                     else {
                         edge = true;
                         break;
@@ -94,7 +94,7 @@ void GaussianBlur::BlurTileMap(std::vector<std::vector<int>>* tileMap)
         blurred.push_back(blurRow);
     }
 
-    for (int y = 0; y < tileMap->size(); y++)
-        for (int x = 0; x < (*tileMap)[y].size(); x++)
-            (*tileMap)[y][x] = blurred[y][x];
+    for (int y = 0; y < tileMap.size(); y++)
+        for (int x = 0; x < tileMap[y].size(); x++)
+            tileMap[y][x] = blurred[y][x];
 }
