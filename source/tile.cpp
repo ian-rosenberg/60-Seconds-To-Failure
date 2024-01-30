@@ -17,10 +17,12 @@ extern "C" {
 #define EDGE_COUNT 2
 #define MAX_CAPS 2
 #define GAUSSIAN_FILTER_SIZE 3
-#define DRUNK_WALK_MAX 5
+#define DRUNK_WALK_MAX 4
 #define DRUNK_WALK_MIN 1
-#define PLATFORM_TOP_EDGE_MIN 3
+#define PLATFORM_TOP_EDGE_MIN 4
 #define PLATFORM_TOP_EDGE_MAX 9
+#define WORLD_ROW_MIN 5
+#define WORLD_COL_MIN WORLD_ROW_MIN * 2
 				  
 void Tile::CreatePhysicsEdges(Vector2 playerDimensions)
 {
@@ -1330,46 +1332,94 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 
 void TileManager::CreatePlatforms(std::vector<std::vector<int>>& pseudoMap, std::vector<Coord>& platformStarts)
 {
+	GaussianBlur* blur = new GaussianBlur(GAUSSIAN_FILTER_SIZE);
+	DrunkardsWalk* miniWalk;
+	std::vector<Coord> walk;
+
 	for (int y = 0; y < pseudoMap.size(); y++) {
 		for (int x = 0; x < pseudoMap[y].size(); x++) {
-			bool valid = true;
-			int randWidth = rand(), randHeight = rand();
-			
-			if (pseudoMap[y][x] == 0) {
-				
-				randWidth = std::clamp(randWidth, PLATFORM_TOP_EDGE_MIN, PLATFORM_TOP_EDGE_MAX);
-				randHeight = std::clamp(randHeight, PLATFORM_TOP_EDGE_MIN, PLATFORM_TOP_EDGE_MAX);
+			int randWidth = std::clamp(rand(), PLATFORM_TOP_EDGE_MIN, PLATFORM_TOP_EDGE_MAX);
+			int randHeight = 1;
 
-				for (int iy = y - ((randHeight / 2)), ix = x - ((randWidth / 2)); iy < y + ((randHeight / 2)) + 1 && valid; ix++) {
-					if (ix > x + (randWidth / 2)) {
-						iy++;
-						ix = x -((randWidth / 2));
-					}
+			bool leftOpen, rightOpen, valid;
 
-					if (!IsInBounds(ix, iy) || pseudoMap[iy][ix] != 0)
-						valid = false;
-				}
+			leftOpen = rightOpen = valid = true;
 
-				if (!valid)
+			if (!IsInBounds(x + randWidth, y) 
+				|| pseudoMap[y][x + randWidth] != 0
+				|| pseudoMap[y][x] == 1) 
+				if (!IsInBounds(x - 1, y) || !IsInBounds(x - 1, y))
 					continue;
-				
-				for (int iy = y - ((randHeight / 2)), ix = x - ((randWidth / 2)); iy < y + ((randHeight / 2)) + 1 && valid; ix++) {
-					if (ix > x + (randWidth / 2)) {
-						iy++;
-						ix = x - ((randWidth / 2));
+
+			for (int j = y - PLATFORM_TOP_EDGE_MIN / 2; j < y + PLATFORM_TOP_EDGE_MIN / 2; j++)
+				for (int i = x - PLATFORM_TOP_EDGE_MIN / 2; i < x + PLATFORM_TOP_EDGE_MIN / 2; i++)
+					if (!IsInBounds(i, j) || pseudoMap[j][i] != 0)
+						leftOpen = false;
+
+			for (int j = y - PLATFORM_TOP_EDGE_MIN / 2; j < y + PLATFORM_TOP_EDGE_MIN / 2; j++)
+				for (int i = x + randWidth - PLATFORM_TOP_EDGE_MIN / 2; i < x + PLATFORM_TOP_EDGE_MIN / 2; i++)
+					if (!IsInBounds(i, j) || pseudoMap[j][i] != 0)
+						rightOpen = false;
+
+			if (!rightOpen || !leftOpen)
+				continue;
+
+			randHeight = rand();
+			randHeight = std::clamp(randHeight, PLATFORM_TOP_EDGE_MIN, PLATFORM_TOP_EDGE_MAX);
+
+			for (int ix = x; valid && ix < x + randWidth && IsInBounds(ix, y); ix++) {
+				for (int iy = y; valid && iy < y + randHeight && IsInBounds(ix, iy); iy++) {
+					if (pseudoMap[iy][ix] == 1) {
+						if (pseudoMap[iy - 1][ix] == 1)
+							randHeight = iy - 1 - y;
+						if (pseudoMap[iy][ix - 1] == 1)
+							randWidth = ix - 1 - x;
 					}
-					
-					pseudoMap[y][x] = 2;
+
+					if (!IsInBounds(ix,iy) || randWidth < PLATFORM_TOP_EDGE_MIN || randHeight < PLATFORM_TOP_EDGE_MIN)
+						valid = false;
 				}
 			}
 
-			platformStarts.push_back({ y - ((randHeight / 2)), x - ((randWidth / 2)) });
+			if (!valid)
+				continue;
 
-			continue;
+			for (int iy = y; iy < y + randHeight; iy++)
+				for (int ix = x; ix < x + randWidth; ix++)
+					pseudoMap[iy][ix] = 1;
+
+			miniWalk = new DrunkardsWalk(randWidth, randHeight);
+			walk = miniWalk->Walk(rand() % (MIN(randWidth,randHeight) + 1), pseudoMap, Coord(x,y));
+
+			for (auto coord : walk)
+				pseudoMap[y + coord.Y][x + coord.X] = 0;
+
+			platformStarts.push_back({y, x + randWidth});
+			delete miniWalk;
+			walk.clear();
 		}
 	}
 
-	PrintMapToConsole(pseudoMap);
+	blur->BlurTileMap(pseudoMap);
+
+
+	for (int y = 0; y < pseudoMap.size(); y++){
+		for (int x = 0; x < pseudoMap[y].size(); x++) {
+			SDL_Rect r{ x * 5,y * 5,5,5 };
+			if (pseudoMap[y][x] == 0)
+				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255,255,255,255);
+			else
+				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0,0,0,255);
+			
+			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
+		}
+	}
+
+	SDL_RenderPresent(graphicsRef->GetRenderer());
+
+	//PrintMapToConsole(pseudoMap);
+
+	delete blur;
 }
 
 std::unordered_set<Coord, PairHash> TileManager::GetWalkPerimeter(std::vector<Coord>& caveWalk)
@@ -1464,13 +1514,15 @@ void TileManager::PrintMapToConsole(std::vector<std::vector<int>> const & pmap =
 			std::cout << map[y][x];
 		}
 	}
+	SetConsoleTextAttribute(hConsole, 0);
+	system("cls");
 }
 
 void TileManager::CarveCaves(std::vector<std::vector<int>>& pseudoMap)
 {
 	GaussianBlur* blurStage = new GaussianBlur(GAUSSIAN_FILTER_SIZE);
 	DrunkardsWalk* caveWalk = new DrunkardsWalk(worldCols, worldRows);
-	std::vector<Coord> walk = caveWalk->Walk((rand() % DRUNK_WALK_MAX) + DRUNK_WALK_MIN);
+	std::vector<Coord> walk = caveWalk->Walk((rand() % DRUNK_WALK_MAX) + DRUNK_WALK_MIN, pseudoMap, Coord(-1,-1));
 	std::unordered_set<Coord, PairHash> walkPerimeter;
 	spawn = Vector2{ (walk[0].X * tileWidth * 1.0) + (tileWidth / 2), (walk[0].Y * tileHeight * 1.0) + (tileHeight / 2) };
 	SDL_Rect testDraw{};
@@ -1491,8 +1543,6 @@ void TileManager::CarveCaves(std::vector<std::vector<int>>& pseudoMap)
 		tileMap[coord.Y][coord.X] = nullptr;
 
 		delete t;
-
-		pseudoMap[coord.Y][coord.X] = 0;
 
 		SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
 	}
@@ -1592,8 +1642,8 @@ TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& 
 
 	TileParseTypesFromJSON("data/tilemap/Grassland/grassTiles.json");
 
-	worldRows = worldSize.y / PIX_IN_MET;
-	worldCols = worldSize.x / PIX_IN_MET;
+	worldRows = std::clamp(rand() % (int)(worldSize.y / 2), WORLD_ROW_MIN, (int)(worldSize.y / PIX_IN_MET));
+	worldCols = std::clamp(rand() % (int)(worldSize.x / 2), WORLD_COL_MIN, (int)(worldSize.x / PIX_IN_MET));
 }
 
 //Time to worry about the destructor again

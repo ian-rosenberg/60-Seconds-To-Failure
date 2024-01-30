@@ -22,6 +22,8 @@ private:
 	int													width;
 	int													height;
 
+	bool												fullMap;
+	
 	std::unordered_set<Coord, PairHash>  				visited;
 
 	void												Step(int x, int y, Coord &lastStep);
@@ -31,7 +33,7 @@ public:
 
 	~DrunkardsWalk();
 
-	std::vector<Coord> Walk(int numIterations);
+	std::vector<Coord> Walk(int numIterations, std::vector<std::vector<int>>& map, Coord Start);
 
-	int InBounds(int &x, int &y);
+	bool InBounds(int x, int y);
 };

@@ -2,6 +2,10 @@
 
 #include <vectortypes.h>
 #include <iostream>
+#include <algorithm>
+
+#define MIN_BLUR_COVERAGE 0.3f
+#define MAX_BLUR_COVERAGE 0.7f
 
 void GaussianBlur::FilterCreate()
 {
@@ -40,7 +44,7 @@ GaussianBlur::GaussianBlur(int kernelSize)
 
     this->kernelSize = kernelSize;
 
-    coverage = .667;//gf2d_random() * (kernelSize * kernelSize);
+    coverage = std::clamp((rand() % (kernelSize * kernelSize)) / (kernelSize * kernelSize) * 1.0f, MIN_BLUR_COVERAGE, MAX_BLUR_COVERAGE);
 
     kernelSum = 0;
 }
