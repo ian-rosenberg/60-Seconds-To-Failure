@@ -21,8 +21,10 @@ extern "C" {
 #define DRUNK_WALK_MIN 1
 #define PLATFORM_TOP_EDGE_MIN 4
 #define PLATFORM_TOP_EDGE_MAX 9
-#define WORLD_ROW_MIN 5
-#define WORLD_COL_MIN WORLD_ROW_MIN * 2
+#define WORLD_ROW_MIN 30
+#define WORLD_ROW_MAX 50
+#define WORLD_COL_MIN 60
+#define WORLD_COL_MAX 100
 				  
 void Tile::CreatePhysicsEdges(Vector2 playerDimensions)
 {
@@ -1340,6 +1342,7 @@ void TileManager::CreatePlatforms(std::vector<std::vector<int>>& pseudoMap, std:
 		for (int x = 0; x < pseudoMap[y].size(); x++) {
 			int randWidth = std::clamp(rand(), PLATFORM_TOP_EDGE_MIN, PLATFORM_TOP_EDGE_MAX);
 			int randHeight = 1;
+			Coord platformStart(x,y);
 
 			bool leftOpen, rightOpen, valid;
 
@@ -1367,25 +1370,31 @@ void TileManager::CreatePlatforms(std::vector<std::vector<int>>& pseudoMap, std:
 			randHeight = rand();
 			randHeight = std::clamp(randHeight, PLATFORM_TOP_EDGE_MIN, PLATFORM_TOP_EDGE_MAX);
 
-			for (int ix = x; valid && ix < x + randWidth && IsInBounds(ix, y); ix++) {
-				for (int iy = y; valid && iy < y + randHeight && IsInBounds(ix, iy); iy++) {
-					if (pseudoMap[iy][ix] == 1) {
-						if (pseudoMap[iy - 1][ix] == 1)
-							randHeight = iy - 1 - y;
-						if (pseudoMap[iy][ix - 1] == 1)
-							randWidth = ix - 1 - x;
+			for (int ix = x; valid && ix < x + randWidth && IsInBounds(ix, y) && randHeight > 0; ix++) {
+				for (int iy = y; valid && iy < y + randHeight && IsInBounds(ix, iy) && randWidth > 0; iy++) {
+
+					if (!IsInBounds(ix,iy) || randWidth < PLATFORM_TOP_EDGE_MIN || randHeight < PLATFORM_TOP_EDGE_MIN){
+						valid = false; 
+						continue;
 					}
 
-					if (!IsInBounds(ix,iy) || randWidth < PLATFORM_TOP_EDGE_MIN || randHeight < PLATFORM_TOP_EDGE_MIN)
-						valid = false;
+					if (!IsInBounds(ix - 1, iy) || pseudoMap[iy][ix - 1] == 1)
+						platformStart.X++;
+
+					if (!IsInBounds(ix + 1, iy) || pseudoMap[iy][ix + 1] == 1)
+						randWidth = x - ix;
+
+					if (!IsInBounds(ix, iy+1) || pseudoMap[iy + 1][ix] == 1)
+						randHeight = iy - y - 1;
+
 				}
 			}
 
-			if (!valid)
+			if (!valid || randWidth < 1 || randHeight < 1)
 				continue;
 
 			for (int iy = y; iy < y + randHeight; iy++)
-				for (int ix = x; ix < x + randWidth; ix++)
+				for (int ix = x; ix < x + randWidth && IsInBounds(ix,iy); ix++)
 					pseudoMap[iy][ix] = 1;
 
 			miniWalk = new DrunkardsWalk(randWidth, randHeight);
@@ -1642,8 +1651,8 @@ TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& 
 
 	TileParseTypesFromJSON("data/tilemap/Grassland/grassTiles.json");
 
-	worldRows = std::clamp(rand() % (int)(worldSize.y / 2), WORLD_ROW_MIN, (int)(worldSize.y / PIX_IN_MET));
-	worldCols = std::clamp(rand() % (int)(worldSize.x / 2), WORLD_COL_MIN, (int)(worldSize.x / PIX_IN_MET));
+	worldRows = std::clamp(rand() % (int)(worldSize.y / 2), WORLD_ROW_MIN, WORLD_ROW_MAX);
+	worldCols = std::clamp(rand() % (int)(worldSize.x / 2), WORLD_COL_MIN, WORLD_COL_MAX);
 }
 
 //Time to worry about the destructor again
