@@ -247,7 +247,7 @@ private:
 	void													TileParseTypesFromJSON(std::string json);
 
 	void													CarveCaves(std::vector<std::vector<int>>& pseudoMap);
-	void													CreatePlatforms(std::vector<std::vector<int>>& pseudoMap, std::vector<Coord>& platformStarts);
+	void													CreatePlatforms(std::vector<std::vector<int>>& pseudoMap, std::vector<SDL_Rect>& platformStarts);
 	void													FillHills(std::vector<std::vector<int>>& pseudoMap, std::vector<Coord>& platformTops);
 	//void													FillCeiling(std::vector<std::vector<int>>& pseudoMap);
 

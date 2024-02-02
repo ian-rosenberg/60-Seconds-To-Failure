@@ -60,6 +60,8 @@ DrunkardsWalk::DrunkardsWalk(int w, int h)
 	width = w;
 	height = h;
 	fullMap = false;
+
+	start = { 0,0 };
 }
 
 DrunkardsWalk::~DrunkardsWalk()
@@ -72,14 +74,14 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 	std::vector<Coord> walked;
 	Coord lastStep(0, 0);
 	int corner = ceil((int)(gf2d_random() * 10) % 4);
-	int cx = start.X < 0 ? rand() % width : start.X;
-	int cy = start.Y < 0 ? rand() % height : start.Y;
+	int cx = 0;
+	int cy = 0;
 	int curWalk = 1;
 	int randSwitch = rand() % 4;
 
 	fullMap = start.X == -1 && start.Y == -1;
 
-	if (fullMap) {
+	if (!fullMap) {
 		switch (randSwitch) {
 		case 0:
 			cx = start.X;
@@ -100,6 +102,32 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 		default: break;
 		}
 	}
+	else{
+		switch (randSwitch) {
+		case 0:
+			cx = 1;
+			cy = 1;
+			break;
+		case 1:
+			cx = map[0].size() - 2;
+			cy = 1;
+			break;
+		case 2:
+			cx = map[0].size() - 2;
+			cy = map.size() - 2;
+			break;
+		case 3:
+			cx = 1;
+			cy = map.size() - 2;
+			break;
+		default: break;
+		}	
+	}
+	
+
+	if(!fullMap && (start.X < 1 || start.Y < 1 || start.X + width >= map[start.Y].size() || start.Y + height >= map.size()))
+		return std::vector<Coord>();
+
 
 	for (int i = 0; i < numIterations; i++) {
 		Step(cx, cy, lastStep);
@@ -110,10 +138,12 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 
 		cx = lastStep.X;
 		cy = lastStep.Y;
-
 	}
 
-	if(!map.empty())
+	if (!fullMap)
+		for (Coord c : walked)
+			map[start.Y + c.Y][start.X + c.X] = 1;
+	else
 		for (Coord c : walked)
 			map[c.Y][c.X] = 0;
 

@@ -21,6 +21,8 @@ class DrunkardsWalk {
 private:
 	int													width;
 	int													height;
+	
+	Coord												start;
 
 	bool												fullMap;
 	
