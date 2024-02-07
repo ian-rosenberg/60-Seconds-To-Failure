@@ -28,7 +28,7 @@ private:
 	
 	std::unordered_set<Coord, PairHash>  				visited;
 
-	void												Step(int x, int y, Coord &lastStep);
+	void												Step(std::vector<std::vector<int>>& map, int x, int y, Coord &lastStep);
 public:
 
 	DrunkardsWalk(int w, int h);

@@ -1,7 +1,7 @@
 #include "drunkard.h"
 #include <algorithm>
 
-void DrunkardsWalk::Step(int x, int y, Coord& lastStep)
+void DrunkardsWalk::Step(std::vector<std::vector<int>>& map, int x, int y, Coord& lastStep)
 {
 	Coord prevPair(x, y);
 	Coord pair(x, y);
@@ -10,7 +10,9 @@ void DrunkardsWalk::Step(int x, int y, Coord& lastStep)
 	float covered = visited.size() / coverable;
 	
 	while (covered < coverage) {
-		do {
+		pair = prevPair;
+
+		do{
 			switch ((int)(gf2d_random() * 10) % 4) {
 			case 0:
 				pair.X += 1;
@@ -33,10 +35,10 @@ void DrunkardsWalk::Step(int x, int y, Coord& lastStep)
 			default:break;
 			}
 
-			pair.X = std::clamp(pair.X, 1, width - 1);
-			pair.Y = std::clamp(pair.Y, 1, height - 1);
+			pair.X = std::clamp(pair.X, 1, (int)map[y].size() - 1);
+			pair.Y = std::clamp(pair.Y, 1, (int)map.size() - 1);
 
-		} while (!InBounds(pair.X, pair.Y));
+		}while (!InBounds(pair.X, pair.Y));
 
 		if (!visited.contains(pair)) {
 			visited.insert(pair);
@@ -48,7 +50,9 @@ void DrunkardsWalk::Step(int x, int y, Coord& lastStep)
 			diffX = pair.X - prevPair.X;
 			diffY = pair.Y - prevPair.Y;
 
-			prevPair = { prevPair.X + diffX * -1, prevPair.Y + diffY * -1 };
+			prevPair = pair;
+
+			pair = { prevPair.X + diffX * -1, prevPair.Y + diffY * -1 };
 		}
 
 		covered = visited.size() / coverable;
@@ -79,6 +83,8 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 	int curWalk = 1;
 	int randSwitch = rand() % 4;
 
+	visited.clear();
+
 	fullMap = start.X == -1 && start.Y == -1;
 
 	if (!fullMap) {
@@ -101,6 +107,10 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 			break;
 		default: break;
 		}
+
+		for (int i = start.Y; i < start.Y + height; i++)
+			for (int j = start.X; j < start.X + width; j++)
+				map[i][j] = 1;
 	}
 	else{
 		switch (randSwitch) {
@@ -130,7 +140,7 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 
 
 	for (int i = 0; i < numIterations; i++) {
-		Step(cx, cy, lastStep);
+		Step(map, cx, cy, lastStep);
 
 		walked.reserve(visited.size());
 		for (auto it = visited.begin(); it != visited.end();)
@@ -139,13 +149,6 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 		cx = lastStep.X;
 		cy = lastStep.Y;
 	}
-
-	if (!fullMap)
-		for (Coord c : walked)
-			map[start.Y + c.Y][start.X + c.X] = 1;
-	else
-		for (Coord c : walked)
-			map[c.Y][c.X] = 0;
 
 	return walked;
 }
