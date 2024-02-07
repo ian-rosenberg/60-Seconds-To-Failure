@@ -108,8 +108,8 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 		default: break;
 		}
 
-		for (int i = start.Y; i < start.Y + height; i++)
-			for (int j = start.X; j < start.X + width; j++)
+		for (int i = start.Y; i < start.Y + height && i < map.size(); i++)
+			for (int j = start.X; j < start.X + width && j < map[i].size(); j++)
 				map[i][j] = 1;
 	}
 	else{

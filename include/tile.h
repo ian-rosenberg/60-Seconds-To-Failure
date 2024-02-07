@@ -255,6 +255,8 @@ private:
 	void													CreateMapRenderTarget();
 	void													ConvertLocalMapToTileLayer(std::vector<std::vector<int>>& localMap, std::vector<std::vector<TileLayer>>& pseudoMap);
 	void													CreateLocalMap(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<std::vector<int>>& localMap);
+	void													PruneTileMap(std::vector<std::vector<TileLayer>>& map);
+	std::vector<Coord>										PlatformDFS(int x, int y, int & platformFlag, std::vector<std::vector<int>>& pmap);
 
 public:
 	TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDimensions);
@@ -278,8 +280,6 @@ public:
 	bool IsOfPlatform(int x, int y);
 	
 	bool IsInBounds(int x, int y);
-
-	void PlatformDFS(int x, int y, int & platformFlag, std::vector<std::vector<TileLayer>>& pmap);
 
 	std::vector<std::vector<SDL_Color>> CopyRectOfTilePixelsFromTexture(SDL_Rect* sR);
 	std::unordered_set<Coord, PairHash> GetWalkPerimeter(std::vector<Coord>& caveWalk);
