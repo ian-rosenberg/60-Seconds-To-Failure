@@ -1069,12 +1069,15 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 }
 
 
-void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformStarts)
+std::vector<std::pair<Coord,Coord>> TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformStarts)
 {
 	GaussianBlur* blur = new GaussianBlur(GAUSSIAN_FILTER_SIZE);
 	DrunkardsWalk* miniWalk;
 	std::vector<Coord> walk;
 	std::vector<std::vector<int>> localMap(worldRows, std::vector<int>(worldCols, 1));
+	std::vector<std::pair<Coord, Coord>> possibleDisconnects;
+	Coord cur = { 0,0 }, 
+		prev = { 0,0 };
 
 	//PrintMapToConsole(localMap);
 			
@@ -1082,7 +1085,8 @@ void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap
 
 	for (int y = 0; y < pseudoMap.size(); y++) {
 		for (int x = 0; x < pseudoMap[y].size(); x++) {
-
+			prev = cur;
+			cur = { x,y };
 			int randWidth = std::clamp(rand(), PLATFORM_TOP_EDGE_MIN, PLATFORM_TOP_EDGE_MAX);
 			int randHeight = 1;
 			Coord platformStart(x, y);
@@ -1122,14 +1126,14 @@ void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap
 					}
 
 					if (!IsInBounds(ix, iy - 1) || (pseudoMap[iy - 1][ix] & TileLayer::Empty) != TileLayer::Empty)
-						platformStart.Y++;													 
-																							 
+						platformStart.Y++;
+
 					if (!IsInBounds(ix - 1, iy) || (pseudoMap[iy][ix - 1] & TileLayer::Empty) != TileLayer::Empty)
-						platformStart.X++;													 
-																							 
+						platformStart.X++;
+
 					if (!IsInBounds(ix + 1, iy) || (pseudoMap[iy][ix + 1] & TileLayer::Empty) != TileLayer::Empty)
-						randWidth = x - ix - 1;												 
-																							 
+						randWidth = x - ix - 1;
+
 					if (!IsInBounds(ix, iy + 1) || (pseudoMap[iy + 1][ix] & TileLayer::Empty) != TileLayer::Empty)
 						randHeight = iy - y - 1;
 
@@ -1153,22 +1157,31 @@ void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap
 			miniWalk = new DrunkardsWalk(randWidth, randHeight);
 			walk = miniWalk->Walk(rand() % (MIN(randWidth, randHeight) + 1), localMap, platformStart);
 
-			for (auto coord : walk){
-				if (platformStart == coord) 
+			for (auto coord : walk) {
+				if (platformStart == coord)
 					platformStart = platformStart.X < x + randWidth ? Coord(platformStart.X + 1, platformStart.Y) : Coord(x, platformStart.Y + 1);
-			
+
 				localMap[coord.Y + platformStart.Y][coord.X + platformStart.X] = 0;
 			}
+
 			platformStarts.push_back(SDL_Rect(platformStart.X, platformStart.Y, randWidth, randHeight));
 			delete miniWalk;
-			
-			walk.clear();
-					
 
-			for (int jy = 0; jy < localMap.size(); jy++) {
-				for (int jx = 0; jx < localMap[jy].size(); jx++) {
+			if(!walk.empty())
+				possibleDisconnects.push_back(std::pair<Coord, Coord>(
+					walk.front(),
+					walk.back()
+				));
+
+			walk.clear();
+
+			ConvertLocalMapToTileLayer(localMap, pseudoMap);
+			PrunePseudoMap(pseudoMap);
+
+			for (int jy = 0; jy < pseudoMap.size(); jy++) {
+				for (int jx = 0; jx < pseudoMap[jy].size(); jx++) {
 					SDL_Rect r{ jx * 5,jy * 5,5,5 };
-					if (localMap[jy][jx] == 0)
+					if ((pseudoMap[jy][jx] & TileLayer::Empty) == TileLayer::Empty)
 						SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 255, 255, 255);
 					else
 						SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 0, 0, 255);
@@ -1181,11 +1194,12 @@ void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap
 
 
 
-			ConvertLocalMapToTileLayer(localMap, pseudoMap);
 		}
 	}
 
 	blur->BlurTileMap(localMap);
+
+	PrunePseudoMap(pseudoMap);
 
 	for (int y = 0; y < localMap.size(); y++){
 		for (int x = 0; x < localMap[y].size(); x++) {
@@ -1206,6 +1220,8 @@ void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap
 	ConvertLocalMapToTileLayer(localMap, pseudoMap);
 
 	delete blur;
+
+	return possibleDisconnects;
 }
 
 void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformRects)
@@ -1522,69 +1538,84 @@ void TileManager::PrintMapToConsole(std::vector<std::vector<int>> const & pmap =
 	system("cls");
 }
 
-void TileManager::CarveCaves(std::vector<std::vector<TileLayer>>& pseudoMap)
+std::vector<std::pair<Coord, Coord>> TileManager::CarveCaves(std::vector<std::vector<TileLayer>>& pseudoMap)
 {
 	GaussianBlur* blurStage = new GaussianBlur(GAUSSIAN_FILTER_SIZE);
 	DrunkardsWalk* caveWalk = new DrunkardsWalk(worldCols, worldRows);
 	std::vector<std::vector<int>> localMap(worldRows,
 		std::vector<int>(worldCols, 1));
-	std::vector<Coord> walk = caveWalk->Walk((rand() % DRUNK_WALK_MAX) + DRUNK_WALK_MIN, localMap, Coord(-1,-1));
+	int numWalks = (rand() % DRUNK_WALK_MAX) + DRUNK_WALK_MIN;
+	std::vector<Coord> walk;
 	std::unordered_set<Coord, PairHash> walkPerimeter;
-	spawn = Vector2{ (walk[0].X * tileWidth * 1.0) + (tileWidth / 2), (walk[0].Y * tileHeight * 1.0) + (tileHeight / 2) };
 	SDL_Rect testDraw{};
-
+	std::vector<std::pair<Coord, Coord>> possibleDisconnects;
 
 	graphicsRef->Vector2PixelsToMeters(spawn);
 
-	SDL_RenderClear(graphicsRef->GetRenderer());
+	for (int i = 0; i < numWalks; i++) {
 
-	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 0, 0, 255);
+		walk = caveWalk->Walk(1, localMap, Coord(-1, -1));
 
-	for (Coord coord : walk)
-	{
-		const SDL_Rect r(coord.X*5, coord.Y*5, 5, 5);
+		possibleDisconnects.push_back(std::pair<Coord, Coord>(
+			walk.front(),
+			walk.back()
+		));
 
-		localMap[coord.Y][coord.X] = 0;
+		SDL_RenderClear(graphicsRef->GetRenderer());
 
-		SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
-	}
+		SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 0, 0, 255);
 
-	SDL_RenderPresent(graphicsRef->GetRenderer());
+		for (Coord coord : walk)
+		{
+			const SDL_Rect r(coord.X * 5, coord.Y * 5, 5, 5);
 
-	walkPerimeter = GetWalkPerimeter(walk);
+			localMap[coord.Y][coord.X] = 0;
 
-	walk.clear();
-	
-	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 255, 0, 255);
-
-	for (auto w : walkPerimeter) {
-		testDraw = { w.X * 5, w.Y * 5, 5, 5 };
-		SDL_RenderFillRect(graphicsRef->GetRenderer(), &testDraw);
-		walk.push_back(w);
-	}
-
-	SDL_RenderPresent(graphicsRef->GetRenderer());
-	
-	blurStage->BlurTileMap(localMap);
-
-	for (int y = 0; y < localMap.size(); y++) {
-		for (int x = 0; x < localMap[y].size(); x++) {
-			SDL_Rect rect(x * 5, y * 5, 5, 5);
-			if(localMap[y][x] == 0)
-				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 255, 255, 255);
-			else
-				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 0, 0, 255);
-
-			SDL_RenderFillRect(graphicsRef->GetRenderer(), &rect);
+			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
 		}
+
+		SDL_RenderPresent(graphicsRef->GetRenderer());
+
+		walkPerimeter = GetWalkPerimeter(walk);
+
+		walk.clear();
+
+		SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 255, 0, 255);
+
+		for (auto w : walkPerimeter) {
+			testDraw = { w.X * 5, w.Y * 5, 5, 5 };
+			SDL_RenderFillRect(graphicsRef->GetRenderer(), &testDraw);
+			walk.push_back(w);
+		}
+
+		SDL_RenderPresent(graphicsRef->GetRenderer());
+
+		blurStage->BlurTileMap(localMap);
+
+		for (int y = 0; y < localMap.size(); y++) {
+			for (int x = 0; x < localMap[y].size(); x++) {
+				SDL_Rect rect(x * 5, y * 5, 5, 5);
+				if (localMap[y][x] == 0)
+					SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 255, 255, 255);
+				else
+					SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 0, 0, 255);
+
+				SDL_RenderFillRect(graphicsRef->GetRenderer(), &rect);
+			}
+		}
+		SDL_RenderPresent(graphicsRef->GetRenderer());
+
+		ConvertLocalMapToTileLayer(localMap, pseudoMap);
+
 	}
- 	SDL_RenderPresent(graphicsRef->GetRenderer());
-
-	ConvertLocalMapToTileLayer(localMap, pseudoMap);
 	
-	PruneTileMap(pseudoMap);
-
 	delete caveWalk;
+
+	spawn = Vector2{ (possibleDisconnects[0].first.X * tileWidth * 1.0) + (tileWidth / 2), (possibleDisconnects[0].first.Y * tileHeight * 1.0) + (tileHeight / 2) };
+	
+	PrunePseudoMap(pseudoMap);
+
+	return possibleDisconnects;
 }
 
 void TileManager::CreateMapRenderTarget()
@@ -1625,15 +1656,20 @@ void TileManager::ConvertLocalMapToTileLayer(std::vector<std::vector<int>>& loca
 	for (int y = 0; y < pseudoMap.size(); y++) {
 		for (int x = 0; x < pseudoMap[y].size(); x++) {
 			switch (localMap[y][x]) {
-				case 0: pseudoMap[y][x] = TileLayer::Empty;
+				case 0:
+					pseudoMap[y][x] = TileLayer::Empty;
 					continue;
-				case 1: pseudoMap[y][x] = TileLayer::Wall;
+				case 1: 
+					pseudoMap[y][x] = TileLayer::Wall;
 					continue;
-				case 2: pseudoMap[y][x] = TileLayer::Ground;
+				case 2: 
+					pseudoMap[y][x] = TileLayer::Ground;
 					continue;
-				case 3: pseudoMap[y][x] = TileLayer::Platform;
+				case 3: 
+					pseudoMap[y][x] = TileLayer::Platform;
 					continue;
-				case 4: pseudoMap[y][x] = TileLayer::Hill;
+				case 4: 
+					pseudoMap[y][x] = TileLayer::Hill;
 					continue;
 				default:
 					continue;
@@ -1647,16 +1683,26 @@ void TileManager::CreateLocalMap(std::vector<std::vector<TileLayer>>& pseudoMap,
 	for (int y = 0; y < pseudoMap.size(); y++) {
 		for (int x = 0; x < pseudoMap[y].size(); x++) {
 			switch (pseudoMap[y][x]) {
-			case TileLayer::Empty: localMap[y][x] = 0;
+			case TileLayer::Empty: 
+				localMap[y][x] = 0;
 				continue;
-			case TileLayer::Wall: localMap[y][x] = 1 ;
+
+			case TileLayer::Wall: 
+				localMap[y][x] = 1 ;
 				continue;
-			case TileLayer::Ground: localMap[y][x] = 2 ;
+
+			case TileLayer::Ground:
+				localMap[y][x] = 2 ;
 				continue;
-			case TileLayer::Platform: localMap[y][x] = 3 ;
+
+			case TileLayer::Platform: 
+				localMap[y][x] = 3 ;
 				continue;
-			case TileLayer::Hill: localMap[y][x] = 4 ;
+
+			case TileLayer::Hill: 
+				localMap[y][x] = 4 ;
 				continue;
+
 			default:
 				continue;
 			}
@@ -1664,11 +1710,14 @@ void TileManager::CreateLocalMap(std::vector<std::vector<TileLayer>>& pseudoMap,
 	}
 }
 
-void TileManager::PruneTileMap(std::vector<std::vector<TileLayer>>& map)
+void TileManager::PrunePseudoMap(std::vector<std::vector<TileLayer>>& map)
 {
 	for (int i = 0; i < map.size(); i++) {
 		for (int j = 0; j < map[i].size(); j++) {
 			if (map[i][j] != TileLayer::Empty)
+				continue;
+
+			if (!tileMap[i][j])
 				continue;
 
 			Tile* t = tileMap[i][j];
@@ -1677,6 +1726,30 @@ void TileManager::PruneTileMap(std::vector<std::vector<TileLayer>>& map)
 			delete t;
 		}
 	}
+}
+
+////////////HEREEEE
+void TileManager::FixNonContiguousEmptySpaces(std::vector<std::vector<TileLayer>>& pseudoMap, Coord endFirstWalk, Coord startSecondWalk)
+{
+	Coord cur = endFirstWalk;
+
+	while (cur != startSecondWalk) {
+		pseudoMap[cur.Y][cur.X] = TileLayer::Empty;
+
+		if (cur.X == startSecondWalk.X
+			&& cur.Y != startSecondWalk.Y) {
+			cur.Y += (cur.Y < startSecondWalk.Y ? 1 : -1);
+		}
+		else if (cur.X != startSecondWalk.X
+			&& cur.Y == startSecondWalk.Y){
+			cur.X += (cur.X < startSecondWalk.X ? 1 : -1);
+		}
+		else {
+			cur = { cur.X + (cur.X < startSecondWalk.X ? 1 : -1), cur.Y + (cur.Y < startSecondWalk.Y ? 1 : -1) };
+		}
+	}
+
+	PrunePseudoMap(pseudoMap);
 }
 
 void TileManager::CreateTileMapBodies(std::vector<std::vector<int>>& pseudoMap)
@@ -1782,6 +1855,8 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 	std::vector<Tile*>* groundTilesFullCapped = groundTiles->FindTilesOfDirection((Direction)(Direction::East|Direction::West));
 	std::vector<std::vector<TileLayer>> pseudoMap;
 	std::vector<SDL_Rect> platformStarts;
+	std::vector<std::pair<Coord, Coord>> carvingSpots;
+	std::vector<std::pair<Coord, Coord>> allCarvingSpots;
 	bounds = Vector4(0, 0, worldCols * tileWidth, worldRows * tileHeight);
 
 	tileMap.resize(worldRows);
@@ -1804,9 +1879,19 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 		pseudoMap.push_back(pRow);
 	}
 
-	CarveCaves(pseudoMap);
+	carvingSpots = CarveCaves(pseudoMap);
 
-	CreatePlatforms(pseudoMap, platformStarts);
+	for (std::pair<Coord, Coord> startEnd : carvingSpots)
+		allCarvingSpots.push_back(startEnd);
+
+	carvingSpots = CreatePlatforms(pseudoMap, platformStarts);
+
+	for (std::pair<Coord, Coord> startEnd : carvingSpots)
+		allCarvingSpots.push_back(startEnd);
+
+
+	for (int i = allCarvingSpots.size()-1; i > 0; i--)
+		FixNonContiguousEmptySpaces(pseudoMap, allCarvingSpots[i].second, allCarvingSpots[i-1].first);
 
 	FillHills(pseudoMap, platformStarts);
 

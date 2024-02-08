@@ -1,12 +1,15 @@
 #include "drunkard.h"
 #include <algorithm>
 
+#define	MIN_COVERAGE_PERCENT 0.1f
+#define MAX_COVERAGE_PERCENT 0.2f
+
 void DrunkardsWalk::Step(std::vector<std::vector<int>>& map, int x, int y, Coord& lastStep)
 {
 	Coord prevPair(x, y);
 	Coord pair(x, y);
 	float coverable = ((width - 1) * (height - 1));
-	float coverage = std::clamp(gf2d_random(), 0.05f, 0.2f);
+	float coverage = std::clamp(gf2d_random(), MIN_COVERAGE_PERCENT, MAX_COVERAGE_PERCENT);
 	float covered = visited.size() / coverable;
 	
 	while (covered < coverage) {
