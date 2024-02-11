@@ -246,9 +246,9 @@ private:
 
 	void													TileParseTypesFromJSON(std::string json);
 
-	std::vector<std::pair<Coord, Coord>>					CarveCaves(std::vector<std::vector<TileLayer>>& pseudoMap);
+	std::vector<std::pair<Coord, Coord>>					CarveCaves(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<Coord>& carveWalk);
 	std::vector<std::pair<Coord, Coord>>					CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformStarts);
-	void													FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformTops);
+	void													FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformTops, std::vector<Coord>& caveWalkPerimeter);
 	//void													FillCeiling(std::vector<std::vector<int>>& pseudoMap);
 	void													CreateTileMapBodies(std::vector<std::vector<int>>& pseudoMap);
 	void													CreateMapRenderTarget();
@@ -257,6 +257,8 @@ private:
 	void													PrunePseudoMap(std::vector<std::vector<TileLayer>>& map);
 	void													FixNonContiguousEmptySpaces(std::vector<std::vector<TileLayer>>& pseudoMap, Coord endFirstWalk, Coord startSecondWalk);
 	std::vector<Coord>										PlatformDFS(int x, int y, int & platformFlag, std::vector<std::vector<int>>& pmap);
+	bool													IslandDFS(int x, int y, TileLayer target, std::vector<std::vector<TileLayer>>& pmap);
+	void													GetMapPerimeter(std::vector<Coord>& perimeter, std::vector<std::vector<int>>& localMap);
 
 public:
 	TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDimensions);
@@ -282,7 +284,6 @@ public:
 	bool IsInBounds(int x, int y);
 
 	std::vector<std::vector<SDL_Color>> CopyRectOfTilePixelsFromTexture(SDL_Rect* sR);
-	std::unordered_set<Coord, PairHash> GetWalkPerimeter(std::vector<Coord>& caveWalk);
-
+	std::unordered_set<Coord, PairHash> GetWalkPerimeter(std::vector<Coord>& caveWalk, std::vector<std::vector<int>>& localMap);
 	void PrintMapToConsole(std::vector<std::vector<int>> const & pmap);
 };
