@@ -26,8 +26,8 @@ extern "C" {
 #define WORLD_COL_MIN 80
 #define WORLD_COL_MAX 120
 
-#define ADJACENT_MIN -1
-#define ADJACENT_MAX 1
+#define ADJACENT_MIN -2
+#define ADJACENT_MAX 2
 				  
 void Tile::CreatePhysicsEdges(Vector2 playerDimensions)
 {
@@ -1229,25 +1229,24 @@ std::vector<std::pair<Coord,Coord>> TileManager::CreatePlatforms(std::vector<std
 
 void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformRects, std::vector<Coord>& caveWalkPerimeter)
 {
-	std::vector<std::vector<Tile*>> platforms;
-	std::vector<std::vector<Tile*>> platformsFound;
-	std::unordered_set<Tile*> platformTopSingles;
-	std::vector<Tile*> platformTops;
-	std::vector<Tile*> allocatedSpots;
-	std::vector<Tile*> viableBodies;
+	std::vector<std::vector<Coord>> platforms;
+	std::vector<std::vector<Coord>> platformsFound;
+	std::vector<Coord> platformSingles;
+	std::vector<Coord> platformTops;
+	std::vector<Coord> allocatedSpots;
+	std::vector<Coord> viableBodies;
 	std::vector<Tile*> neTiles = *northEastHillTiles->FindTilesOfDirection((Direction)(East | West));
 	std::vector<Tile*> seTiles = *southEastHillTiles->FindTilesOfDirection((Direction)(East | West));
 	std::vector<std::vector<int>> localMap(worldRows,
-		std::vector<int>(worldCols, 1)); 
-	std::vector<Coord> walkPerimeter;
-	
+		std::vector<int>(worldCols, 1));
+
 	CreateLocalMap(pseudoMap, localMap);
+
 
 	for (int y = 0; y < localMap.size(); y++) {
 		for (int x = 0; x < localMap[y].size(); x++) {
-			std::vector<Tile*> visitedPlatform;
+			std::vector<Coord> visitedPlatform;
 			int platform = 1;
-			//PrintMapToConsole(pseudoMap);
 		
 			std::vector<Coord> walk = PlatformDFS(x, y, platform, localMap);
 			if (platform != 0) {
@@ -1264,35 +1263,32 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 			platformsFound.push_back(visitedPlatform);
 		
 			for (Coord c : walk) {
-				visitedPlatform.push_back(tileMap[c.Y][c.X]);
+				visitedPlatform.push_back(c);
 				SDL_Rect r = { c.X * 5, c.Y * 5,5,5 };
 				SDL_RenderDrawRect(graphicsRef->GetRenderer(), &r);
 			}
 			SDL_RenderPresent(graphicsRef->GetRenderer());
-		
-			//PrintMapToConsole(pseudoMap);
-		
-			//PrintTileMapToConsole(1);
 		}
 	}
+
+	ConvertLocalMapToTileLayer(localMap, pseudoMap);
+
 
 	for (auto platform : platformsFound) {
 		SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), rand() % 256, rand() % 256, rand() % 256, 255);
 
-		for (auto tile : platform) {
-			Coord pos = tile->GetGridPosition();
-			for (int x = pos.X; x < tileMap[pos.Y].size() && tileMap[pos.Y][x] != nullptr; x++) {
+		for (auto pos : platform) {
+			for (int x = pos.X; x < pseudoMap[pos.Y].size() && pseudoMap[pos.Y][x] != TileLayer::Empty; x++) {
 				if (IsInBounds(pos.X, pos.Y - 1)
 					&& IsInBounds(pos.X, pos.Y - 2)
-					&& tileMap[pos.Y - 1][x] == nullptr
-					&& tileMap[pos.Y - 2][x] == nullptr)
+					&& localMap[pos.Y - 1][x] == 0
+					&& localMap[pos.Y - 2][x] == 0)
 				{
-					platformTopSingles.insert(tileMap[pos.Y][x]);
+					platformSingles.push_back(Coord(x,pos.Y));
 
-					for (auto tile : platformTopSingles) {
-						Coord c = tile->GetGridPosition();
-						localMap[c.Y][c.X] = 4;
-					}
+					for (auto c : platformSingles)
+						localMap[c.Y][c.X] = 3;
+					
 
 					SDL_Rect r = { x * 5, pos.Y * 5,5,5 };
 					SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
@@ -1307,66 +1303,75 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 	for (auto coord : caveWalkPerimeter) {
 		if (IsInBounds(coord.X, coord.Y - 1)
 			&& IsInBounds(coord.X, coord.Y - 2)
-			&& tileMap[coord.Y - 1][coord.X] == nullptr
-			&& tileMap[coord.Y - 2][coord.X] == nullptr) {
-			platformTopSingles.insert(tileMap[coord.Y][coord.X]);
+			&& localMap[coord.Y - 1][coord.X] == 0
+			&& localMap[coord.Y - 2][coord.X] == 0
+			&& std::find(platformSingles.begin(), platformSingles.end(), coord) == platformSingles.end()) {
+			platformSingles.push_back(coord);
 		}
 	}
 
-	for (auto tile : platformTopSingles) {
-		std::vector<Tile*>rowTiles;
-		Coord start = tile->GetGridPosition();
+	for (auto start : platformSingles) {
 		bool foundTile = false;
 		for (auto foundRow : platforms) {
-			if (std::find(foundRow.begin(), foundRow.end(), tile) != foundRow.end()) {
+			if (std::find(foundRow.begin(), foundRow.end(), start) != foundRow.end()) {
 				foundTile = true;
 				break;
 			}
 		}
 
 		if (!foundTile) {
-			for (int xL = start.X - 1, xLOffset = start.X - 2; IsInBounds(xL, start.Y) && tileMap[start.Y][xL]; xL--, xLOffset--) {
-				rowTiles.emplace(rowTiles.begin(), tileMap[start.Y][xL]);
-
-				if (!IsInBounds(start.Y, xLOffset) || !tileMap[start.Y][xLOffset] || pseudoMap[start.Y][xLOffset] != 4) {
+			for (int xL = start.X - 1, xLOffset = start.X - 2; IsInBounds(xL, start.Y) && localMap[start.Y][xL]; xL--, xLOffset--) {
+				localMap[start.Y][xL] = 3;
+				if (!IsInBounds(start.Y, xLOffset) || localMap[start.Y][xLOffset] != 4)
 					break;
-				}
 			}
 
-			for (int xR = start.X, xROffset = start.X + 1; IsInBounds(xR, start.Y) && tileMap[start.Y][xR]; xR++, xROffset++) {
-				rowTiles.push_back(tileMap[start.Y][xR]);
-
-				if (!IsInBounds(start.Y, xROffset) || !tileMap[start.Y][xROffset] || pseudoMap[start.Y][xROffset] != 4) {
+			for (int xR = start.X, xROffset = start.X + 1; IsInBounds(xR, start.Y) && localMap[start.Y][xR]; xR++, xROffset++) {
+				localMap[start.Y][xR] = 3; 
+				if (!IsInBounds(start.Y, xROffset) || localMap[start.Y][xROffset] != 4)
 					break;
-				}
 			}
+		}
+	}			
+	
+	auto sortRuleXLambda = [](Coord const& s1, Coord const& s2) -> bool
+		{
+			return s1.X < s2.X;
+		};
 
-			auto sortRuleLambda = [](Tile* const& s1, Tile* const& s2) -> bool
-				{
-					return s1->GetGridPosition().X < s2->GetGridPosition().X;
-				};
+	for (int i = 0; i < platformSingles.size(); i++) {
+		Coord start = platformSingles[i];
+		Coord current = start;
+		std::vector<Coord> rowTiles;
 
+		while (localMap[current.Y][current.X] == 3 
+			&& localMap[current.Y - 1][current.X] == 0 
+			&& localMap[current.Y - 1][current.X] == 0){
+			rowTiles.push_back(current);
+			localMap[current.Y][current.X] = 4;
+			current.X++;
+		}
 
-			std::sort(rowTiles.begin(), rowTiles.end(), sortRuleLambda);
+		if (!rowTiles.empty()) {
+			std::sort(rowTiles.begin(), rowTiles.end(), sortRuleXLambda);
 
 			platforms.push_back(rowTiles);
 		}
 	}
 
-	auto sortRuleLambda = [](std::vector<Tile*> const& s1, std::vector<Tile*> const& s2) -> bool
-		{
-			return s1[0]->GetGridPosition().Y < s2[0]->GetGridPosition().Y;
+	auto sortRuleYLambda = [](std::vector<Coord> const& s1, std::vector<Coord> const& s2) -> bool
+		{	
+			return s1[0].Y < s2[0].Y;
 		};
 
 
-	std::sort(platforms.begin(), platforms.end(), sortRuleLambda);
+	std::sort(platforms.begin(), platforms.end(), sortRuleYLambda);
 
 
 	for (auto platform : platforms) {
 		SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), rand() % 256, rand() % 256, rand() % 256, 255);
 
-		for (Tile* t : platform) {
-			Coord coord = t->GetGridPosition();
+		for (Coord coord : platform) {
 			SDL_Rect r = { coord.X * 5, coord.Y * 5,5,5 };
 			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
 		}
@@ -1377,8 +1382,8 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 	for (auto platform : platforms) {
 		Coord fNW, fNE, bNW, bNE, front, back;
 		Coord lCoord, rCoord;
-		Tile* leftCorner = nullptr;
-		Tile* rightCorner = nullptr;
+		Coord leftCorner = {INT_MIN, INT_MIN};
+		Coord rightCorner = {INT_MIN, INT_MIN};
 		int slopeIterator;
 		int rint = (rand() % platform.size()) + 1;
 		int freq = platform.size() / rint;
@@ -1386,8 +1391,8 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 		int i = 0;
 		bool up = false;
 
-		front = platform.front()->GetGridPosition();
-		back = platform.back()->GetGridPosition();
+		front = platform.front();
+		back = platform.back();
 
 		fNW = { front.X - 1, front.Y - 1 };
 		fNE = { front.X + 1, front.Y - 1 };
@@ -1401,24 +1406,24 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 
 		i = lCoord.X;
 
-		if (IsInBounds(fNW.X, fNW.Y) && IsInBounds(fNE.X, fNE.Y) && !tileMap[fNW.Y][fNW.X] != !tileMap[fNE.Y][fNE.X]) {
-			leftCorner = (tileMap[fNW.Y][fNW.X]) ? tileMap[fNW.Y][fNW.X] : tileMap[fNE.Y][fNE.X];
+		if (IsInBounds(fNW.X, fNW.Y) && IsInBounds(fNE.X, fNE.Y) && !pseudoMap[fNW.Y][fNW.X] != !pseudoMap[fNE.Y][fNE.X]) {
+			leftCorner = (pseudoMap[fNW.Y][fNW.X]) ? Coord(fNW.Y,fNW.X) : Coord(fNE.Y,fNE.X);
 		}
 
-		if (IsInBounds(bNW.X, bNW.Y) && IsInBounds(bNE.X, bNE.Y) && !tileMap[bNW.Y][bNW.X] != !tileMap[bNE.Y][bNE.X]) {
-			rightCorner = (tileMap[bNW.Y][bNW.X]) ? tileMap[bNW.Y][bNW.X] : tileMap[bNE.Y][bNE.X];
+		if (IsInBounds(bNW.X, bNW.Y) && IsInBounds(bNE.X, bNE.Y) && !pseudoMap[bNW.Y][bNW.X] != !pseudoMap[bNE.Y][bNE.X]) {
+			rightCorner = (pseudoMap[bNW.Y][bNW.X]) ? Coord(bNW.Y,bNW.X) : Coord(bNE.Y,bNE.X);
 		}
 
-		if (leftCorner)
+		if (leftCorner != Coord(INT_MIN, INT_MIN))
 			up = true;
 
 
 		for (; fi <= freq; fi++) {
-			for (; i < lCoord.X + rint / freq && slopeIterator >= 0 && i < rCoord.X && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator--) {
+			for (; i < lCoord.X + rint / freq && slopeIterator >= 0 && i < rCoord.X && pseudoMap[lCoord.Y][i] && !pseudoMap[lCoord.Y - 1][i]; i++, slopeIterator--) {
 				tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
 				tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
 				tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
-				allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
+				allocatedSpots.push_back(Coord(lCoord.Y - 1,i));
 			}
 
 			if (i >= rCoord.X)
@@ -1426,11 +1431,11 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 
 			lCoord.X += rint / 2 - 1;
 			up = !up;
-			for (; i < lCoord.X + rint / freq && slopeIterator < neTiles.size() && i < rCoord.X && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator++) {
+			for (; i < lCoord.X + rint / freq && slopeIterator < neTiles.size() && i < rCoord.X && pseudoMap[lCoord.Y][i] && !pseudoMap[lCoord.Y - 1][i]; i++, slopeIterator++) {
 				tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
 				tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
 				tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
-				allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
+				allocatedSpots.push_back(Coord(lCoord.Y - 1,i));
 			}
 
 			up = !up;
@@ -1438,19 +1443,19 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 
 		if (platform.size() % rint > 0) {
 			if (!up) {
-				for (; i <= rCoord.X && slopeIterator < neTiles.size() && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator++) {
+				for (; i <= rCoord.X && slopeIterator < neTiles.size() && pseudoMap[lCoord.Y][i] && !pseudoMap[lCoord.Y - 1][i]; i++, slopeIterator++) {
 					tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
 					tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
 					tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
-					allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
+					allocatedSpots.push_back(Coord(lCoord.Y - 1, i));
 				}
 			}
 			else {
-				for (; i <= rCoord.X && slopeIterator >= 0 && tileMap[lCoord.Y][i] && !tileMap[lCoord.Y - 1][i]; i++, slopeIterator--) {
+				for (; i <= rCoord.X && slopeIterator >= 0 && pseudoMap[lCoord.Y][i] && !pseudoMap[lCoord.Y - 1][i]; i++, slopeIterator--) {
 					tileMap[lCoord.Y - 1][i] = up ? new Tile(*neTiles[slopeIterator]) : new Tile(*seTiles[slopeIterator]);
 					tileMap[lCoord.Y - 1][i]->SetGridPosition(i, lCoord.Y - 1);
 					tileMap[lCoord.Y - 1][i]->TestDraw(cameraBounds);
-					allocatedSpots.push_back(tileMap[lCoord.Y - 1][i]);
+					allocatedSpots.push_back(Coord(lCoord.Y - 1, i));
 				}
 			}
 		}
@@ -1798,12 +1803,19 @@ void TileManager::FixNonContiguousEmptySpaces(std::vector<std::vector<TileLayer>
 		return;
 
 	while (cur != startSecondWalk) {
-		for(int i = ADJACENT_MIN; i < ADJACENT_MAX; i++)
-			for(int j = ADJACENT_MIN; j < ADJACENT_MAX; j++)
-				pseudoMap[cur.Y][cur.X] = TileLayer::Empty;
+		for(int i = ADJACENT_MIN; i < ADJACENT_MAX && IsInBounds(cur.X + i, cur.Y); i++)
+			for(int j = ADJACENT_MIN; j < ADJACENT_MAX && IsInBounds(cur.X + i, cur.Y + j); j++)
+				pseudoMap[cur.Y + j][cur.X + i] = TileLayer::Empty;
+		if (cur.X < startSecondWalk.X)
+			cur.X++;
+		else if (cur.X > startSecondWalk.X)
+			cur.X--;
 
-		cur.X += startSecondWalk.X - cur.X > 0 ? 1 : -1;
-		cur.Y += startSecondWalk.Y - cur.Y > 0 ? 1 : -1;
+		if (cur.Y < startSecondWalk.Y)
+			cur.Y++;
+		else if (cur.Y > startSecondWalk.Y)
+			cur.Y--;
+
 	}
 
 	PrunePseudoMap(pseudoMap);
@@ -1951,6 +1963,22 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 	for (int i = allCarvingSpots.size()-1; i > 0; i--)
 		FixNonContiguousEmptySpaces(pseudoMap, allCarvingSpots[i].second, allCarvingSpots[i-1].first);
 
+
+	for (int y = 0; y < pseudoMap.size(); y++) {
+		for (int x = 0; x < pseudoMap[y].size(); x++) {
+			SDL_Rect r = { x * 5, y * 5, 5, 5 };
+
+			if ((pseudoMap[y][x] & TileLayer::Empty) == TileLayer::Empty)
+				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 255, 255, 255);
+			else
+				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 0, 0, 255);
+
+			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
+		}
+	}
+
+	SDL_RenderPresent(graphicsRef->GetRenderer());
+
 	FillHills(pseudoMap, platformStarts, walkPerimeter);
 
 	CreateMapRenderTarget();
@@ -2004,7 +2032,11 @@ bool TileManager::IslandDFS(int x, int y, TileLayer target, std::vector<std::vec
 	bool valid = true;
 	std::vector<Coord>found;
 	std::deque<Coord> deque;
+	std::vector < std::vector<int>> localMap(worldRows, std::vector<int>(worldCols, 1));
 	deque.push_back(Coord(x, y));
+
+	CreateLocalMap(pmap, localMap);
+
 	while (!deque.empty()) {
 		auto curr = deque.front();
 		deque.pop_front();
@@ -2012,16 +2044,15 @@ bool TileManager::IslandDFS(int x, int y, TileLayer target, std::vector<std::vec
 		int xi = curr.X;
 		int yi = curr.Y;
 
-		if (!IsInBounds(xi, yi) || (pmap[yi][xi] & TileLayer::Empty) != TileLayer::Empty) {
+		if (!IsInBounds(xi, yi)) {
 			valid = false;
-			break;
+			continue;
 		}
 
-		if (std::find(found.begin(), found.end(), curr) == found.end()) {
-			found.push_back(Coord(xi, yi));
-		}
-		else
+		if (localMap[yi][xi] == 1)
 			continue;
+
+		localMap[yi][xi] == 1;
 
 		deque.push_back(Coord(xi - 1, yi));
 		deque.push_back(Coord(xi, yi - 1));
