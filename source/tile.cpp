@@ -1072,13 +1072,12 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 }
 
 
-std::vector<std::pair<Coord,Coord>> TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformStarts)
+void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformStarts)
 {
 	GaussianBlur* blur = new GaussianBlur(GAUSSIAN_FILTER_SIZE);
 	DrunkardsWalk* miniWalk;
 	std::vector<Coord> walk;
 	std::vector<std::vector<int>> localMap(worldRows, std::vector<int>(worldCols, 1));
-	std::vector<std::pair<Coord, Coord>> possibleDisconnects;
 	Coord cur = { 0,0 }, 
 		prev = { 0,0 };
 
@@ -1170,12 +1169,6 @@ std::vector<std::pair<Coord,Coord>> TileManager::CreatePlatforms(std::vector<std
 			platformStarts.push_back(SDL_Rect(platformStart.X, platformStart.Y, randWidth, randHeight));
 			delete miniWalk;
 
-			if(!walk.empty())
-				possibleDisconnects.push_back(std::pair<Coord, Coord>(
-					walk.front(),
-					walk.back()
-				));
-
 			walk.clear();
 
 			ConvertLocalMapToTileLayer(localMap, pseudoMap);
@@ -1223,8 +1216,6 @@ std::vector<std::pair<Coord,Coord>> TileManager::CreatePlatforms(std::vector<std
 	ConvertLocalMapToTileLayer(localMap, pseudoMap);
 
 	delete blur;
-
-	return possibleDisconnects;
 }
 
 void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformRects, std::vector<Coord>& caveWalkPerimeter)
@@ -1583,7 +1574,7 @@ void TileManager::PrintMapToConsole(std::vector<std::vector<int>> const & pmap =
 	system("cls");
 }
 
-std::vector<std::pair<Coord, Coord>> TileManager::CarveCaves(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<Coord>& carveWalk)
+void TileManager::CarveCaves(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<Coord>& carveWalk)
 {
 	GaussianBlur* blurStage = new GaussianBlur(GAUSSIAN_FILTER_SIZE);
 	DrunkardsWalk* caveWalk = new DrunkardsWalk(worldCols, worldRows);
@@ -1594,44 +1585,28 @@ std::vector<std::pair<Coord, Coord>> TileManager::CarveCaves(std::vector<std::ve
 	std::vector<Coord> walk;
 	std::unordered_set<Coord, PairHash> walkPerimeter;
 	SDL_Rect testDraw{};
-	std::vector<std::pair<Coord, Coord>> possibleDisconnects;
 
 	graphicsRef->Vector2PixelsToMeters(spawn);
 
-	for (int i = 0; i < numWalks; i++) {
-		walk = caveWalk->Walk(1, localMap, Coord(-1, -1));
+	walk = caveWalk->Walk(1, localMap, Coord(-1, -1));
+	SDL_RenderClear(graphicsRef->GetRenderer());
 
-		possibleDisconnects.push_back(std::pair<Coord, Coord>(
-			walk.front(),
-			walk.back()
-		));
+	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 0, 0, 255);
 
-		SDL_RenderClear(graphicsRef->GetRenderer());
+	for (Coord coord : walk)
+	{
+		const SDL_Rect r(coord.X * 5, coord.Y * 5, 5, 5);
 
-		SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 0, 0, 255);
+		localMap[coord.Y][coord.X] = 0;
 
-		for (Coord coord : walk)
-		{
-			const SDL_Rect r(coord.X * 5, coord.Y * 5, 5, 5);
-
-			localMap[coord.Y][coord.X] = 0;
-
-			SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
-		}
-
-		SDL_RenderPresent(graphicsRef->GetRenderer());
-
-
-
-		walks.push_back(walk);
-
-		walk.clear();
+		SDL_RenderFillRect(graphicsRef->GetRenderer(), &r);
 	}
 
-	for (auto w : walks)
-		for (Coord c : w)
-			if (std::find(walk.begin(), walk.end(), c) == walk.end())
-				walk.push_back(c);
+	SDL_RenderPresent(graphicsRef->GetRenderer());
+
+	spawn = Vector2{ (walk[0].X * tileWidth * 1.0) + (tileWidth / 2), (walk[0].Y * tileHeight * 1.0) + (tileHeight / 2) };
+
+	walk.clear();
 
 	walkPerimeter = GetWalkPerimeter(walk, localMap);
 
@@ -1660,7 +1635,6 @@ std::vector<std::pair<Coord, Coord>> TileManager::CarveCaves(std::vector<std::ve
 		}
 	}
 	
-	
 	SDL_RenderPresent(graphicsRef->GetRenderer());
 
 	carveWalk.clear();
@@ -1671,11 +1645,7 @@ std::vector<std::pair<Coord, Coord>> TileManager::CarveCaves(std::vector<std::ve
 	
 	delete caveWalk;
 
-	spawn = Vector2{ (possibleDisconnects[0].first.X * tileWidth * 1.0) + (tileWidth / 2), (possibleDisconnects[0].first.Y * tileHeight * 1.0) + (tileHeight / 2) };
-	
 	PrunePseudoMap(pseudoMap);
-
-	return possibleDisconnects;
 }
 
 void TileManager::CreateMapRenderTarget()
@@ -1786,39 +1756,6 @@ void TileManager::PrunePseudoMap(std::vector<std::vector<TileLayer>>& map)
 			delete t;
 		}
 	}
-}
-
-////////////HEREEEE
-void TileManager::FixNonContiguousEmptySpaces(std::vector<std::vector<TileLayer>>& pseudoMap, Coord endFirstWalk, Coord startSecondWalk)
-{
-	Coord cur = endFirstWalk;
-	TileLayer target = TileLayer::Empty;
-	int islands = 0;
-
-	for (int y = 0; islands < 2 && y < pseudoMap.size(); y++) 
-		for (int x = 0; islands < 2 &&  x < pseudoMap[y].size(); x++) 
-			islands += IslandDFS(x, y, target, pseudoMap) ? 1 : 0;
-		
-	if (islands == 0)
-		return;
-
-	while (cur != startSecondWalk) {
-		for(int i = ADJACENT_MIN; i < ADJACENT_MAX && IsInBounds(cur.X + i, cur.Y); i++)
-			for(int j = ADJACENT_MIN; j < ADJACENT_MAX && IsInBounds(cur.X + i, cur.Y + j); j++)
-				pseudoMap[cur.Y + j][cur.X + i] = TileLayer::Empty;
-		if (cur.X < startSecondWalk.X)
-			cur.X++;
-		else if (cur.X > startSecondWalk.X)
-			cur.X--;
-
-		if (cur.Y < startSecondWalk.Y)
-			cur.Y++;
-		else if (cur.Y > startSecondWalk.Y)
-			cur.Y--;
-
-	}
-
-	PrunePseudoMap(pseudoMap);
 }
 
 void TileManager::CreateTileMapBodies(std::vector<std::vector<int>>& pseudoMap)
@@ -1949,20 +1886,9 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 		pseudoMap.push_back(pRow);
 	}
 
-	carvingSpots = CarveCaves(pseudoMap, walkPerimeter);
+	CarveCaves(pseudoMap, walkPerimeter);
 
-	for (std::pair<Coord, Coord> startEnd : carvingSpots)
-		allCarvingSpots.push_back(startEnd);
-
-	carvingSpots = CreatePlatforms(pseudoMap, platformStarts);
-
-	for (std::pair<Coord, Coord> startEnd : carvingSpots)
-		allCarvingSpots.push_back(startEnd);
-
-
-	for (int i = allCarvingSpots.size()-1; i > 0; i--)
-		FixNonContiguousEmptySpaces(pseudoMap, allCarvingSpots[i].second, allCarvingSpots[i-1].first);
-
+	CreatePlatforms(pseudoMap, platformStarts);
 
 	for (int y = 0; y < pseudoMap.size(); y++) {
 		for (int x = 0; x < pseudoMap[y].size(); x++) {
