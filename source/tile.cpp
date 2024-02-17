@@ -1074,7 +1074,7 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 
 void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformStarts)
 {
-	GaussianBlur* blur = new GaussianBlur(GAUSSIAN_FILTER_SIZE);
+	//GaussianBlur* blur = new GaussianBlur(GAUSSIAN_FILTER_SIZE);
 	DrunkardsWalk* miniWalk;
 	std::vector<Coord> walk;
 	std::vector<std::vector<int>> localMap(worldRows, std::vector<int>(worldCols, 1));
@@ -1136,7 +1136,12 @@ void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap
 					if (!IsInBounds(ix + 1, iy) || (pseudoMap[iy][ix + 1] & TileLayer::Empty) != TileLayer::Empty)
 						randWidth = x - ix - 1;
 
-					if (!IsInBounds(ix, iy + 1) || (pseudoMap[iy + 1][ix] & TileLayer::Empty) != TileLayer::Empty)
+					if (!IsInBounds(ix, iy + 1) 
+						|| (pseudoMap[iy + 1][ix] & TileLayer::Empty) != TileLayer::Empty
+						|| !IsInBounds(ix - 1, iy + 1)
+						|| (pseudoMap[iy + 1][ix - 1] & TileLayer::Empty) != TileLayer::Empty
+						|| !IsInBounds(ix + 1, iy + 1)
+						|| (pseudoMap[iy + 1][ix + 1] & TileLayer::Empty) != TileLayer::Empty)
 						randHeight = iy - y - 1;
 
 					if (!IsInBounds(ix - 1, iy + 1)
@@ -1160,8 +1165,12 @@ void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap
 			walk = miniWalk->Walk(rand() % (MIN(randWidth, randHeight) + 1), localMap, platformStart);
 
 			for (auto coord : walk) {
-				if (platformStart == coord)
-					platformStart = platformStart.X < x + randWidth ? Coord(platformStart.X + 1, platformStart.Y) : Coord(x, platformStart.Y + 1);
+				if (platformStart == coord) {
+					if (localMap[platformStart.Y][platformStart.X + 1] == 1)
+						platformStart.X++;
+					if (localMap[platformStart.Y + 1][platformStart.X] == 1)
+						platformStart.Y++;
+				}
 
 				localMap[coord.Y + platformStart.Y][coord.X + platformStart.X] = 0;
 			}
@@ -1193,7 +1202,7 @@ void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap
 		}
 	}
 
-	blur->BlurTileMap(localMap);
+	//blur->BlurTileMap(localMap);
 
 	PrunePseudoMap(pseudoMap);
 
@@ -1215,7 +1224,7 @@ void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap
 
 	ConvertLocalMapToTileLayer(localMap, pseudoMap);
 
-	delete blur;
+	//delete blur;
 }
 
 void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformRects, std::vector<Coord>& caveWalkPerimeter)
@@ -1234,46 +1243,50 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 	CreateLocalMap(pseudoMap, localMap);
 
 
+
+	
 	for (int y = 0; y < localMap.size(); y++) {
 		for (int x = 0; x < localMap[y].size(); x++) {
-			std::vector<Coord> visitedPlatform;
 			int platform = 1;
+			std::vector<Coord> visitedPlatform;
+			
+			if (localMap[y][x] < 2)
+				continue;
 		
 			std::vector<Coord> walk = PlatformDFS(x, y, platform, localMap);
-			if (platform != 0) {
+			if (platform > 0) {
 				std::cout << "Platform found starting at " << x << "," << y << std::endl;
-
 				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 0, 255, 255);
 			}
 			else {
-				std::cout << " NO platform found at " << x << "," << y << std::endl;
-
+				std::cout << "NO platform found at " << x << "," << y << std::endl;
 				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 0, 0, 255);
+				continue;
 			}
 
-			platformsFound.push_back(visitedPlatform);
-		
+
 			for (Coord c : walk) {
+				localMap[c.Y][c.X] = platform == 1 ? 3 : 2;
 				visitedPlatform.push_back(c);
 				SDL_Rect r = { c.X * 5, c.Y * 5,5,5 };
 				SDL_RenderDrawRect(graphicsRef->GetRenderer(), &r);
 			}
 			SDL_RenderPresent(graphicsRef->GetRenderer());
+
 		}
 	}
-
-	ConvertLocalMapToTileLayer(localMap, pseudoMap);
-
 
 	for (auto platform : platformsFound) {
 		SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), rand() % 256, rand() % 256, rand() % 256, 255);
 
 		for (auto pos : platform) {
-			for (int x = pos.X; x < pseudoMap[pos.Y].size() && pseudoMap[pos.Y][x] != TileLayer::Empty; x++) {
+			for (int x = pos.X; x < localMap[pos.Y].size() && localMap[pos.Y][x] != 0; x++) {
 				if (IsInBounds(pos.X, pos.Y - 1)
 					&& IsInBounds(pos.X, pos.Y - 2)
 					&& localMap[pos.Y - 1][x] == 0
-					&& localMap[pos.Y - 2][x] == 0)
+					&& localMap[pos.Y - 2][x] == 0
+					&& localMap[pos.Y - 1][x - 1] == 0
+					&& localMap[pos.Y - 1][x + 1] == 0)
 				{
 					platformSingles.push_back(Coord(x,pos.Y));
 
@@ -1296,6 +1309,8 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 			&& IsInBounds(coord.X, coord.Y - 2)
 			&& localMap[coord.Y - 1][coord.X] == 0
 			&& localMap[coord.Y - 2][coord.X] == 0
+			&& localMap[coord.Y - 1][coord.X - 1] == 0
+			&& localMap[coord.Y - 1][coord.X + 1] == 0
 			&& std::find(platformSingles.begin(), platformSingles.end(), coord) == platformSingles.end()) {
 			platformSingles.push_back(coord);
 		}
@@ -1336,8 +1351,10 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 		std::vector<Coord> rowTiles;
 
 		while (localMap[current.Y][current.X] == 3 
-			&& localMap[current.Y - 1][current.X] == 0 
-			&& localMap[current.Y - 1][current.X] == 0){
+			&& localMap[current.Y - 1][current.X] == 0
+			&& localMap[current.Y - 1][current.X + 1] == 0
+			&& localMap[current.Y - 1][current.X - 1] == 0 
+			&& localMap[current.Y - 2][current.X] == 0){
 			rowTiles.push_back(current);
 			localMap[current.Y][current.X] = 4;
 			current.X++;
@@ -1933,16 +1950,15 @@ std::vector<Coord> TileManager::PlatformDFS(int x, int y, int & platformFlag, st
 		int xi = curr.X;
 		int yi = curr.Y;
 		if (!IsInBounds(xi,yi)) {
-			platformFlag = 0; 
+			platformFlag = 0;
 			continue;
 		}
 
-		if (pmap[yi][xi] == 1) {
-			pmap[yi][xi] = 2;
-			found.push_back(Coord(xi, yi));
-		}
-		else
+		if (pmap[yi][xi] != 1)
 			continue;
+
+		pmap[yi][xi] = 3;
+		found.push_back(Coord(xi, yi));
 
 		deque.push_back(Coord(xi - 1, yi));
 		deque.push_back(Coord(xi, yi - 1));
@@ -1951,42 +1967,6 @@ std::vector<Coord> TileManager::PlatformDFS(int x, int y, int & platformFlag, st
 	}
 
 	return found;
-}
-
-bool TileManager::IslandDFS(int x, int y, TileLayer target, std::vector<std::vector<TileLayer>>& pmap)
-{
-	bool valid = true;
-	std::vector<Coord>found;
-	std::deque<Coord> deque;
-	std::vector < std::vector<int>> localMap(worldRows, std::vector<int>(worldCols, 1));
-	deque.push_back(Coord(x, y));
-
-	CreateLocalMap(pmap, localMap);
-
-	while (!deque.empty()) {
-		auto curr = deque.front();
-		deque.pop_front();
-
-		int xi = curr.X;
-		int yi = curr.Y;
-
-		if (!IsInBounds(xi, yi)) {
-			valid = false;
-			continue;
-		}
-
-		if (localMap[yi][xi] == 1)
-			continue;
-
-		localMap[yi][xi] == 1;
-
-		deque.push_back(Coord(xi - 1, yi));
-		deque.push_back(Coord(xi, yi - 1));
-		deque.push_back(Coord(xi, yi + 1));
-		deque.push_back(Coord(xi + 1, yi));
-	}
-
-	return valid;
 }
 
 std::vector<std::vector<SDL_Color>> TileManager::CopyRectOfTilePixelsFromTexture(SDL_Rect* sR)

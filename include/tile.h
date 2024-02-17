@@ -256,7 +256,6 @@ private:
 	void													CreateLocalMap(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<std::vector<int>>& localMap);
 	void													PrunePseudoMap(std::vector<std::vector<TileLayer>>& map);
 	std::vector<Coord>										PlatformDFS(int x, int y, int & platformFlag, std::vector<std::vector<int>>& pmap);
-	bool													IslandDFS(int x, int y, TileLayer target, std::vector<std::vector<TileLayer>>& pmap);
 	void													GetMapPerimeter(std::vector<Coord>& perimeter, std::vector<std::vector<int>>& localMap);
 
 public:

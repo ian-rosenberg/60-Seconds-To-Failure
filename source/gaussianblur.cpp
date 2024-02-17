@@ -4,8 +4,8 @@
 #include <iostream>
 #include <algorithm>
 
-#define MIN_BLUR_COVERAGE 0.3f
-#define MAX_BLUR_COVERAGE 0.7f
+#define MIN_BLUR_COVERAGE 0.6f
+#define MAX_BLUR_COVERAGE 1.0f
 
 void GaussianBlur::FilterCreate()
 {
