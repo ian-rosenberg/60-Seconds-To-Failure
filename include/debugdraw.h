@@ -17,6 +17,7 @@ private:
 	std::vector<Tile*>					tileRefs;
 	Camera*								camera;
 	int32								worldWidth, worldHeight;
+	int									camX, camY, camWidth, camHeight;
 		
 	// Inherited via b2Draw
 	void DrawRect(b2Body* bodyRef, const SDL_Rect* rect, const SDL_Color& color);
@@ -34,12 +35,12 @@ private:
 
 public:
 
-	DebugDraw(const std::shared_ptr<Graphics>& graphicsr, Camera* cam);
+	DebugDraw(const std::shared_ptr<Graphics>& graphics, Camera* cam);
 	~DebugDraw();
 
 	void SetWorldDimensions(b2Vec2 dim);
 	void AddEntityRef(Entity* entityRef);
 	void AddTileRef(Tile* tile) { tileRefs.push_back(tile); }
 	void AddTileMapRef(std::vector<std::vector<Tile*>>* tilemapRef);
-	void DrawAll(float &accum, SDL_Rect camRect);
+	void DrawAll(float &accum);
 };

@@ -24,27 +24,27 @@ private:
 
 	std::shared_ptr<Graphics>		graphics;
 
-	Player*							player;
+	Player* player;
 
-	EntityManager*					entityManager;
+	EntityManager* entityManager;
 
 	b2Vec2							gravityScale;
-	b2World*						areaPhysics;
+	b2World* areaPhysics;
 
 	Vector2							playerPixelDimensions;
 
-	TileManager*					tileManager;
+	TileManager* tileManager;
 
 	//Test ground vars
-	b2Body*							ground;
+	b2Body* ground;
 	b2BodyDef						groundBD;
 	b2PolygonShape					groundBox;
 
-	b2Body*							testPlatform;
+	b2Body* testPlatform;
 	float							testPlatformBottom;
 	float							testPlatformTop;
 
-	ContactListener*				listener;
+	ContactListener* listener;
 
 	double							fixedTimestepAccum;
 	double							fixedTimestepAccumRatio;
@@ -52,8 +52,8 @@ private:
 	const int32						velocityIterations = 6;
 	const int32						positionIterations = 2;
 
-	Camera*							camera;
-	DebugDraw*						debugDraw;
+	Camera* camera;
+	DebugDraw* debugDraw;
 
 	float							cameraFollowStrength;
 
@@ -95,5 +95,5 @@ public:
 
 	b2Vec2 GetGravityScale() { return gravityScale; }
 
-	b2Vec2 FindSpawnPointFromLeft();
+	b2Vec2 GetSpawn();
 };

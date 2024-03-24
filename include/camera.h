@@ -6,16 +6,15 @@
 class Camera {
 private:
 	SDL_Rect cameraRect;
-	Vector4 bounds;
+	SDL_Rect bounds;
 	float zRot;
+	Vector2 offset;
 
 public:
-	Camera(SDL_Rect r, Vector4 bounds);
+	Camera(Vector2 screenDim, Vector2 bounds);
 
 	void Move(Vector2 target, float lerp);
 
 	inline SDL_Rect GetRect() { return cameraRect; }
 	inline float GetRotationZ() { return zRot; }
-
-	inline void SetBounds(Vector4 bounds) { this->bounds = bounds; }
 };

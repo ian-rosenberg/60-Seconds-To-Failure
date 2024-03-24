@@ -1,8 +1,8 @@
 #include "drunkard.h"
 #include <algorithm>
 
-#define	MIN_COVERAGE_PERCENT 0.1f
-#define MAX_COVERAGE_PERCENT 0.2f
+#define	MIN_COVERAGE_PERCENT 0.15f
+#define MAX_COVERAGE_PERCENT 0.25f
 
 void DrunkardsWalk::Step(std::vector<std::vector<int>>& map, int x, int y, Coord& lastStep)
 {
@@ -38,8 +38,8 @@ void DrunkardsWalk::Step(std::vector<std::vector<int>>& map, int x, int y, Coord
 			default:break;
 			}
 
-			pair.X = std::clamp(pair.X, 1, (int)map[y].size() - 1);
-			pair.Y = std::clamp(pair.Y, 1, (int)map.size() - 1);
+			pair.X = std::clamp(pair.X, 1, (int)map[y].size() - 2);
+			pair.Y = std::clamp(pair.Y, 1, (int)map.size() - 2);
 
 		}while (!InBounds(pair.X, pair.Y));
 
@@ -114,6 +114,9 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 		for (int i = start.Y; i < start.Y + height && i < map.size(); i++)
 			for (int j = start.X; j < start.X + width && j < map[i].size(); j++)
 				map[i][j] = 1;
+
+		cx = std::clamp(cx, 1, width);
+		cy = std::clamp(cy, 1, height);
 	}
 	else{
 		switch (randSwitch) {
@@ -135,11 +138,10 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 			break;
 		default: break;
 		}	
-	}
-	
 
-	if(!fullMap && (start.X < 1 || start.Y < 1 || start.X + width >= map[start.Y].size() || start.Y + height >= map.size()))
-		return std::vector<Coord>();
+		cx = std::clamp(cx, 1, (int)map[0].size() - 2);
+		cy = std::clamp(cy, 1, (int)map.size() - 2);
+	}
 
 
 	for (int i = 0; i < numIterations; i++) {
@@ -159,7 +161,7 @@ std::vector<Coord> DrunkardsWalk::Walk(int numIterations, std::vector<std::vecto
 bool DrunkardsWalk::InBounds(int x, int y)
 {
 	if(fullMap)
-		return x >= 1 && x < width - 1  && y >= 1 && y < height - 1;
+		return x >= 1 && x < width - 2  && y >= 1 && y < height - 2;
 	else 
 		return x >= 0 && x < width && y >= 0 && y < height;
 }

@@ -135,7 +135,9 @@ void Player::Think() {
 void Player::Draw(Vector2 cameraPosition)
 {
 	Vector4 debugColor = vector4(.5, 1, 0, 1);
-	Vector2 resultPosition = { newDrawPosition.x - cameraPosition.x,
+	Vector2 resultPosition;
+
+	resultPosition = { newDrawPosition.x - cameraPosition.x,
 		newDrawPosition.y - cameraPosition.y };
 
 	if (!this)

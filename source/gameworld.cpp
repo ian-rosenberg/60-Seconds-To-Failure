@@ -45,12 +45,12 @@ void GameWorld::InitPlayerPhysics() {
 
 	// Actor
 	{
-		b2Vec2 pos = currentArea->FindSpawnPointFromLeft();
+		b2Vec2 sp = currentArea->GetSpawn();
 		b2Vec2 d = player->GetWorldDimensions();
 		b2BodyDef bd;
 		bd.type = b2_dynamicBody;
 		bd.fixedRotation = true;
-		bd.position.Set(pos.x,pos.y);
+		bd.position.Set(sp.x,sp.y);
 		player->SetBody(currentArea->GetWorldPtr()->CreateBody(&bd));
 
 		b2FixtureDef fd;

@@ -4,24 +4,19 @@
 #include <iostream>
 #include <algorithm>
 
-Camera::Camera(SDL_Rect r, Vector4 bounds ){
-	cameraRect = r;
-	this->bounds = bounds;
+Camera::Camera(Vector2 screenDim, Vector2 bounds ){
+	cameraRect = SDL_Rect(0, 0, screenDim.x, screenDim.y);
+	this->bounds = SDL_Rect(0, 0, bounds.x, bounds.y);
 	zRot = 0;
+	offset = Vector2(screenDim.x / 2, screenDim.y / 2);
 }
 
 void Camera::Move(Vector2 target, float alpha)
 {
-	Vector2 cameraMove{
-		(target.x - cameraRect.w / 2.0) * alpha + cameraRect.x * (1.0 - alpha),
-		(target.y - cameraRect.h / 2.0) * alpha + cameraRect.y * (1.0 - alpha)
-	};
+	cameraRect.x = cameraRect.x + alpha * (target.x - (cameraRect.x + cameraRect.w/2));
+	cameraRect.y = cameraRect.y + alpha * (target.y - (cameraRect.y + cameraRect.h/2));
 
-	if (bounds.z - cameraMove.x / 2.0
-		|| bounds.w - cameraMove.y / 2.0)
-		return;
-
-	cameraRect.x = std::clamp(bounds.x, bounds.z, bounds.z - cameraMove.x/2.0);
-	cameraRect.y = std::clamp(bounds.y, bounds.w, bounds.w - cameraMove.y/2.0);
+	cameraRect.x = std::clamp((int)cameraRect.x, 0, (int)(bounds.w - cameraRect.w));
+	cameraRect.y = std::clamp((int)cameraRect.y, 0, (int)(bounds.h - cameraRect.h));
 	//std::cout << cameraPosition.x << "," << cameraPosition.y << std::endl;
 }
