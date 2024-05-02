@@ -4,6 +4,8 @@
 DebugDraw::DebugDraw(const std::shared_ptr<Graphics>& graphics, Camera* cam) {
 	graphicsRef = graphics;
 	camera = cam;
+	mapRef = nullptr;
+	worldWidth = worldHeight = camX = camY = camWidth = camHeight = 0;
 }
 
 void DebugDraw::SetWorldDimensions(b2Vec2 dim) {
@@ -133,12 +135,41 @@ void DebugDraw::AddEntityRef(Entity* entityRef)
 	entityRefs.insert_or_assign(id, entityRef);
 }
 
-void DebugDraw::AddTileMapRef(std::vector<std::vector<Tile*>>* tilemapRef)
+void DebugDraw::AddShapeRef(Tile* tile)
 {
-	for (auto row : *tilemapRef) {
-		for (Tile* tile : row)
-			AddTileRef(tile);
+	SDL_Renderer* ren = graphicsRef->GetRenderer();
+	b2Body* body = tile->GetBodyReference();
+	int texID = tile->GetTextureID();
+
+	if (shapeImages[texID] != nullptr)
+		return;
+
+	SDL_Texture* shapeTex = Sprite::CreateRenderTexture(mapRef->GetTileDimensions().x, mapRef->GetTileDimensions().y, graphicsRef, SDL_PIXELFORMAT_RGBA8888);
+	SDL_SetTextureBlendMode(shapeTex, SDL_BLENDMODE_BLEND);
+
+	SDL_RenderClear(ren);
+	SDL_SetRenderTarget(ren, shapeTex);
+	for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
+		b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
+		
+		DrawPolygon(body, poly->m_vertices, poly->m_count, SDL_Color(0, 255, 0, 255));
 	}
+	SDL_SetRenderTarget(ren, nullptr);
+	SDL_RenderClear(ren);
+
+	
+	shapeImages.insert_or_assign(texID, shapeTex);
+}
+
+void DebugDraw::AddTileMapRef(TileManager* tilemapRef)
+{
+	std::vector<std::vector<Tile*>>* tilemap = tilemapRef->GetTileMap();
+	mapRef = tilemapRef;
+
+	for (int y = 0; y < tilemap->size(); y++)
+		for (int x = 0; x < tilemap->at(y).size(); x++)
+			if (tilemap->at(y)[x] != nullptr && tilemap->at(y)[x]->GetBodyReference() != nullptr)
+				AddShapeRef(tilemap->at(y)[x]);
 }
 
 void DebugDraw::DrawRect(b2Body* body, const b2Vec2* vertices, int32 vertexCount, const SDL_Color& color)
@@ -149,70 +180,53 @@ DebugDraw::~DebugDraw()
 {
 	camera = nullptr;
 	entityRefs.clear();
-	tileRefs.clear();
+	mapRef = nullptr;
 
 	graphicsRef.reset();
 }
 
 void DebugDraw::DrawAll(float& accum)
 {
+	SDL_Renderer* ren = graphicsRef->GetRenderer();
+	std::vector<std::vector<Tile*>>* tileRefs = mapRef->GetTileMap();
 	camX = camera->GetRect().x;
 	camY = camera->GetRect().y;
 	camWidth = camera->GetRect().w;
 	camHeight = camera->GetRect().h;
 
-	for (auto tile : tileRefs) {
-		Tile* thisTile = tile;
-
-		if (!tile)
-			continue;
-		if (Vector2 tPos = thisTile->GetPixelPosition(); !(tPos.x + thisTile->GetPixelDimensions().x >= camX)
-			|| !(tPos.x< camX + camWidth)
-			|| !(tPos.y + thisTile->GetPixelDimensions().y >= camY)
-			|| !(tPos.y < camY + camHeight))
-			continue;
-
-		b2Body* body = thisTile->GetBodyReference();
-		SDL_Color debugColor = thisTile->GetDebugColor();
-		if (!body)
-			continue;
-
-
-		for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
-			b2Shape::Type shapeType = f->GetType();
-
-			if (shapeType == b2Shape::e_polygon) {
-				b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
-
-				DrawPolygon(body, poly->m_vertices, poly->m_count, debugColor);
-
+	for (auto row : *tileRefs) {
+		for (auto tile : row) {
+			if (!tile)
 				continue;
-			}
+			Vector2 tPos = tile->GetPixelPosition();
 
-			else if (shapeType == b2Shape::e_edge) {
-				b2EdgeShape* edge = (b2EdgeShape*)f->GetShape();
 
-				DrawSegment(body, edge->m_vertex1, edge->m_vertex2, debugColor);
-
+			if ((tPos.x + tile->GetPixelDimensions().x >= camX)
+				&&(tPos.x < camX + camWidth)
+				&&(tPos.y + tile->GetPixelDimensions().y >= camY)
+				&&(tPos.y < camY + camHeight))
 				continue;
-			}
 
-			else if (shapeType == b2Shape::e_chain) {
-				b2ChainShape* chain = (b2ChainShape*)f->GetShape();
-
-				DrawChainShape(body, chain->m_vertices, chain->m_count, *(chain->m_vertices), *(chain->m_vertices + chain->m_count - 1), debugColor);
-
+			b2Body* body = tile->GetBodyReference();
+			SDL_Color debugColor = tile->GetDebugColor();
+			if (!body)
 				continue;
-			}
 
-			else if (shapeType == b2Shape::e_circle) {
-				b2CircleShape* poly = (b2CircleShape*)f->GetShape();
+			Vector2 pixelPosition = tile->GetPixelPosition();
+			Vector2 pixelDimensions = tile->GetPixelDimensions();
 
-				DrawCircle(body, poly->m_p, poly->m_radius * PIX_IN_MET, debugColor);
-				continue;
-			}
+			int texID = tile->GetTextureID();
+			SDL_Rect dest{
+				(int)(pixelPosition.x - camX),
+				(int)(pixelPosition.y - camY),
+				(int)pixelDimensions.x,
+				(int)pixelDimensions.y
+			};
+
+			SDL_Rect srcRect = tile->GetSourceRect();
+
+			SDL_RenderCopy(ren, shapeImages[texID], &srcRect, &dest);
 		}
-
 	}
 
 	for (auto entity : entityRefs) {

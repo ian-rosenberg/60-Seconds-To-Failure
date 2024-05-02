@@ -5,16 +5,11 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 	Vector2 screenDim = graphics->GetScreenDimensions();
 	Vector2 cBounds;
 	Vector2 camRect(screenDim.x, screenDim.y);
-	std::vector<std::vector<Tile*>>* tiles;
 	id = ID;
 	player = nullptr;
 	entityManager = new EntityManager(1, graphics);//enabling debug draw with parameter, renderer
 	gravityScale = grav;
 	gravityEnabled = gravityScale.y != 0 || gravityScale.x != 0;
-	ground = {};
-	testPlatform = {};
-	testPlatformBottom = 0.0f;
-	testPlatformTop = 0.0f;
 	this->graphics = graphics;
 
 	cameraFollowStrength = 0.1f;
@@ -29,7 +24,7 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 		areaPhysics, 
 		playerDim);
 	
-	tiles = tileManager->GenerateTileMap(areaPhysics, playerDim);
+	tileManager->GenerateTileMap(areaPhysics, playerDim);
 
 	cBounds = tileManager->GetBounds();
 
@@ -39,7 +34,7 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 
 	debugDraw = new DebugDraw(graphics, camera);
 	
-	debugDraw->AddTileMapRef(tiles);
+	debugDraw->AddTileMapRef(tileManager);
 
 	playerPixelDimensions = playerDim;
 }

@@ -17,45 +17,36 @@
 
 class GameArea {
 private:
-	int								id;
+	int										id;
 
-	Uint8							active;
-	Uint8							gravityEnabled;
+	Uint8									active;
+	Uint8									gravityEnabled;
 
-	std::shared_ptr<Graphics>		graphics;
+	std::shared_ptr<Graphics>				graphics;
 
-	Player* player;
+	Player									*player;
 
-	EntityManager* entityManager;
+	EntityManager							*entityManager;
 
-	b2Vec2							gravityScale;
-	b2World* areaPhysics;
+	b2Vec2									gravityScale;
+	b2World									*areaPhysics;
 
-	Vector2							playerPixelDimensions;
+	Vector2									playerPixelDimensions;
 
-	TileManager* tileManager;
+	TileManager								*tileManager;
 
-	//Test ground vars
-	b2Body* ground;
-	b2BodyDef						groundBD;
-	b2PolygonShape					groundBox;
+	ContactListener							*listener;
 
-	b2Body* testPlatform;
-	float							testPlatformBottom;
-	float							testPlatformTop;
+	double									fixedTimestepAccum;
+	double									fixedTimestepAccumRatio;
+	const float								timeStep = 1.f / 60.f;
+	const int32								velocityIterations = 6;
+	const int32								positionIterations = 2;
+		
+	Camera									*camera;
+	DebugDraw								*debugDraw;
 
-	ContactListener* listener;
-
-	double							fixedTimestepAccum;
-	double							fixedTimestepAccumRatio;
-	const float						timeStep = 1.f / 60.f;
-	const int32						velocityIterations = 6;
-	const int32						positionIterations = 2;
-
-	Camera* camera;
-	DebugDraw* debugDraw;
-
-	float							cameraFollowStrength;
+	float									cameraFollowStrength;
 
 	void InitPhysicsWorld();
 

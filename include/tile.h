@@ -79,6 +79,7 @@ typedef struct TileSpriteSheet_S {
 class Tile {
 private:
 	int														id;
+	int														textureID;
 	Direction												direction;
 
 	SDL_Color												debugColor;
@@ -97,13 +98,13 @@ private:
 	Vector2													pixelCenter;
 
 	b2Body*													physicsBody;
-	b2Fixture*												fixture;
-
+	
 	Direction												capDirection;
 
 	std::shared_ptr<Graphics>								graphicsRef;
 
 	std::shared_ptr<Sprite>									sprite;
+	Coord													spritePos;
 
 	SDL_Rect												sourceRect;
 
@@ -127,11 +128,13 @@ private:
 
 public:
 	Tile();
-	Tile(int id, Sprite* srcSheet, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect, std::vector<float> slopes);
+	Tile(int id, int texID, Sprite* srcSheet, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect, std::vector<float> slopes);
 	Tile(const Tile& oldTile);
 	Tile& operator= (const Tile& other);
 
 	~Tile();
+
+	void													ClearExtras();
 
 	void													AddPossibleConnection(Vector2 v, TileLayer layer, Direction hillDir);
 	void													RotateChain(std::vector<b2Vec2>& chain, float angle);
@@ -140,7 +143,7 @@ public:
 	void													CreateTileBody(b2World* world);
 	void													SetCappingDirection(Direction capping);
 	void													DecideCapping();
-	void													TilePhysicsInit(b2World* world, Vector2 playerDim);
+	void													TilePhysicsInit();
 	void													SetSpriteDirection(Direction dir) { direction = dir; }
 	void													SetSDL_RendererFlipFlags(SDL_RendererFlip flip);
 	void													SetTileLayer(TileLayer layers) { tileLayers = layers; }
@@ -185,14 +188,14 @@ public:
 	SDL_RendererFlip										GetFlipFlags() { return flipFlags; }
 
 	float													GetZRotation() { return zRot; }
-	b2Fixture*												GetShapeFixture(){ return fixture; }
 	Coord													GetGridPosition() { return Coord(gridX,gridY); }
+
+	const int												GetTextureID() { return textureID; }
 };
 
 typedef struct TileNode {
 	Direction direction;
-
-	std::vector<Tile*> tiles;
+	std::unordered_map<TileLayer, std::vector<Tile*>> tiles;
 	TileNode* child;
 }TileNode_S;
 
@@ -206,17 +209,15 @@ public:
 
 	//Creates an entry for the capping direction of the tilewhen it returns false, 
 	void AddTile(Tile* newTile);
-	std::vector<Tile*>* FindTilesOfDirection(Direction dir);
-	Tile* FindNthTileOfDirection(Direction dir, uint16_t index);
+	std::vector<Tile*>* FindTilesOfDirection(TileLayer layer, Direction dir);
+	Tile* FindNthTileOfDirection(TileLayer layer, Direction dir, uint16_t index);
 };
 
 class TileManager {
 private:
 	//Capping direction
-	TileCollection*		groundTiles;
-	TileCollection*		northEastHillTiles;
-	TileCollection*		southEastHillTiles;
-	TileCollection*		platformTiles;
+	Uint8													active;
+	TileCollection*											tiles;
 
 	Sprite*													spriteSheet;
 
@@ -225,7 +226,7 @@ private:
 
 	Coord													spawn;
 
-	std::vector<std::vector<Tile*>>							tileMap;
+	std::vector<std::vector<Tile*>>     					tileMap;
 
 	int														tileWidth;
 	int														tileHeight;

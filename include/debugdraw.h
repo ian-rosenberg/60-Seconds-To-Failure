@@ -12,12 +12,13 @@
 
 class DebugDraw {
 private:
-	std::shared_ptr<Graphics>			graphicsRef;
-	std::unordered_map<int, Entity*>	entityRefs;
-	std::vector<Tile*>					tileRefs;
-	Camera*								camera;
-	int32								worldWidth, worldHeight;
-	int									camX, camY, camWidth, camHeight;
+	std::shared_ptr<Graphics>					graphicsRef;
+	std::unordered_map<int, Entity*>			entityRefs;
+	TileManager*								mapRef;
+	std::unordered_map<int, SDL_Texture*>		shapeImages;
+	Camera*										camera;
+	int32										worldWidth, worldHeight;
+	int											camX, camY, camWidth, camHeight;
 		
 	// Inherited via b2Draw
 	void DrawRect(b2Body* bodyRef, const SDL_Rect* rect, const SDL_Color& color);
@@ -40,7 +41,7 @@ public:
 
 	void SetWorldDimensions(b2Vec2 dim);
 	void AddEntityRef(Entity* entityRef);
-	void AddTileRef(Tile* tile) { tileRefs.push_back(tile); }
-	void AddTileMapRef(std::vector<std::vector<Tile*>>* tilemapRef);
+	void AddShapeRef(Tile* tile);
+	void AddTileMapRef(TileManager* tilemapRef);
 	void DrawAll(float &accum);
 };
