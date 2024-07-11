@@ -281,40 +281,55 @@ void Tile::SetGridPosition(int col, int row)
 
 void Tile::CreateTileBody(b2World* world)
 {
+<<<<<<< HEAD
 	Vector2 center;
 	b2BodyDef bodyDefinition;
+=======
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 
-	bodyDefinition.type = b2_staticBody;
+	//Since Box2D supports 8 ( EIGHT ) vertices MAX per polygon, we chop up the tiles into smaller, 4 vertex fixtures 
+	b2BodyDef bd;
+	b2FixtureDef fd;
+	Vector2 tV;
+	std::vector<b2PolygonShape> polyShapes;
+	b2Vec2 center;
+	SDL_Renderer* r = graphicsRef->GetRenderer();
 
-	bodyDefinition.position.Set(pixelPosition.x * MET_IN_PIX, pixelPosition.y * MET_IN_PIX);
+	bd.type = b2_staticBody;
 
-	worldPosition = bodyDefinition.position;
+	bd.position.Set(pixelPosition.x * MET_IN_PIX, pixelPosition.y * MET_IN_PIX);
+
+	worldPosition = bd.position;
 
 	center = { (float)(worldPosition.x + pixelDimensions.x * MET_IN_PIX / 2),
-		(float)(worldPosition.y + pixelDimensions.y * MET_IN_PIX / 2) };
-
+		(float)(worldPosition.y + pixelDimensions.y * MET_IN_PIX / 2)};
+	
 	switch (direction) {
 	case North:
-		bodyDefinition.angle = 0.f;
+		bd.angle = 0.f;
 		break;
 
 	case East:
-		bodyDefinition.angle = M_PI * 1.5f;
+		bd.angle = M_PI * 1.5f;
 		break;
 
 	case South:
-		bodyDefinition.angle = M_PI;
+		bd.angle = M_PI;
 		break;
 
 	case West:
-		bodyDefinition.angle = M_PI * 0.5f;
+		bd.angle = M_PI * 0.5f;
 		break;
 
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 	physicsBody = world->CreateBody(&bodyDefinition);
+=======
+	physicsBody = world->CreateBody(&bd);
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 
 	if(flipFlags == SDL_FLIP_HORIZONTAL)
 		for (int i = 0; i < MAX_EDGES; i++)
@@ -350,12 +365,19 @@ void Tile::CreateTileBody(b2World* world)
 			break;
 		}*/
 
+<<<<<<< HEAD
 		poly.m_count = MAX_EDGES;
 		for (int j = 0; j < MAX_EDGES; j++)
 			*(poly.m_vertices + j) = verts[j];
 		fix.shape = &poly;
 		fix.friction = 0.7f;
 		physicsBody->CreateFixture(&fix);
+=======
+		fix.Set(verts.data(), verts.size());
+		fd.shape = &fix;
+		fd.friction = 0.7f;
+		fixture = physicsBody->CreateFixture(&fd);
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 
 	}
 }
@@ -395,11 +417,16 @@ Tile::Tile()
 	debugColor = SDL_Color(0, 255, 0, 255);
 
 	hillOrientation = Direction::None;
+	slopes = nullptr;
 
 	SetGridPosition(INT_MIN, INT_MIN);
 }
 
+<<<<<<< HEAD
 Tile::Tile(int id, int texID, Sprite* srcSheet, Vector2 gridPosition, Vector2 dim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect, std::vector<float> slopes)
+=======
+Tile::Tile(int id, Sprite* srcSheet, Vector2 gridPosition, Vector2 dim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect, float* slopes)
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 {
 	this->id = id;
 	textureID = texID;
@@ -697,18 +724,6 @@ std::vector<std::vector<SDL_Color>> Tile::GetTilePixels()
 	return Sprite::GetPixelData(sprite->GetFilePath().c_str(), &sR, graphicsRef);	
 }
 
-float Tile::GetAvgSlope()
-{
-	float avgSlope = 0.f;
-
-	for (int i = 0; i < slopes.size(); i++)
-		avgSlope += slopes[i];
-
-	avgSlope /= slopes.size();
-
-	return avgSlope;
-}
-
 void Tile::FlipChain(std::vector<b2Vec2> &chain)
 {
 	if (flipFlags == SDL_FLIP_NONE)
@@ -804,9 +819,7 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 		//Tile* yMirrorHillTileW = nullptr;
 		//Tile* yMirrorHillTileF = nullptr;
 		int layerCount = 0;
-		std::vector<float> slopes;
-
-		slopes.resize(MAX_EDGES);
+		float* slopes = new float[MAX_EDGES];
 
 
 		layerCount = sj_array_get_count(sj_object_get_value(sj_array_get_nth(genDescList, i), "layers"));
@@ -1204,8 +1217,7 @@ void TileManager::CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap
 						platformStart.Y++;
 				}
 
-				if(IsInBounds(coord.X + platformStart.X, coord.Y + platformStart.Y))
-					localMap[coord.Y + platformStart.Y][coord.X + platformStart.X] = 0;
+				localMap[coord.Y + platformStart.Y][coord.X + platformStart.X] = 0;
 			}
 
 			platformStarts.push_back(SDL_Rect(platformStart.X, platformStart.Y, randWidth, randHeight));
@@ -1276,23 +1288,36 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 
 	CreateLocalMap(pseudoMap, localMap);
 
+
+
+	
 	for (int y = 0; y < localMap.size(); y++) {
 		for (int x = 0; x < localMap[y].size(); x++) {
 			int platform = 1;
+<<<<<<< HEAD
 
+=======
+			std::vector<Coord> visitedPlatform;
+			
+			if (localMap[y][x] < 2)
+				continue;
+		
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 			std::vector<Coord> walk = PlatformDFS(x, y, platform, localMap);
 			if (platform > 0) {
 				std::cout << "Platform found starting at " << x << "," << y << std::endl;
-				platformsFound.push_back(walk);
 				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 0, 0, 255, 255);
 			}
 			else {
+				std::cout << "NO platform found at " << x << "," << y << std::endl;
 				SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), 255, 0, 0, 255);
+				continue;
 			}
 
 
 			for (Coord c : walk) {
 				localMap[c.Y][c.X] = platform == 1 ? 3 : 2;
+				visitedPlatform.push_back(c);
 				SDL_Rect r = { c.X * 5, c.Y * 5,5,5 };
 				SDL_RenderDrawRect(graphicsRef->GetRenderer(), &r);
 			}
@@ -1308,8 +1333,8 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 			&& IsInBounds(coord.X, coord.Y - 2)
 			&& localMap[coord.Y - 1][coord.X] == 0
 			&& localMap[coord.Y - 2][coord.X] == 0
-			&& (!localMap[coord.Y - 1][coord.X - 1] || localMap[coord.Y - 1][coord.X - 1] == 0)
-			&& (!localMap[coord.Y - 1][coord.X + 1] || localMap[coord.Y - 1][coord.X + 1] == 0)
+			&& localMap[coord.Y - 1][coord.X - 1] == 0
+			&& localMap[coord.Y - 1][coord.X + 1] == 0
 			&& std::find(platformSingles.begin(), platformSingles.end(), coord) == platformSingles.end()) {
 			platformSingles.push_back(coord);
 		}
@@ -1319,11 +1344,22 @@ void TileManager::FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std:
 		Coord start = platformSingles[i];
 		std::vector<Coord> cPlat;
 
+<<<<<<< HEAD
 		for (int xL = start.X - 1, xLOffset = start.X - 2; IsInBounds(xL, start.Y) && localMap[start.Y][xL] > 0 && localMap[start.Y - 1][xL] == 0; xL--, xLOffset--) {
 			localMap[start.Y][xL] = 3;
 			cPlat.emplace(cPlat.begin(), Coord(xL, start.Y));
 			if (!IsInBounds(xLOffset, start.Y) || localMap[start.Y][xLOffset] == 0)
 				break;
+=======
+		while (localMap[current.Y][current.X] == 3 
+			&& localMap[current.Y - 1][current.X] == 0
+			&& localMap[current.Y - 1][current.X + 1] == 0
+			&& localMap[current.Y - 1][current.X - 1] == 0 
+			&& localMap[current.Y - 2][current.X] == 0){
+			rowTiles.push_back(current);
+			localMap[current.Y][current.X] = 4;
+			current.X++;
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 		}
 
 		for (int xR = start.X, xROffset = start.X + 1; IsInBounds(xR, start.Y) && localMap[start.Y][xR] > 0 && localMap[start.Y-1][xR] == 0; xR++, xROffset++) {
@@ -1612,20 +1648,6 @@ void TileManager::PrintMapToConsole(std::vector<std::vector<int>> const & pmap =
 	system("cls");
 }
 
-Vector2 TileManager::GetSpawnPoint()
-{
-	Vector2 sp;
-
-	for (int y = 1; y < tileMap.size() - 1; y++)
-		for (int x = 1; x < tileMap[y].size() - 1; x++)
-			if (tileMap[y][x] == nullptr)
-				sp = { x * tileWidth * 1.0, y * tileHeight * 1.0 };
-
-	graphicsRef->Vector2PixelsToMeters(sp);
-
-	return sp;
-}
-
 void TileManager::CarveCaves(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<Coord>& carveWalk)
 {
 	GaussianBlur* blurStage = new GaussianBlur(GAUSSIAN_FILTER_SIZE);
@@ -1637,6 +1659,8 @@ void TileManager::CarveCaves(std::vector<std::vector<TileLayer>>& pseudoMap, std
 	std::vector<Coord> walk;
 	std::unordered_set<Coord, PairHash> walkPerimeter;
 	SDL_Rect testDraw{};
+
+	graphicsRef->Vector2PixelsToMeters(spawn);
 
 	walk = caveWalk->Walk(1, localMap, Coord(-1, -1));
 	SDL_RenderClear(graphicsRef->GetRenderer());
@@ -1653,6 +1677,8 @@ void TileManager::CarveCaves(std::vector<std::vector<TileLayer>>& pseudoMap, std
 	}
 
 	SDL_RenderPresent(graphicsRef->GetRenderer());
+
+	spawn = Vector2{ (walk[0].X * tileWidth * 1.0) + (tileWidth / 2), (walk[0].Y * tileHeight * 1.0) + (tileHeight / 2) };
 
 	walk.clear();
 
@@ -1808,8 +1834,9 @@ void TileManager::PrunePseudoMap(std::vector<std::vector<TileLayer>>& map)
 	}
 }
 
-void TileManager::CreateTileMapBodies(std::vector<std::vector<TileLayer>>& pseudoMap)
+void TileManager::CreateTileMapBodies(std::vector<std::vector<int>>& pseudoMap)
 {
+<<<<<<< HEAD
 	std::vector<Tile*> groundTiles = *this->tiles->FindTilesOfDirection(TileLayer::Ground, (Direction)(East | West));
 	std::vector<Tile*> wallTiles = *this->tiles->FindTilesOfDirection(TileLayer::Wall, (Direction)(East | West));
 	std::vector<Tile*> platformTiles = *this->tiles->FindTilesOfDirection(TileLayer::Platform, (Direction)(East | West));
@@ -1847,6 +1874,8 @@ void TileManager::CreateTileMapBodies(std::vector<std::vector<TileLayer>>& pseud
 			tileMap[y][x]->ClearExtras();
 		}
 	}
+=======
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 }
 
 TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& graphics, b2World* world, Vector2 playerDim)
@@ -1924,9 +1953,11 @@ void TileManager::UpdateMap()
 void TileManager::DrawMap(Vector2 cameraOffset, SDL_Rect& cameraBounds)
 {
 	Vector2 sDim = graphicsRef->GetScreenDimensions();
-	SDL_Rect srcRect(cameraBounds.x, cameraBounds.y, sDim.x, sDim.y);
+	SDL_Rect srcRect(cameraOffset.x, cameraOffset.y, sDim.x, sDim.y);
 
-		
+	srcRect.x = std::clamp(cameraOffset.x, 0.0, worldCols * tileWidth * 1.0);
+	srcRect.y = std::clamp(cameraOffset.y, 0.0, worldRows * tileHeight * 1.0);
+
 	SDL_RenderCopy(graphicsRef->GetRenderer(),
 		tileMapTexture,
 		&srcRect,
@@ -1934,21 +1965,35 @@ void TileManager::DrawMap(Vector2 cameraOffset, SDL_Rect& cameraBounds)
 
 }
 
+bool TileManager::IsInCameraBounds(Tile* t, SDL_Rect cameraBounds)
+{
+	Vector2 tPos = t->GetPixelPosition();
+
+	return tPos.x + tileWidth >= cameraBounds.x
+		&& tPos.x < cameraBounds.x + cameraBounds.w
+		&& tPos.y + tileHeight >= cameraBounds.y
+		&& tPos.y < cameraBounds.y + cameraBounds.h;
+}
+
 std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWorld, Vector2 pDim)
 {
 	SDL_Renderer* ren = graphicsRef->GetRenderer();
 	Uint32 fmt;
+<<<<<<< HEAD
 	std::vector<Tile*>* groundTilesFullCapped = this->tiles->FindTilesOfDirection(TileLayer::Ground, (Direction)(Direction::East | Direction::West));
+=======
+	std::vector<Tile*>* groundTilesFullCapped = groundTiles->FindTilesOfDirection((Direction)(Direction::East|Direction::West));
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 	std::vector<std::vector<TileLayer>> pseudoMap;
 	std::vector<SDL_Rect> platformStarts;
 	std::vector<std::pair<Coord, Coord>> carvingSpots;
 	std::vector<std::pair<Coord, Coord>> allCarvingSpots;
 	std::vector<Coord> walkPerimeter;
-	cameraBounds = SDL_Rect( 0, 0, worldCols * tileWidth, worldRows * tileHeight );
+	bounds = Vector4(0, 0, worldCols * tileWidth, worldRows * tileHeight);
 
 	tileMap.resize(worldRows);
-
-	for (int y = 0; y < tileMap.size(); y++)
+	
+	for(int y = 0; y < tileMap.size(); y++)
 		tileMap[y].resize(worldCols);
 
 	for (int row = 0; row < tileMap.size(); row++) {
@@ -1959,7 +2004,7 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 					(int)(rand() % groundTilesFullCapped->size())
 				)
 			);
-
+		
 			tileMap[row][col]->SetGridPosition(col, row);
 			pRow.push_back(TileLayer::Wall);
 		}
@@ -1986,8 +2031,6 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 	SDL_RenderPresent(graphicsRef->GetRenderer());
 
 	FillHills(pseudoMap, platformStarts, walkPerimeter);
-
-	CreateTileMapBodies(pseudoMap);
 
 	CreateMapRenderTarget();
 
@@ -2024,23 +2067,10 @@ std::vector<Coord> TileManager::PlatformDFS(int x, int y, int & platformFlag, st
 		pmap[yi][xi] = 3;
 		found.push_back(Coord(xi, yi));
 
-
-		if (IsInBounds(xi - 1, yi))
-			deque.push_back(Coord(xi - 1, yi));
-		else
-			platformFlag = 0;
-		if (IsInBounds(xi, yi - 1))
-			deque.push_back(Coord(xi, yi - 1));
-		else
-			platformFlag = 0;
-		if (IsInBounds(xi, yi + 1))
-			deque.push_back(Coord(xi, yi + 1));
-		else
-			platformFlag = 0;
-		if (IsInBounds(xi + 1, yi))
-			deque.push_back(Coord(xi + 1, yi));
-		else
-			platformFlag = 0;
+		deque.push_back(Coord(xi - 1, yi));
+		deque.push_back(Coord(xi, yi - 1));
+		deque.push_back(Coord(xi, yi + 1));
+		deque.push_back(Coord(xi + 1, yi));
 	}
 
 	return found;
@@ -2114,10 +2144,16 @@ TileCollection::~TileCollection()
 void TileCollection::AddTile(Tile* newTile)
 {
 	TileNode* cur = root;
+<<<<<<< HEAD
 	float avgSlope = newTile->GetAvgSlope();
+=======
+	TileNode* prev = nullptr;
+	float* slopes = newTile->GetSlopes();
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 	Direction newTileDir = newTile->GetCappingDirection();
 	TileLayer newTileLayer = newTile->GetTileLayer();
 
+<<<<<<< HEAD
 	if (!root->child) {
 		root->child = new TileNode();
 		root->child->direction = newTileDir;
@@ -2149,6 +2185,28 @@ void TileCollection::AddTile(Tile* newTile)
 	cur->child = new TileNode();
 	cur->child->direction = newTileDir;
 	cur->child->tiles[newTile->GetTileLayer()].push_back(newTile);
+=======
+	while(cur){
+		if ((cur->direction & newTileDir) == newTileDir) {
+			if (cur->tiles.empty())
+				cur->tiles.push_back(newTile);
+			else if (slopes[0] < cur->tiles.front()->GetSlopes()[0])
+				cur->tiles.insert(cur->tiles.begin(), newTile);
+			else
+				cur->tiles.push_back(newTile);
+
+			return;
+		}
+
+		prev = cur;
+		cur = cur->child;
+	}
+
+	prev->child = new TileNode();
+	cur = prev->child;
+	cur->direction = newTileDir;
+	cur->tiles.push_back(newTile);
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 }
 
 std::vector<Tile*>* TileCollection::FindTilesOfDirection(TileLayer layer, Direction dir)

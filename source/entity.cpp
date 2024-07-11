@@ -298,6 +298,7 @@ void EntityManager::EntityDrawAll(SDL_Rect cameraRect, float &accumulator)
 		p = (*it)->GetDrawPosition();
 		(*it)->UpdateScreenPosition(accumulator);
 		(*it)->Draw(camPos);
+
 	}
 }
 

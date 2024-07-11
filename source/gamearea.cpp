@@ -2,9 +2,13 @@
 #include "staticentity.h"
 
 GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphics, Vector2 playerDim) {
+<<<<<<< HEAD
 	Vector2 screenDim = graphics->GetScreenDimensions();
 	Vector2 cBounds;
 	Vector2 camRect(screenDim.x, screenDim.y);
+=======
+	Vector2 screenDim;
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 	id = ID;
 	player = nullptr;
 	entityManager = new EntityManager(1, graphics);//enabling debug draw with parameter, renderer
@@ -16,6 +20,14 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 	
 	screenDim = graphics->GetScreenDimensions();
 
+	camera = new Camera(
+		SDL_Rect(0,
+			0,
+			screenDim.x,
+			screenDim.y),
+		Vector4(0,0,0,0));
+
+	debugDraw = new DebugDraw(graphics, camera);
 
 	InitPhysicsWorld();
 
@@ -23,11 +35,15 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 		graphics, 
 		areaPhysics, 
 		playerDim);
+<<<<<<< HEAD
 	
 	tileManager->GenerateTileMap(areaPhysics, playerDim);
+=======
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 
-	cBounds = tileManager->GetBounds();
+	camera->SetBounds(tileManager->GetBounds());
 
+<<<<<<< HEAD
 	camera = new Camera(
 		camRect,
 		cBounds);
@@ -35,6 +51,9 @@ GameArea::GameArea(int ID, b2Vec2 grav, const std::shared_ptr<Graphics>& graphic
 	debugDraw = new DebugDraw(graphics, camera);
 	
 	debugDraw->AddTileMapRef(tileManager);
+=======
+	debugDraw->AddTileMapRef(tileManager->GenerateTileMap(areaPhysics, playerDim));
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 
 	playerPixelDimensions = playerDim;
 }
@@ -62,6 +81,7 @@ void GameArea::AreaThink() {
 void GameArea::AreaUpdate() {
 	if (!active)
 		return;
+
 	tileManager->UpdateMap();
 	entityManager->EntityUpdateAll();
 	camera->Move(player->GetDrawPosition(), cameraFollowStrength);
@@ -176,16 +196,33 @@ void GameArea::AreaDraw(float accum) {
 
 
 	//interpolate all ze positions
-	tileManager->DrawMap(Vector2(camRect.x, camRect.y), camRect);
-	entityManager->EntityDrawAll(camRect, accum);
-	debugDraw->DrawAll(accum);
+	tileManager->DrawMap(Vector2(camera->GetRect().x, camera->GetRect().y), camRect);
+	entityManager->EntityDrawAll(camera->GetRect(), accum);
+	debugDraw->DrawAll(accum, camRect);
 }
 
-b2Vec2 GameArea::GetSpawn()
+
+b2Vec2 GameArea::FindSpawnPointFromLeft()
 {
-	Vector2 pt = tileManager->GetSpawnPoint();
-	b2Vec2 spawnPt(pt.x, pt.y);
-	return spawnPt; 
+	std::vector<std::vector<Tile*>>* tilemap = tileManager->GetTileMap();
+	Vector2 pDim = playerPixelDimensions;
+	int col = 1;
+
+	for (int row = tilemap->size() - 2; col < tilemap[row].size()-2; row--) {
+		if (row < 1) {
+			row = tilemap->size()-2;
+			col++;
+		}
+		
+		if (tilemap->at(row).at(col) != nullptr && tilemap->at(row-1).at(col) == nullptr) {
+			Vector2 worldSpawn(col * tileManager->GetTileDimensions().x, (row - 1) * tileManager->GetTileDimensions().y);
+			graphics->Vector2PixelsToMeters(worldSpawn);
+
+			return b2Vec2(worldSpawn.x + pDim.x / 2, worldSpawn.y);
+		}
+	}
+
+	return b2Vec2(0,0);
 }
 
 void GameArea::InitPhysicsWorld()
@@ -208,7 +245,7 @@ void GameArea::AddEntity(Entity* e) {
 void GameArea::SetPlayer(Player* p) {
 	Vector2 dim = p->GetAvgPixelDimensions();
 	Vector2 sD = graphics->GetScreenDimensions();
-	
+
 	player = p;
 	player->SetInputQueuePtr(entityManager->GetInputQueue());
 	player->SetEventsToFirePtr(entityManager->GetEventsToFire());

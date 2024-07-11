@@ -24,15 +24,25 @@ private:
 
 	std::shared_ptr<Graphics>				graphics;
 
+<<<<<<< HEAD
 	Player									*player;
 
 	EntityManager							*entityManager;
 
 	b2Vec2									gravityScale;
 	b2World									*areaPhysics;
+=======
+	Player*							player;
+
+	EntityManager*					entityManager;
+
+	b2Vec2							gravityScale;
+	b2World*						areaPhysics;
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 
 	Vector2									playerPixelDimensions;
 
+<<<<<<< HEAD
 	TileManager								*tileManager;
 
 	ContactListener							*listener;
@@ -47,6 +57,31 @@ private:
 	DebugDraw								*debugDraw;
 
 	float									cameraFollowStrength;
+=======
+	TileManager*					tileManager;
+
+	//Test ground vars
+	b2Body*							ground;
+	b2BodyDef						groundBD;
+	b2PolygonShape					groundBox;
+
+	b2Body*							testPlatform;
+	float							testPlatformBottom;
+	float							testPlatformTop;
+
+	ContactListener*				listener;
+
+	double							fixedTimestepAccum;
+	double							fixedTimestepAccumRatio;
+	const float						timeStep = 1.f / 60.f;
+	const int32						velocityIterations = 6;
+	const int32						positionIterations = 2;
+
+	Camera*							camera;
+	DebugDraw*						debugDraw;
+
+	float							cameraFollowStrength;
+>>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 
 	void InitPhysicsWorld();
 
@@ -86,5 +121,5 @@ public:
 
 	b2Vec2 GetGravityScale() { return gravityScale; }
 
-	b2Vec2 GetSpawn();
+	b2Vec2 FindSpawnPointFromLeft();
 };
