@@ -86,5 +86,5 @@ public:
 
 	b2Vec2 GetGravityScale() { return gravityScale; }
 
-	b2Vec2 GetSpawn();
+	b2Vec2 FindSpawnPointFromLeft();
 };

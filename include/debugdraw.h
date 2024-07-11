@@ -36,7 +36,7 @@ private:
 
 public:
 
-	DebugDraw(const std::shared_ptr<Graphics>& graphics, Camera* cam);
+	DebugDraw(const std::shared_ptr<Graphics>& graphicsr, Camera* cam);
 	~DebugDraw();
 
 	void SetWorldDimensions(b2Vec2 dim);
