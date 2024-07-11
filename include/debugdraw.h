@@ -12,7 +12,6 @@
 
 class DebugDraw {
 private:
-<<<<<<< HEAD
 	std::shared_ptr<Graphics>					graphicsRef;
 	std::unordered_map<int, Entity*>			entityRefs;
 	TileManager*								mapRef;
@@ -20,13 +19,6 @@ private:
 	Camera*										camera;
 	int32										worldWidth, worldHeight;
 	int											camX, camY, camWidth, camHeight;
-=======
-	std::shared_ptr<Graphics>			graphicsRef;
-	std::unordered_map<int, Entity*>	entityRefs;
-	std::vector<Tile*>					tileRefs;
-	Camera*								camera;
-	int32								worldWidth, worldHeight;
->>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 		
 	// Inherited via b2Draw
 	void DrawRect(b2Body* bodyRef, const SDL_Rect* rect, const SDL_Color& color);
@@ -44,18 +36,12 @@ private:
 
 public:
 
-	DebugDraw(const std::shared_ptr<Graphics>& graphicsr, Camera* cam);
+	DebugDraw(const std::shared_ptr<Graphics>& graphics, Camera* cam);
 	~DebugDraw();
 
 	void SetWorldDimensions(b2Vec2 dim);
 	void AddEntityRef(Entity* entityRef);
-<<<<<<< HEAD
 	void AddShapeRef(Tile* tile);
 	void AddTileMapRef(TileManager* tilemapRef);
 	void DrawAll(float &accum);
-=======
-	void AddTileRef(Tile* tile) { tileRefs.push_back(tile); }
-	void AddTileMapRef(std::vector<std::vector<Tile*>>* tilemapRef);
-	void DrawAll(float &accum, SDL_Rect camRect);
->>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 };

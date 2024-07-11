@@ -15,7 +15,7 @@ void DebugDraw::SetWorldDimensions(b2Vec2 dim) {
 
 void DebugDraw::DrawPolygon(b2Body* bodyRef, const b2Vec2* vertices, int32 vertexCount, const SDL_Color& color)
 {
-	int x1 = 0, x2 = 0, y1 = 0, y2 = 0, camX = camera->GetRect().x, camY = camera->GetRect().y;
+	int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 	b2Vec2 t;
 	Vector2 a = {},
 		b = {};
@@ -49,7 +49,7 @@ void DebugDraw::DrawPolygon(b2Body* bodyRef, const b2Vec2* vertices, int32 verte
 
 void DebugDraw::DrawTriggerPolygon(b2Body* bodyRef, const b2Vec2* vertices, int32 vertexCount, const SDL_Color& color)
 {
-	int x1 = 0, x2 = 0, y1 = 0, y2 = 0, camX = camera->GetRect().x, camY = camera->GetRect().y;
+	int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 	b2Vec2 t;
 	Vector2 a = {},
 		b = {};
@@ -104,7 +104,6 @@ void DebugDraw::DrawChainShape(b2Body* bodyRef, const b2Vec2* vertices, int32 ve
 	Vector2 a, b;
 	b2Vec2 p1;
 	b2Vec2 p2;
-	int camX = camera->GetRect().x, camY = camera->GetRect().y;
 
 	SDL_SetRenderDrawColor(graphicsRef->GetRenderer(), color.r, color.g, color.b, 255);
 
@@ -186,9 +185,8 @@ DebugDraw::~DebugDraw()
 	graphicsRef.reset();
 }
 
-void DebugDraw::DrawAll(float& accum, SDL_Rect camRect)
+void DebugDraw::DrawAll(float& accum)
 {
-<<<<<<< HEAD
 	SDL_Renderer* ren = graphicsRef->GetRenderer();
 	std::vector<std::vector<Tile*>>* tileRefs = mapRef->GetTileMap();
 	camX = camera->GetRect().x;
@@ -199,33 +197,6 @@ void DebugDraw::DrawAll(float& accum, SDL_Rect camRect)
 	for (auto row : *tileRefs) {
 		for (auto tile : row) {
 			if (!tile)
-=======
-	for (auto tile : tileRefs) {
-		Tile* thisTile = tile;
-
-		if (!tile)
-			continue;
-		if (Vector2 tPos = thisTile->GetPixelPosition(); !(tPos.x + thisTile->GetPixelDimensions().x >= camRect.x)
-			|| !(tPos.x< camRect.x + camRect.w)
-			|| !(tPos.y + thisTile->GetPixelDimensions().y >= camRect.y)
-			|| !(tPos.y < camRect.y + camRect.h))
-			continue;
-
-		b2Body* body = thisTile->GetBodyReference();
-		SDL_Color debugColor = thisTile->GetDebugColor();
-		if (!body)
-			continue;
-
-
-		for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
-			b2Shape::Type shapeType = f->GetType();
-
-			if (shapeType == b2Shape::e_polygon) {
-				b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
-
-				DrawPolygon(body, poly->m_vertices, poly->m_count, debugColor);
-
->>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 				continue;
 			Vector2 tPos = tile->GetPixelPosition();
 
@@ -266,10 +237,10 @@ void DebugDraw::DrawAll(float& accum, SDL_Rect camRect)
 		if (!body)
 			continue;
 
-		if (Vector2 ePos = thisEntity->GetDrawPosition(); !(ePos.x + thisEntity->GetAvgPixelDimensions().x >= camRect.x)
-			|| !(ePos.x < camRect.x + camRect.w)
-			|| !(ePos.y + thisEntity->GetAvgPixelDimensions().y >= camRect.y)
-			|| !(ePos.y < camRect.y + camRect.h))
+		if (Vector2 ePos = thisEntity->GetDrawPosition(); !(ePos.x + thisEntity->GetAvgPixelDimensions().x >= camX)
+			|| !(ePos.x < camX + camWidth)
+			|| !(ePos.y + thisEntity->GetAvgPixelDimensions().y >= camY)
+			|| !(ePos.y < camY + camHeight))
 			continue;
 		
 		for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
@@ -313,7 +284,6 @@ void DebugDraw::DrawAll(float& accum, SDL_Rect camRect)
 
 void DebugDraw::DrawCircle(b2Body* bodyRef, const b2Vec2& c, float radius, const SDL_Color& color)
 {
-	int camX = camera->GetRect().x, camY = camera->GetRect().y;
 	float pih = M_PI / 2.0; //half of pi
 	uint8_t sides = 16;
 	float step = 2 * M_PI / sides;
@@ -357,7 +327,6 @@ void DebugDraw::DrawSolidCircle(b2Body* bodyRef, const b2Vec2& center, float rad
 
 void DebugDraw::DrawSegment(b2Body* bodyRef, const b2Vec2& p1, const b2Vec2& p2, const SDL_Color& color)
 {
-	int camX = camera->GetRect().x, camY = camera->GetRect().y;
 	Vector2 a = {},
 		b = {};
 

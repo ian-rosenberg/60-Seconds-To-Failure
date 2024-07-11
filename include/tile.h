@@ -122,16 +122,13 @@ private:
 
 	//Rotation in degrees for SDL2
 	float													zRot;
-	float*													slopes;
+
+	std::vector<float>										slopes;
 
 
 public:
 	Tile();
-<<<<<<< HEAD
 	Tile(int id, int texID, Sprite* srcSheet, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect, std::vector<float> slopes);
-=======
-	Tile(int id, Sprite* srcSheet, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect, float* slopes);
->>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 	Tile(const Tile& oldTile);
 	Tile& operator= (const Tile& other);
 
@@ -184,20 +181,16 @@ public:
 	Direction												GetCappingDirection() { return capDirection; }
 	std::vector<std::vector<SDL_Color>>						GetTilePixels();
 
-	float*													GetSlopes() { return slopes; }
+	std::vector<float>										GetSlopes() { return slopes; }
+	float													GetAvgSlope();
 	void													FlipChain(std::vector<b2Vec2>& chain);
 
 	SDL_RendererFlip										GetFlipFlags() { return flipFlags; }
 
 	float													GetZRotation() { return zRot; }
-<<<<<<< HEAD
 	Coord													GetGridPosition() { return Coord(gridX,gridY); }
 
 	const int												GetTextureID() { return textureID; }
-=======
-	b2Fixture*												GetShapeFixture(){ return fixture; }
-	Coord										GetGridPosition() { return Coord(gridX,gridY); }
->>>>>>> parent of e025855 (Camera is in a good state, working on hill gen again)
 };
 
 typedef struct TileNode {
@@ -231,9 +224,7 @@ private:
 	SDL_Texture*											tileMapTexture;
 	Vector2													tileMapTextureDrawPosition;
 
-	Vector2													spawn;
-
-	Vector4													bounds;
+	Coord													spawn;
 
 	std::vector<std::vector<Tile*>>     					tileMap;
 
@@ -247,7 +238,7 @@ private:
 
 	std::shared_ptr<Graphics>								graphicsRef;
 
-	b2World* physics;
+	b2World*												physics;
 
 	Vector2													playerDimensions;
 	Vector2													worldSize;
@@ -260,7 +251,7 @@ private:
 	void													CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformStarts);
 	void													FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformTops, std::vector<Coord>& caveWalkPerimeter);
 	//void													FillCeiling(std::vector<std::vector<int>>& pseudoMap);
-	void													CreateTileMapBodies(std::vector<std::vector<int>>& pseudoMap);
+	void													CreateTileMapBodies(std::vector<std::vector<TileLayer>>& pseudoMap);
 	void													CreateMapRenderTarget();
 	void													ConvertLocalMapToTileLayer(std::vector<std::vector<int>>& localMap, std::vector<std::vector<TileLayer>>& pseudoMap);
 	void													CreateLocalMap(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<std::vector<int>>& localMap);
@@ -277,15 +268,13 @@ public:
 
 	void DrawMap(Vector2 cameraOffset, SDL_Rect& cameraBounds);
 
-	bool IsInCameraBounds(Tile* t, SDL_Rect cameraBounds);
-
 	std::vector<std::vector<Tile*>>* GenerateTileMap(b2World* physicsWorld, Vector2 pDim);
 
 	Vector2 GetTileDimensions() { return Vector2(tileWidth, tileHeight); }
 
 	std::vector<std::vector<Tile*>>* GetTileMap() { return &tileMap; }
 
-	Vector4 GetBounds() { return bounds; }
+	Vector2 GetBounds() { return Vector2(cameraBounds.w, cameraBounds.h); }
 
 	bool IsOfPlatform(int x, int y);
 	
@@ -294,4 +283,6 @@ public:
 	std::vector<std::vector<SDL_Color>> CopyRectOfTilePixelsFromTexture(SDL_Rect* sR);
 	std::unordered_set<Coord, PairHash> GetWalkPerimeter(std::vector<Coord>& caveWalk, std::vector<std::vector<int>>& localMap);
 	void PrintMapToConsole(std::vector<std::vector<int>> const & pmap);
+
+	Vector2 GetSpawnPoint();
 };
