@@ -19,9 +19,7 @@ private:
 public:
 	StaticEntity();
 
-	StaticEntity(const std::shared_ptr<Graphics>& graphics);
-
-	StaticEntity(const std::shared_ptr<Graphics>& graphics, float w, float h, Vector2 startPos);
+	StaticEntity(float w, float h, Vector2 startPos);
 
 	~StaticEntity();
 

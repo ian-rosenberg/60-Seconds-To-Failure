@@ -10,47 +10,45 @@ Animation::Animation(const Animation & old)
 	length = old.length;
 	cellWidth = old.cellWidth;
 	cellHeight = old.cellHeight;
-	yOffset = old.yOffset;
-	xOffset = old.xOffset;
 	colorSpecial = old.colorSpecial;
 	animType = old.animType;
 	graphics = nullptr;
 	cFrame = 0.f;
 	pFrame = 0.f;
+	stripDirection = old.stripDirection;
+	srcRect = old.srcRect;
+	paused = 0;
+	frameRate = old.frameRate;
+	animStateType = old.animStateType;
 }
 
-Animation::Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics)
+Animation::Animation(std::string n, std::string fp, int len, int width, int height, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics, unsigned short animDir, State aState)
 {
 	name = n;
 	filepath = fp;
-	sprite = new Sprite(fp.c_str(), vector2( 0,0 ), vector2( 1,1 ), vector2(0,0), vector3( 0,0,0 ), vector2( 0,0 ), color, 0, yOffset, width, height, graphics);
+	sprite = new Sprite(fp.c_str(), vector2( 0,0 ), vector2( 1,1 ), vector2(0,0), vector3( 0,0,0 ), vector2( 0,0 ), color, 0, 0, width, height, graphics);
 	length = len;
 	cellWidth = width;
 	cellHeight = height;
-	this->yOffset = yOffset;
-	xOffset = 0;
 	colorSpecial = color;
 	animType = type;
 	this->graphics = (const std::shared_ptr<Graphics>&)graphics;
 	cFrame = 0.f;
 	pFrame = 0.f;
-}
+	srcRect = { 0,0,cellWidth,cellHeight };
+	paused = 0;
+	frameRate = fr;
+	animStateType = aState;
 
-Animation::Animation(std::string n, Sprite* s, int width, int height, int xOffset, int yOffset, Vector4 color, const std::shared_ptr<Graphics>& graphics)
-{
-	name = n;
-	filepath = s->GetFilePath();
-	sprite = s;
-	length = 1;
-	cellWidth = width;
-	cellHeight = height;
-	this->yOffset = yOffset;
-	xOffset = 0;
-	colorSpecial = color;
-	animType = AnimationType::AT_LOOP;
-	this->graphics = graphics;
-	cFrame = 0.f;
-	pFrame = 0.f;
+	if (animDir == 0) {
+		stripDirection = AnimationDirection::X;
+	}
+	else if (animDir == 1){		
+		stripDirection = AnimationDirection::Y;
+	}
+	else {
+		stripDirection = AnimationDirection::BOTH;
+	}
 }
 
 Animation::~Animation()
@@ -66,13 +64,16 @@ Animation::~Animation()
 
 AnimationReturnType Animation::AnimationNextFrame()
 {
+	if (paused)
+		return AnimationReturnType::ART_HOLD;
+	
 	if (!sprite)
 	{
 		std::cout << "No animation found by name!" << std::endl;
 		return AnimationReturnType::ART_ERROR;
 	}
 	float dT = graphics->GetFrameDeltaTime() / 1000.0f;
-	float framesToUpdate = dT / (1.0f / SPRITE_ANIMATION_RATE);
+	float framesToUpdate = dT / frameRate;
 	float alpha = graphics->GetAccumulatorTime();
 
 	pFrame = cFrame;
@@ -80,10 +81,14 @@ AnimationReturnType Animation::AnimationNextFrame()
 	if (framesToUpdate > 0) {
 		cFrame += framesToUpdate;
 	}
+	else {
+		cFrame += frameRate;
+	}
 
-	cFrame = cFrame * alpha + pFrame * (1.0 - alpha);
+	cFrame = pFrame + (cFrame-pFrame) * alpha;
 
-	if (cFrame >= length - 1)
+
+	if ((int)cFrame >= length - 1)
 	{
 		switch (animType)
 		{
@@ -93,8 +98,57 @@ AnimationReturnType Animation::AnimationNextFrame()
 		case AnimationType::AT_ONCE:
 			cFrame = 0;
 			return AnimationReturnType::ART_END;
+		case AnimationType::AT_HOLD:
+			paused = true;
+			break;
 		}
+	}
+	if(stripDirection == AnimationDirection::BOTH)
+		srcRect = { int(cFrame) * cellWidth,
+		int(cFrame) * cellHeight, 
+		cellWidth, 
+		cellHeight 
+		};
+	else if(stripDirection == AnimationDirection::Y)
+		srcRect = { 0,
+			int(cFrame) * cellHeight,
+			cellWidth,
+			cellHeight
+	};
+	else {
+		srcRect = { int(cFrame) * cellWidth,
+		0,
+		cellWidth,
+		cellHeight
+		};
 	}
 
 	return AnimationReturnType::ART_INPROGRESS;
 }
+
+void Animation::DrawAnimationCell(Vector2 pixelDrawPosition, SDL_RendererFlip flipFlags)
+{
+	sprite->Draw(pixelDrawPosition, srcRect, flipFlags);
+}
+
+bool Animation::PauseAnimation()
+{
+	if (paused > 0)
+		return false;
+	else
+		paused = 1;
+
+	return true;
+}
+
+bool Animation::ResumeAnimation()
+{
+	if (paused < 1)
+		return false;
+	else
+		paused = 0;
+
+	return true;
+}
+
+

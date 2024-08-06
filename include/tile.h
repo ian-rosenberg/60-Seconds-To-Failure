@@ -122,12 +122,11 @@ private:
 
 	//Rotation in degrees for SDL2
 	float													zRot;
-	float*													slopes;
 
 
 public:
 	Tile();
-	Tile(int id, int texID, Sprite* srcSheet, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect, std::vector<float> slopes);
+	Tile(int id, int texID, Sprite* srcSheet, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect);
 	Tile(const Tile& oldTile);
 	Tile& operator= (const Tile& other);
 
@@ -154,16 +153,16 @@ public:
 
 	SDL_Color												GetDebugColor() { return debugColor; }
 
-	//b2Vec2													GetTopChainFirstVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? topChain.front() : topChain.back(); }
-	//b2Vec2													GetTopChainLastVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? topChain.back() : topChain.front(); }
-	//b2Vec2													GetBottomChainFirstVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.front() : bottomChain.back(); }
-	//b2Vec2													GetBottomChainLastVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.back() : bottomChain.front(); }
+	b2Vec2													GetTopChainFirstVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? topChain.front() : topChain.back(); }
+	b2Vec2													GetTopChainLastVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? topChain.back() : topChain.front(); }
+	b2Vec2													GetBottomChainFirstVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.front() : bottomChain.back(); }
+	b2Vec2													GetBottomChainLastVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.back() : bottomChain.front(); }
 
 		
-	b2Vec2													GetTopChainFirstVertex() { return topChain.front(); }
-	b2Vec2													GetTopChainLastVertex() { return topChain.back(); }
-	b2Vec2													GetBottomChainFirstVertex() { return bottomChain.front(); }
-	b2Vec2													GetBottomChainLastVertex() { return bottomChain.back(); }
+	//b2Vec2													GetTopChainFirstVertex() { return topChain.front(); }
+	//b2Vec2													GetTopChainLastVertex() { return topChain.back(); }
+	//b2Vec2													GetBottomChainFirstVertex() { return bottomChain.front(); }
+	//b2Vec2													GetBottomChainLastVertex() { return bottomChain.back(); }
 																																					 
 	b2Vec2													GetWorldPosition() { return worldPosition; }											 
 	Vector2													GetPixelPosition() { return pixelPosition; }
@@ -180,7 +179,6 @@ public:
 	Direction												GetCappingDirection() { return capDirection; }
 	std::vector<std::vector<SDL_Color>>						GetTilePixels();
 
-	float*													GetSlopes() { return slopes; }
 	void													FlipChain(std::vector<b2Vec2>& chain);
 
 	SDL_RendererFlip										GetFlipFlags() { return flipFlags; }
@@ -213,6 +211,8 @@ public:
 
 class TileManager {
 private:
+
+	Coord													entrance, exit;
 	//Capping direction
 	Uint8													active;
 	TileCollection*											tiles;
@@ -224,9 +224,9 @@ private:
 
 	Vector2													spawn;
 
-	Vector4													bounds;
+	Vector2													bounds;
 
-	std::vector<std::vector<Tile*>>     					tileMap;
+	std::vector<std::vector<Tile*>>*     					tileMap;
 
 	int														tileWidth;
 	int														tileHeight;
@@ -251,7 +251,7 @@ private:
 	void													CreatePlatforms(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformStarts);
 	void													FillHills(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<SDL_Rect>& platformTops, std::vector<Coord>& caveWalkPerimeter);
 	//void													FillCeiling(std::vector<std::vector<int>>& pseudoMap);
-	void													CreateTileMapBodies(std::vector<std::vector<int>>& pseudoMap);
+	void													CreateTileMapBodies(std::vector<std::vector<TileLayer>>& pseudoMap);
 	void													CreateMapRenderTarget();
 	void													ConvertLocalMapToTileLayer(std::vector<std::vector<int>>& localMap, std::vector<std::vector<TileLayer>>& pseudoMap);
 	void													CreateLocalMap(std::vector<std::vector<TileLayer>>& pseudoMap, std::vector<std::vector<int>>& localMap);
@@ -274,9 +274,9 @@ public:
 
 	Vector2 GetTileDimensions() { return Vector2(tileWidth, tileHeight); }
 
-	std::vector<std::vector<Tile*>>* GetTileMap() { return &tileMap; }
+	std::vector<std::vector<Tile*>>* GetTileMap() { return tileMap; }
 
-	Vector4 GetBounds() { return bounds; }
+	Vector2 GetBounds() { return bounds; }
 
 	bool IsOfPlatform(int x, int y);
 	
@@ -285,4 +285,6 @@ public:
 	std::vector<std::vector<SDL_Color>> CopyRectOfTilePixelsFromTexture(SDL_Rect* sR);
 	std::unordered_set<Coord, PairHash> GetWalkPerimeter(std::vector<Coord>& caveWalk, std::vector<std::vector<int>>& localMap);
 	void PrintMapToConsole(std::vector<std::vector<int>> const & pmap);
+
+	Coord GetSpawn() { return Coord(spawn.x, spawn.y); }
 };

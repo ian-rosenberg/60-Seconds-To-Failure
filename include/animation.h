@@ -8,6 +8,9 @@ enum class State
 {
 	State_Idle,
 	State_Walking,
+	State_Jumping,
+	State_Falling,
+	State_Landing,
 	State_Attacking,
 	State_Hurt,
 	State_Death,
@@ -18,6 +21,7 @@ enum class AnimationType
 {
 	AT_ONCE,
 	AT_LOOP,
+	AT_HOLD
 };
 
 enum class AnimationReturnType
@@ -25,7 +29,15 @@ enum class AnimationReturnType
 	ART_ERROR,
 	ART_LOOPING,
 	ART_INPROGRESS,
+	ART_HOLD,
 	ART_END
+};
+
+enum class AnimationDirection : unsigned short
+{
+	X,
+	Y,
+	BOTH
 };
 
 /**
@@ -39,22 +51,29 @@ private:
 	std::shared_ptr<Graphics> graphics;
 
 protected:
-	Sprite*			sprite;
+	Uint8				paused;
+	Sprite*				sprite;
 
-	int				length;
-	int				cellWidth, cellHeight, yOffset, xOffset;
-	float           cFrame;
-	float           pFrame;
+	SDL_Rect			srcRect;
+
+	int					length;
+	int					cellWidth, cellHeight;
+	float				cFrame;
+	float				pFrame;
+	float				frameRate;
 
 
-	Vector4			colorSpecial;	
+	Vector4				colorSpecial;	
 
-	AnimationType	animType;
+	AnimationType		animType;
+
+	State				animStateType;
+
+	AnimationDirection	stripDirection;
 
 public:
 	Animation(const Animation & old);
-	Animation(std::string n, std::string fp, int len, int width, int height, int xOffset, int yOffset, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics);
-	Animation(std::string n, Sprite* s, int width, int height, int xOffset, int yOffset, Vector4 color, const std::shared_ptr<Graphics>& graphics);
+	Animation(std::string n, std::string fp, int len, int width, int height, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics, unsigned short animDir, State aState);
 	~Animation();
 
 	/**
@@ -69,14 +88,6 @@ public:
 		return floor(cFrame);
 	}
 
-	int GetYOffset() {
-		return yOffset;
-	}
-
-	int GetXOffset() {
-		return xOffset;
-	}
-
 	int GetCellHeight() {
 		return cellHeight;
 	}
@@ -89,7 +100,23 @@ public:
 		return name;
 	}
 
-	Sprite* GetSprite() {
-		return sprite;
+	int GetLength() {
+		return length;
 	}
+
+	void DrawAnimationCell(Vector2 pixelDrawPosition, SDL_RendererFlip flipFlags);
+
+	bool PauseAnimation();
+
+	bool ResumeAnimation();
+
+	bool IsLastFrame() { return (int)cFrame == (length - 1); }
+
+	bool IsPaused() { return paused > 0; }
+
+	bool InProgress() { return (int)cFrame < length - 1; }
+
+	State GetAnimStateType() { return animStateType; }
+
+	void ResetFrame() { cFrame = 0; }
 };

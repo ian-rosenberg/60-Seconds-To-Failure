@@ -23,15 +23,15 @@ Player::Player(const std::shared_ptr<Graphics>& graphics) : Entity{ -1 }
 	energy = maxEnergy;
 	jumpForce = 10.f;
 	scale = { 1,1 };
-	prevDrawPosition = newDrawPosition = { 0,0 };
+	prevDrawPosition = newDrawPosition = resultPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
 
 	punching = false;
-	this->graphics = graphics;
-	LoadActor(actorFilePath.c_str());
-	SetWorldDimensions(b2Vec2(avgDim.x * MET_IN_PIX, avgDim.y * MET_IN_PIX));
-	currentAnimation = GetAnimationByName("idle");
-	currentSprite = currentAnimation->GetSprite();
+	animActor =	LoadActor(actorFilePath.c_str(), graphics);
+	pixelDimensions = animActor->GetAvgDimensions();
+	SetWorldDimensions(b2Vec2(pixelDimensions.x * MET_IN_PIX, pixelDimensions.y * MET_IN_PIX));
+	animActor->SetAnimationState(State::State_Idle);
+	currentEvent = nullptr;
 }
 
 Player::~Player()
@@ -53,195 +53,128 @@ Player::~Player()
 	}
 	delete eventsToFire;
 
-	graphics.reset();
+	currentEvent = nullptr;
 }
 
 void Player::Think() {
-	InputEvent* cEvent = nullptr;
 	InputEvent* pEvent;
 	InputType t;
 
-	DecrementJumpTimer(graphics->GetFrameDeltaTime());
-
 	while (!inputQueue->empty()) {
-		pEvent = cEvent;
-		cEvent = inputQueue->front();
+		pEvent = currentEvent;
+		currentEvent = inputQueue->front();
 		inputQueue->erase(inputQueue->begin());
-		t = cEvent->inputType;
+		t = currentEvent->inputType;
+		currentEvent->repeat = currentEvent->e->key.repeat;
 
-		if (pEvent && pEvent->inputType == t) {
+		if (currentEvent->repeat > 0) {
 			if (t == WALK_UP) {
 				velocity.y = -maxSpeed;
-				cEvent->data = &velocity;
-				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);				
+				currentEvent->data = &velocity;
+				currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
 			}
 			else if (t == WALK_DOWN) {
 				velocity.y = maxSpeed;
-				cEvent->data = &velocity;
-				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);				
+				currentEvent->data = &velocity;
+				currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
 			}
 			else if (t == WALK_LEFT) {
 				velocity.x = -maxSpeed;
-				cEvent->data = &velocity;
-				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);				
+				currentEvent->data = &velocity;
+				currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
 			}
 			else if (t == WALK_RIGHT) {
 				velocity.x = maxSpeed;
-				cEvent->data = &velocity;
-				cEvent->onHold = std::bind(&Entity::SetVelocity, this, cEvent);				
-			}
-			else if (IsGrounded()) {
-				velocity.x = 0;
-				cEvent->data = &velocity;
-				cEvent->onRelease = std::bind(&Entity::SetVelocity, this, cEvent);
+				currentEvent->data = &velocity;
+				currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
 			}
 		}
 		else {
 			if (t == WALK_UP) {
 				velocity.x = velocity.x;
 				velocity.y = -maxSpeed;
-				cEvent->data = &velocity;
-				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);				
+				currentEvent->data = &velocity;
+				currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
 			}
 			else if (t == WALK_DOWN) {
 				velocity.x = velocity.x;
 				velocity.y = maxSpeed;
-				cEvent->data = &velocity;
-				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);				
+				currentEvent->data = &velocity;
+				currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
 			}
 			else if (t == WALK_LEFT) {
 				velocity.x = -maxSpeed;
 				velocity.y = velocity.y;
-				cEvent->data = &velocity;
-				cEvent->onPress = std::bind(&Entity::SetVelocity, this, cEvent);				
+				currentEvent->data = &velocity;
+				currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
 			}
 			else if (t == WALK_RIGHT) {
 				velocity.x = maxSpeed;
 				velocity.y = velocity.y;
-				cEvent->data = &velocity;
-				cEvent->onRelease = std::bind(&Entity::SetVelocity, this, cEvent);				
+				currentEvent->data = &velocity;
+				currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
 			}
 		}
 
-		if (t == JUMP && IsGrounded()) {
+		if (t == JUMP && (IsGrounded() || (jumpTimer <= 0 && jumpCount < jumpMax))) {
 			//ResetJumpTimer();
-			cEvent->onPress = std::bind(&Entity::Jump, this, cEvent);
+			jumpCount++;
+			currentEvent->onPress = std::bind(&Entity::Jump, this, currentEvent);
+			jumpTimer = jumpCooldown;
 		}
 
-		eventsToFire->push(cEvent);
+		eventsToFire->push(currentEvent);
 	}
 }
 
-void Player::Draw(Vector2 cameraPosition)
-{
-	Vector4 debugColor = vector4(.5, 1, 0, 1);
-	Vector2 resultPosition;
-
-	resultPosition = { newDrawPosition.x - cameraPosition.x,
-		newDrawPosition.y - cameraPosition.y };
-
+void Player::Draw(Vector2 cameraPosition){	
 	if (!this)
 	{
 		return;
 	}
 
-	if ((health / maxHealth) < 0.25f)
-	{
-		color = vector4(SDL_MAX_UINT8, 0, 0, SDL_MAX_UINT8);
-	}
-	else
-	{
-		color = vector4(SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8, SDL_MAX_UINT8);
-	}
+	Entity::Draw(cameraPosition);
 
-	scaleCenter = vector2(currentAnimation->GetCellWidth() / 2.0f,
-		currentAnimation->GetCellHeight() / 2.0f);
-
-	currentSprite->Draw(currentSprite,
-		resultPosition,
-		&scale,
-		&scaleCenter,
-		&rotation,
-		flip,
-		&color,
-		currentAnimation->GetCurrentFrame(),
-		currentAnimation->GetYOffset(),
-		currentAnimation->GetCellWidth(),
-		currentAnimation->GetCellHeight());
-
-	//std::cout << resultPosition.x << "," << resultPosition.y << std::endl;
-	//std::cout << "Player Velocity (" << velocity.x << ", " << velocity.y << ")" << std::endl;
-	
-	if (currentAnimation->AnimationNextFrame() == AnimationReturnType::ART_END) {
-		animState = State::State_Idle;
-		currentAnimation = GetAnimationByName("idle");
-		currentSprite = currentAnimation->GetSprite();
-	 }
 }
 
 
 
 void Player::Update()
 {
-	b2Vec2 bodyVelocity = body->GetLinearVelocity();
-		
-	SetLogicalState(State::State_Idle);
+	this->Entity::Update();
 
-	if (dead)
-	{
-		return;
-	}
-	
-	if (abs(bodyVelocity.x) > .01f)
-	{
-		if (velocity.x < 0)
-		{
-			flip.x = 1;
-		}
-		else if (velocity.x > 0)
-		{
-			flip.x = 0;
-		}
-		SetLogicalState(State::State_Walking);
-	}
+
+	//If anim in progress
+	//if (currentAnimation->InProgress()) {
+	//	//jumping/falling
+	//	if ((int)bodyVelocity.y != 0 && animState != State::State_Jumping) {
+	//		if (bodyVelocity.y > 0) {
+	//			logicalState = State::State_Jumping;
+	//		}
+	//		else if(bodyVelocity.y < 0 && animState == State::State_Jumping){
+	//			logicalState = State::State_Falling;
+	//		}
+	//		else if ((int)bodyVelocity.y == 0 && animState == State::State_Falling) {
+	//			logicalState = State::State_Landing;
+	//		}
+	//	}	
+	//}
+	//else {
+	//	if ((int)bodyVelocity.y > 0 && animState != State::State_Jumping)
+	//		logicalState = State::State_Jumping;
+	//	else
+	//		logicalState = State::State_Idle;
+	//}
 
 	//std::cout << "World Position: " << newBodyPosition.x << "," << newBodyPosition.y << std::endl;
 	//std::cout << "Draw Position: " << newDrawPosition.x << "," << newDrawPosition.y << std::endl;
 	//std::cout << "Debug Rect: " << debugCircle.x << "," << debugCircle.y << "," << debugCircle.w << "," << debugCircle.h << std::endl;
 	//std::cout << "X Velocity " << body->GetLinearVelocity().x << std::endl;
 
-	rotation.z = body->GetAngle() * GF2D_RADTODEG;
+ 	rotation.z = body->GetAngle() * GF2D_RADTODEG;
 
 	//set anim state
-	if (logicalState != animState)
-	{
-		switch (logicalState)
-		{
-			case State::State_Walking:
-				animState = logicalState;
-				currentAnimation = GetAnimationByName("walk");
-				currentSprite = currentAnimation->GetSprite();
-				scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);
-				break;
-
-			case State::State_Idle:
-				animState = logicalState;
-				currentAnimation = GetAnimationByName("idle");
-				currentSprite = currentAnimation->GetSprite();
-				scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);
-				break;
-
-			case State::State_Attacking:
-				animState = logicalState;
-				currentAnimation = GetAnimationByName("attacking");
-				currentSprite = currentAnimation->GetSprite();
-				scaleCenter = vector2(currentAnimation->GetCellWidth() / 2, currentAnimation->GetCellHeight() / 2);
-				break;
-
-			default:
-				break;
-		}
-	}
+	
 }
 
 int Player::Touch(Entity* other)

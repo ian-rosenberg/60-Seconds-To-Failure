@@ -39,7 +39,7 @@ void GameWorld::InitPlayerPhysics() {
 			b2Vec2(0.0f,
 				10.f * PIX_IN_MET),
 			graphicsPtr,
-			player->GetAvgPixelDimensions()));
+			player->GetPixelDimensions()));
 
 	currentArea = areas->at(0);
 
@@ -54,10 +54,9 @@ void GameWorld::InitPlayerPhysics() {
 		player->SetBody(currentArea->GetWorldPtr()->CreateBody(&bd));
 
 		b2FixtureDef fd;
-		b2CircleShape shape;
+		b2PolygonShape shape;
 
-		shape.m_radius = d.x / 4;
-		shape.m_p = b2Vec2(0, d.y / 4);
+		shape.SetAsBox(d.x * 0.125, d.y * 0.4, b2Vec2(d.x*0.5, d.y * .5), 0.0);
 
 		fd.shape = &shape;
 		fd.density = 10.f;
@@ -67,10 +66,10 @@ void GameWorld::InitPlayerPhysics() {
 
 		b2PolygonShape jumpBox;
 		b2Vec2 verts[] = {
-			b2Vec2(-d.x * 0.25, d.y * 0.25),
-			b2Vec2(d.x * 0.25, d.y * 0.25),
-			b2Vec2(d.x * 0.25, d.y * 0.55),
-			b2Vec2(-d.x * 0.25, d.y * 0.55)
+			b2Vec2(d.x * 0.6, d.y * 0.95),
+			b2Vec2(d.x * 0.6, d.y * 0.8),
+			b2Vec2(d.x * 0.4, d.y * 0.8),
+			b2Vec2(d.x * 0.4, d.y * 0.95)
 		};
 
 		jumpBox.Set(verts, 4);
@@ -115,6 +114,7 @@ void GameWorld::GameLoop(float & accumulator) {
 
 			accumulator -= DELTA_TIME;
 		}
+
 		graphicsPtr->SetAccumulatorTime(accumulator / DELTA_TIME);
 		currentArea->AreaDraw(accumulator / DELTA_TIME);
 

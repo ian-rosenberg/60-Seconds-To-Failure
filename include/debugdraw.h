@@ -43,5 +43,5 @@ public:
 	void AddEntityRef(Entity* entityRef);
 	void AddShapeRef(Tile* tile);
 	void AddTileMapRef(TileManager* tilemapRef);
-	void DrawAll(float &accum);
+	void DrawAll(float &accum, SDL_Rect camrRect);
 };

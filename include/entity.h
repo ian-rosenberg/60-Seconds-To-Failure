@@ -5,6 +5,9 @@
 #include <actor.h>
 #include <queue>
 #include <functional>
+#include <memory>
+#include <fstream>
+#include <string>
 
 typedef enum {
 	PLAYER = 1,
@@ -37,7 +40,7 @@ typedef struct PhysicsComponent {
 
 }PhysicsComponent_S;
 
-class Entity: public Actor
+class Entity
 {
 protected:
 	int												id;
@@ -48,11 +51,12 @@ protected:
 	b2Fixture*										jumpTrigger;
 
 	b2Vec2											worldDimensions;
+	Vector2											pixelDimensions;
 
 	State											logicalState; // Same enum as used for animations, used here for logic of those states
 		
 	Entity*											parentEntity;
-
+	Actor*											animActor;
 	Vector2											velocity;
 	Vector2											prevDrawPosition;
 	Vector2											newDrawPosition;
@@ -62,7 +66,7 @@ protected:
 	Vector2											scale;												/**<scale to draw sprite at*/
 	Vector2											scaleCenter;										/**<where to scale sprite from*/
 	Vector3											rotation;											/**<how to rotate the sprite*/
-	Vector2											flip;												/**<if to flip the sprite*/
+	SDL_RendererFlip								flipFlags;												/**<if to flip the sprite*/
 	Vector2											facing;												/**<direction the entity is facing*/
 
 	Uint8											dead;												/**<when true, the entity system will delete the entity on the next update*/
@@ -71,7 +75,6 @@ protected:
 	Uint16											maxHealth;
 
 	const double									jumpCooldown = 2550.0;	//2.55 second jump cooldown
-	double											jumpTimer;
 	float											jumpForce;
 	float											dampening;
 	bool											grounded;
@@ -84,7 +87,8 @@ protected:
 	//Debug Drawing, null if not enabled
 	SDL_Color										debugColor;
 	SDL_Rect										debugRect;
-
+	AnimationReturnType								artStatus;	
+	
 public:
 	struct InputEvent {
 		InputEvent*				prevEvent;
@@ -135,9 +139,9 @@ public:
 
 	~Entity();
 
-	virtual void Draw(Vector2 cameraPosition) = 0;											/**<called after system entity drawing for custom effects*/
+	virtual void Draw(Vector2 cameraPosition);											/**<called after system entity drawing for custom effects*/
 	virtual void Think() = 0;											/**<called before system updates to make decisions / hand input*/
-	virtual void Update() = 0;											/**<called after system entity update*/
+	virtual void Update();														/**<called after system entity update*/
 	virtual int Touch(Entity* other) = 0;								/**<when this entity touches another entity*/
 	virtual void Activate(Entity* activator) = 0;						/**<some entities can be activated by others, doors opened, levels, etc*/
 	virtual int Damage(int amount, Entity* source) = 0;					/**<when this entity takes damage*/
@@ -148,12 +152,6 @@ public:
 	* @param name Animation to set for actor
 	*/
 	void SetAnimationByName(const char* name);
-
-	/**
-	* @brief Set this actor's animation by the name of the animation
-	* @param name Animation to set for actor
-	*/
-	Animation* GetAnimationByName(const char* name);
 
 	void SetJumpTrigger(b2Fixture* f);
 
@@ -193,19 +191,13 @@ public:
 	
 	Vector2 GetDrawPosition() { return newDrawPosition; }
 
-	const char* GetActorName() { return name.c_str(); }
-
-	void DecrementJumpTimer(double ticks) { jumpTimer -= ticks; }
-
-	void ResetJumpTimer() { jumpTimer = jumpCooldown; }
-
-	bool IsJumpTimeReady() { return jumpTimer <= 0; }
+	const char* GetActorName() { return animActor ? animActor->GetActorName() : ""; }
 
 	bool IsGrounded() { return grounded; }
 
-	Vector2 GetAvgPixelDimensions() { return avgDim; }
-
 	SDL_Color GetDebugColor() { return debugColor; }
+
+	Vector2 GetPixelDimensions() { return pixelDimensions; }
 };
 
 class EntityManager {

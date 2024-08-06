@@ -17,6 +17,7 @@
 
 class GameArea {
 private:
+
 	int										id;
 
 	Uint8									active;
@@ -86,5 +87,5 @@ public:
 
 	b2Vec2 GetGravityScale() { return gravityScale; }
 
-	b2Vec2 FindSpawnPointFromLeft();
+	b2Vec2 GetSpawn();
 };

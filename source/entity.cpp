@@ -14,11 +14,10 @@ Entity::Entity(int id)
 	scale = { 0,0 };
 	scaleCenter = { 0,0 };
 	rotation = { 0,0,0 };
-	flip = { 0,0 };
+	flipFlags = SDL_FLIP_NONE;
 	facing = { 0,0 };
 	maxHealth = 0;
 	health = 0;
-	jumpTimer = 0.0f;
 	grounded = false;
 	energy = 0;
 	maxEnergy = 0;
@@ -30,7 +29,8 @@ Entity::Entity(int id)
 	parentEntity = nullptr;
 	interpComponent = new PhysicsComponent{ {0,0}, 0.0f, {0,0}, 0.0f };
 	debugColor = SDL_Color(0, 255, 0, 255);
-	debugRect = SDL_Rect(0, 0, avgDim.x, avgDim.y);
+	debugRect = SDL_Rect(0, 0, 0, 0);
+	artStatus = AnimationReturnType::ART_LOOPING;
 }
 
 Entity::Entity()
@@ -47,11 +47,10 @@ Entity::Entity()
 	scale = { 0,0 };
 	scaleCenter = { 0,0 };
 	rotation = { 0,0,0 };
-	flip = { 0,0 };
+	flipFlags = SDL_FLIP_NONE;
 	facing = { 0,0 };
 	maxHealth = 0;
 	health = 0;
-	jumpTimer = 0.0f;
 	grounded = false;
 	energy = 0;
 	maxEnergy = 0;
@@ -63,37 +62,80 @@ Entity::Entity()
 	parentEntity = nullptr;
 	interpComponent = new PhysicsComponent{ {0,0}, 0.0f, {0,0}, 0.0f };
 	debugColor = SDL_Color(0, 255, 0, 255);
-	debugRect = SDL_Rect(0, 0, avgDim.x, avgDim.y);
+	debugRect = SDL_Rect(0, 0, 0, 0);
+	artStatus = AnimationReturnType::ART_LOOPING;
 }
 
 Entity::~Entity()
 {
-	if (animations) {
-		while (!animations->empty()) {
-			Animation* anim = animations->back();
-			animations->pop_back();
-			delete anim;
-		}
-	}
+	if (animActor)
+		delete animActor;
 
-	if (currentAnimation)
-		currentAnimation = nullptr;
-	
-	if (currentSprite)
-		currentSprite = nullptr;
 
 	if (interpComponent)
 		delete interpComponent;
 }
+
+void Entity::Draw(Vector2 cameraPosition)
+{
+	if (!animActor)
+		return;
+
+	Vector2 resultPosition = { newDrawPosition.x - cameraPosition.x,
+	newDrawPosition.y - cameraPosition.y };
+
+
+	animActor->Draw(resultPosition, flipFlags);
+}
+
+
+void Entity::Update()
+{
+	artStatus = animActor->AnimationProceed();
+	
+	b2Vec2 bodyVelocity = body->GetLinearVelocity();
+
+	if (dead)
+	{
+		return;
+	}
+
+	if (abs(bodyVelocity.x) > .01f)
+	{
+		if (velocity.x < 0)
+		{
+			flipFlags = SDL_FLIP_HORIZONTAL;
+		}
+		else if (velocity.x > 0)
+		{
+			flipFlags = SDL_FLIP_NONE;
+		}
+	}
+	if (animActor && abs(bodyVelocity.x) < 0.01f && abs(bodyVelocity.y) < 0.01f)
+		animActor->SetAnimationState(State::State_Idle);
+	if (animActor && bodyVelocity.y > 0.1f) {
+		animActor->SetAnimationState(State::State_Falling);
+		SetLogicalState(State::State_Falling);
+	}
+	if (animActor && abs(bodyVelocity.y) < 0.1f && animActor->GetAnimationState() == State::State_Falling) {
+		animActor->SetAnimationState(State::State_Landing);
+		SetLogicalState(State::State_Landing);
+	}
+
+}
+
 void Entity::SetAnimationByName(const char* name)
 {
-	std::vector<Animation*>* animations = GetAnimations();
+	if (!animActor)
+		return;
+
+	std::vector<Animation*>* animations = animActor->GetAnimations();
 
 	
 	for (int i = 0; i < animations->size(); i++)
 	{
 		if (strcmp(animations->at(i)->GetName().c_str(), name) == 0) {
-			SetAnimation(animations->at(i));
+			animActor->SetAnimation(animations->at(i));
 			return;
 		}
 	}
@@ -103,27 +145,22 @@ void Entity::SetJumpTrigger(b2Fixture* f) {
 	jumpTrigger = f;
 }
 
-Animation* Entity::GetAnimationByName(const char* name)
-{
-	std::vector<Animation*>* animations = GetAnimations();
-		
-	for (int i = 0; i < animations->size(); i++)
-	{
-		if (strcmp(animations->at(i)->GetName().c_str(), name) == 0) {
-			return animations->at(i);
-		}
-	}
 
-	return nullptr;
-}
 
 void Entity::SetVelocity(InputEvent* e)
 {
+	if (!grounded)
+		return;
+
+
 	Vector2* vlcty = (Vector2*)e->data;
 	velocity.x = vlcty->x;
 	velocity.y = body->GetLinearVelocity().y;
 	b2Vec2 v = b2Vec2(velocity.x, velocity.y);
 	body->SetLinearVelocity(v);
+
+	if (animActor && v.x != 0 && animActor->GetAnimationState() != State::State_Walking)
+		animActor->SetAnimationState(State::State_Walking);
 }
 
 void Entity::SetPreviousPhysicsState()
@@ -177,6 +214,9 @@ void Entity::Jump(InputEvent* e)
 
  	body->ApplyLinearImpulse(b2Vec2(0, -body->GetMass() * jumpForce), body->GetWorldCenter(), true);
 	this->ToggleGrounded(false);
+
+	if (animActor)
+		animActor->SetAnimationState(State::State_Jumping);
 }
 
 void Entity::ToggleGrounded(int flag)
@@ -192,7 +232,7 @@ void Entity::ToggleGrounded(int flag)
 void Entity::UpdateScreenPosition(float alpha)
 {
 	Vector2 p;
-	//b2Vec2 bPos = body->GetPosition();
+    //b2Vec2 bPos = body->GetPosition();
 
 	prevBodyPosition = newBodyPosition;
 	newBodyPosition = interpComponent->smoothedPosition;
@@ -204,7 +244,7 @@ void Entity::UpdateScreenPosition(float alpha)
 
 	prevDrawPosition = newDrawPosition;
 
-	graphics->Vector2MetersToPixels(p);
+	p = { p.x * PIX_IN_MET, p.y * PIX_IN_MET };
 	newDrawPosition = p;
 	newDrawPosition.x = newDrawPosition.x * alpha + prevDrawPosition.x * (1.0 - alpha);
 	newDrawPosition.y = newDrawPosition.y * alpha + prevDrawPosition.y * (1.0 - alpha);
@@ -267,6 +307,8 @@ void EntityManager::AddEntity(Entity* ent)
 	entities->push_back(ent);
 	if(ent->GetId() > -1)
 		ent->SetId(entities->size());
+
+	ent->UpdateScreenPosition(1.0f);
 }
 
 Entity* EntityManager::DeleteEntity(Entity* ent)
@@ -333,15 +375,24 @@ void EntityManager::InputUpdate()
 		cur = eventsToFire->front();
 		eventsToFire->pop();
 
-		gravityEnabled = cur->gravity;
 		prev = cur->prevEvent ? cur->prevEvent : nullptr;
 		
-		if(cur->onHold)
-			cur->onHold(cur);
-		else if (cur->onPress)
-			cur->onPress(cur);
-		else if (cur->onRelease)
-			cur->onRelease(cur);
+		if (prev) {
+			if (cur->e->type == SDL_KEYDOWN
+				&& cur->e->key.repeat > 0
+				&& cur->onHold)
+				cur->onHold(cur);
+			else if (cur->e->type == SDL_KEYUP
+				&& cur->e->key.repeat > 0
+				&& cur->onRelease)
+				cur->onRelease(cur);
+			else if(cur->onPress)
+				cur->onPress(cur);
+		}
+		else {
+			if (cur->onPress)
+				cur->onPress(cur);
+		}
 		
 		delete cur;
 	}

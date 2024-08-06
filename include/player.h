@@ -7,7 +7,7 @@
 class Player : public Entity
 {
 private:
-	const std::string		actorFilePath = "data/Player.actor";
+	const std::string		actorFilePath = "data/player/Player.actor";
 	std::string 			name;
 
 	const Uint8*			keys;
@@ -20,13 +20,26 @@ private:
 	Vector3					dimensions;
 
 	Vector2					enteredFrom;
-
+	Vector2					resultPosition;
 	int32_t					axisLeftXLock;
 	int32_t					axisLeftYLock;
 	int32_t					axisRightXLock;
 	int32_t					axisRightYLock;
 
 	Bool					punching;
+
+	InputEvent*				currentEvent;
+
+	float					jumpTimer;
+	short					jumpCount;
+	short					jumpMax = 2;
+
+	void DecrementJumpTimer(double ticks) { jumpTimer -= ticks; }
+
+	void ResetJumpTimer() { jumpTimer = jumpCooldown; }
+
+	bool IsJumpTimeReady() { return jumpTimer <= 0; }
+
 
 public:
 	Player(const std::shared_ptr<Graphics>& graphics);

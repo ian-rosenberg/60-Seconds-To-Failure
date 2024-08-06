@@ -190,43 +190,36 @@ void DebugDraw::DrawAll(float& accum, SDL_Rect camRect)
 {
 	SDL_Renderer* ren = graphicsRef->GetRenderer();
 	std::vector<std::vector<Tile*>>* tileRefs = mapRef->GetTileMap();
+
+	Vector2 pixelDimensions = mapRef->GetTileDimensions();
 	camX = camera->GetRect().x;
 	camY = camera->GetRect().y;
 	camWidth = camera->GetRect().w;
 	camHeight = camera->GetRect().h;
 
-	for (auto row : *tileRefs) {
-		for (auto tile : row) {
-			if (!tile)
+	for (int y = camY / pixelDimensions.y; y < (camY + camHeight) / pixelDimensions.y; y++) {
+		for (int x = camX / pixelDimensions.x; x < (camX + camWidth) / pixelDimensions.x; x++) {
+			if (!tileRefs->at(y)[x])
 				continue;
-			Vector2 tPos = tile->GetPixelPosition();
 
-
-			if ((tPos.x + tile->GetPixelDimensions().x >= camX)
-				&&(tPos.x < camX + camWidth)
-				&&(tPos.y + tile->GetPixelDimensions().y >= camY)
-				&&(tPos.y < camY + camHeight))
-				continue;
+			Tile* tile = tileRefs->at(y)[x];
 
 			b2Body* body = tile->GetBodyReference();
 			SDL_Color debugColor = tile->GetDebugColor();
 			if (!body)
 				continue;
-
-			Vector2 pixelPosition = tile->GetPixelPosition();
-			Vector2 pixelDimensions = tile->GetPixelDimensions();
-
+		
+			Vector2 bPos = { body->GetTransform().p.x, body->GetTransform().p.y };
+			graphicsRef->Vector2MetersToPixels(bPos);
 			int texID = tile->GetTextureID();
 			SDL_Rect dest{
-				(int)(pixelPosition.x - camX),
-				(int)(pixelPosition.y - camY),
+				(int)(bPos.x - camX),
+				(int)(bPos.y - camY),
 				(int)pixelDimensions.x,
 				(int)pixelDimensions.y
 			};
 
-			SDL_Rect srcRect = tile->GetSourceRect();
-
-			SDL_RenderCopy(ren, shapeImages[texID], &srcRect, &dest);
+			SDL_RenderCopy(ren, shapeImages[texID], nullptr, &dest);
 		}
 	}
 
@@ -238,9 +231,9 @@ void DebugDraw::DrawAll(float& accum, SDL_Rect camRect)
 		if (!body)
 			continue;
 
-		if (Vector2 ePos = thisEntity->GetDrawPosition(); !(ePos.x + thisEntity->GetAvgPixelDimensions().x >= camRect.x)
+		if (Vector2 ePos = thisEntity->GetDrawPosition(); !(ePos.x + thisEntity->GetPixelDimensions().x >= camRect.x)
 			|| !(ePos.x < camRect.x + camRect.w)
-			|| !(ePos.y + thisEntity->GetAvgPixelDimensions().y >= camRect.y)
+			|| !(ePos.y + thisEntity->GetPixelDimensions().y >= camRect.y)
 			|| !(ePos.y < camRect.y + camRect.h))
 			continue;
 		
