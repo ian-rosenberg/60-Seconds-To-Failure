@@ -118,5 +118,5 @@ public:
 
 	State GetAnimStateType() { return animStateType; }
 
-	void ResetFrame() { cFrame = 0; }
+	void ResetFrame() { cFrame = paused = 0; }
 };

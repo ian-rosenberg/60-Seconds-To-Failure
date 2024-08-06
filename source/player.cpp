@@ -30,7 +30,8 @@ Player::Player(const std::shared_ptr<Graphics>& graphics) : Entity{ -1 }
 	animActor =	LoadActor(actorFilePath.c_str(), graphics);
 	pixelDimensions = animActor->GetAvgDimensions();
 	SetWorldDimensions(b2Vec2(pixelDimensions.x * MET_IN_PIX, pixelDimensions.y * MET_IN_PIX));
-	animActor->SetAnimationState(State::State_Idle);
+	SetLogicalState(State::State_Idle);
+	animActor->SetAnimationState(State::State_Falling);
 	currentEvent = nullptr;
 }
 

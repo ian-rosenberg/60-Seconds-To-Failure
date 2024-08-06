@@ -110,17 +110,21 @@ void Entity::Update()
 		{
 			flipFlags = SDL_FLIP_NONE;
 		}
-	}
-	if (animActor && abs(bodyVelocity.x) < 0.01f && abs(bodyVelocity.y) < 0.01f)
-		animActor->SetAnimationState(State::State_Idle);
-	if (animActor && bodyVelocity.y > 0.1f) {
-		animActor->SetAnimationState(State::State_Falling);
-		SetLogicalState(State::State_Falling);
-	}
+	}	
+	
 	if (animActor && abs(bodyVelocity.y) < 0.1f && animActor->GetAnimationState() == State::State_Falling) {
-		animActor->SetAnimationState(State::State_Landing);
 		SetLogicalState(State::State_Landing);
+		animActor->SetAnimationState(State::State_Landing);
 	}
+	if (animActor && artStatus != AnimationReturnType::ART_INPROGRESS && abs(bodyVelocity.x) < 0.01f && abs(bodyVelocity.y) < 0.01f) {
+ 		SetLogicalState(State::State_Idle);
+		animActor->SetAnimationState(State::State_Idle);
+	}
+	if (animActor && bodyVelocity.y > 0.1f) {
+		SetLogicalState(State::State_Falling);
+		animActor->SetAnimationState(State::State_Falling);
+	}
+
 
 }
 

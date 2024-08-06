@@ -200,9 +200,9 @@ void Actor::SetAnimation(Animation* anim)
 }
 
 void Actor::SetAnimationState(State s){
-	if (s == animState && currentAnimation)
+	if (s == animState)
 		return;
-
+	
 	SetAnimation(GetAnimationByType(s));
   	animState = s;
 }
