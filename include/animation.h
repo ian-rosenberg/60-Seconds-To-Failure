@@ -14,7 +14,8 @@ enum class State
 	State_Attacking,
 	State_Hurt,
 	State_Death,
-	State_Dead
+	State_Dead,
+	State_Invalid
 };
 
 enum class AnimationType
@@ -46,34 +47,37 @@ enum class AnimationDirection : unsigned short
 class Animation
 {
 private:
-	std::string		name;
-	std::string		filepath;
-	std::shared_ptr<Graphics> graphics;
+	std::string					name;
+	std::string					filepath;
+	std::shared_ptr<Graphics>	graphics;
+
+	std::vector<State>			possibleStatesNext;
 
 protected:
-	Uint8				paused;
-	Sprite*				sprite;
+	Uint8						paused;
+	bool						mustComplete;
+	Sprite*						sprite;
 
-	SDL_Rect			srcRect;
+	SDL_Rect					srcRect;
 
-	int					length;
-	int					cellWidth, cellHeight;
-	float				cFrame;
-	float				pFrame;
-	float				frameRate;
+	int							length;
+	int							cellWidth, cellHeight;
+	float						cFrame;
+	float						pFrame;
+	float						frameRate;
 
 
-	Vector4				colorSpecial;	
+	Vector4						colorSpecial;	
 
-	AnimationType		animType;
+	AnimationType				animType;
 
-	State				animStateType;
+	State						animStateType;
 
-	AnimationDirection	stripDirection;
+	AnimationDirection			stripDirection;
 
 public:
 	Animation(const Animation & old);
-	Animation(std::string n, std::string fp, int len, int width, int height, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics, unsigned short animDir, State aState);
+	Animation(std::string n, std::string fp, int len, int width, int height, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics, unsigned short animDir, State aState, bool finish, std::vector<State> tStates);
 	~Animation();
 
 	/**
@@ -116,7 +120,13 @@ public:
 
 	bool InProgress() { return (int)cFrame < length - 1; }
 
+	bool MustComplete() { return mustComplete; }
+
 	State GetAnimStateType() { return animStateType; }
 
+	AnimationType GetLoopType() { return animType; }
+
 	void ResetFrame() { cFrame = paused = 0; }
+
+	bool IsPossibleState(State s) { return std::find(possibleStatesNext.begin(), possibleStatesNext.end(), s) != possibleStatesNext.end(); }
 };

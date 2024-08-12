@@ -20,9 +20,10 @@ Animation::Animation(const Animation & old)
 	paused = 0;
 	frameRate = old.frameRate;
 	animStateType = old.animStateType;
+	mustComplete = old.mustComplete;
 }
 
-Animation::Animation(std::string n, std::string fp, int len, int width, int height, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics, unsigned short animDir, State aState)
+Animation::Animation(std::string n, std::string fp, int len, int width, int height, Vector4 color, float fr, float current, AnimationType type, const std::shared_ptr<Graphics>& graphics, unsigned short animDir, State aState, bool finish, std::vector<State> tStates)
 {
 	name = n;
 	filepath = fp;
@@ -39,7 +40,7 @@ Animation::Animation(std::string n, std::string fp, int len, int width, int heig
 	paused = 0;
 	frameRate = fr;
 	animStateType = aState;
-
+	mustComplete = finish;
 	if (animDir == 0) {
 		stripDirection = AnimationDirection::X;
 	}
@@ -49,6 +50,8 @@ Animation::Animation(std::string n, std::string fp, int len, int width, int heig
 	else {
 		stripDirection = AnimationDirection::BOTH;
 	}
+
+	std::copy(tStates.begin(), tStates.end(), std::back_inserter(possibleStatesNext));
 }
 
 Animation::~Animation()
@@ -65,7 +68,7 @@ Animation::~Animation()
 AnimationReturnType Animation::AnimationNextFrame()
 {
 	if (paused)
-		return AnimationReturnType::ART_HOLD;
+ 		return AnimationReturnType::ART_HOLD;
 	
 	if (!sprite)
 	{
@@ -87,7 +90,6 @@ AnimationReturnType Animation::AnimationNextFrame()
 
 	cFrame = pFrame + (cFrame-pFrame) * alpha;
 
-
 	if ((int)cFrame >= length - 1)
 	{
 		switch (animType)
@@ -97,10 +99,10 @@ AnimationReturnType Animation::AnimationNextFrame()
 			return AnimationReturnType::ART_LOOPING;
 		case AnimationType::AT_ONCE:
 			cFrame = 0;
-			return AnimationReturnType::ART_END;
+  			return AnimationReturnType::ART_END; 
 		case AnimationType::AT_HOLD:
 			paused = true;
-			break;
+			return AnimationReturnType::ART_HOLD;
 		}
 	}
 	if(stripDirection == AnimationDirection::BOTH)

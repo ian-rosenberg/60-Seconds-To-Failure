@@ -14,7 +14,7 @@ const Uint32 MS = 1000;
 const float PIX_IN_MET = 10.f;//convert pixel to meter
 const float MET_IN_PIX = 1 / PIX_IN_MET;//convert meter to pixel
 
-class Graphics {
+static class Graphics {
 private:
 	SDL_Window*		window;
 	SDL_Renderer*	renderer;

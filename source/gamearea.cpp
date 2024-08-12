@@ -305,7 +305,7 @@ Uint8 GameArea::CaptureInputEvents(SDL_Event* e){
 		newEvent->prevEvent = prevEvent;
 		newEvent->gravity = gravityEnabled;
 		newEvent->e = e;
-		newEvent->msSinceLastInput = (prevEvent != nullptr) ? SDL_GetTicks() - prevEvent->msSinceLastInput : SDL_GetTicks();
+		newEvent->msSinceLastInput = (prevEvent != nullptr) ? SDL_GetTicks64() - prevEvent->msSinceLastInput : SDL_GetTicks64();
 		newEvent->repeat = e->key.repeat ? 1 : 0;
 
 		entityManager->PushBackInputEvent(newEvent);

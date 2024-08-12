@@ -58,12 +58,15 @@ Animation* ParseAnimation(const char* filename, const std::shared_ptr<Graphics> 
 	std::string filepath = "";
 	std::string name = "";
 	State stt = State::State_Idle;
+	std::vector<State> transitionStates;
 	Vector4 color = { 0,0,0,0 };
 	int length = 0;
 	int width = 0;
 	int height = 0;
 	float fr = 0.0f;
 	int stripDir = 0;
+	bool finishFlag = false;
+	AnimationType at = AnimationType::AT_ONCE;
 
 	if (!in.is_open()) {
 		std::cerr << "Error Unable to open settings file \"" << filename << "\" for reading!" << std::endl;
@@ -75,6 +78,7 @@ Animation* ParseAnimation(const char* filename, const std::shared_ptr<Graphics> 
 	{
 		std::getline(in, value, '\n');
 
+		
 		if (strcmp(line.c_str(), "name") == 0)
 		{
 			name = value;
@@ -138,23 +142,90 @@ Animation* ParseAnimation(const char* filename, const std::shared_ptr<Graphics> 
 		{
 			if (strcmp(value.c_str(), "loop") == 0)
 			{
-				anim = new Animation(name, filepath, length, width, height, color, fr, 0, AnimationType::AT_LOOP, graphics, stripDir, stt);
+				at = AnimationType::AT_LOOP;
+				
 			}
 			else if (strcmp(value.c_str(), "once") == 0)
 			{
-				anim = new Animation(name, filepath, length, width, height, color, fr, 0, AnimationType::AT_ONCE, graphics, stripDir, stt);
+				at = AnimationType::AT_ONCE;
 			}
 			else if (strcmp(value.c_str(), "hold") == 0)
 			{
-				anim = new Animation(name, filepath, length, width, height, color, fr, 0, AnimationType::AT_HOLD, graphics, stripDir, stt);
+				at = AnimationType::AT_HOLD;
 			}
-
-			std::cout << "Animation " << name << " loaded!" << std::endl;
-
-			break;
+			
+			continue;
 		}
-	}
+		if (strcmp(line.c_str(), "forcedCompletion") == 0)
+		{
+			if (atoi(value.c_str()) != 0)
+				finishFlag = true;
+			else
+				finishFlag = false;
+				
 
+		}
+		if (strcmp(line.c_str(), "transitions") == 0)
+		{
+			std::string transitions = value;
+			int i, j;
+			i = j = 0;
+
+			for (; j < transitions.length(); j++) {
+				if (transitions[i] == ';')
+					break;
+			
+				if (transitions[j] == ',' || transitions[j] == ';') {
+					std::string transition = transitions.substr(i, j - i);
+					i = ++j;
+					
+					if (strcmp(transition.c_str(), "idle") == 0) {
+						transitionStates.push_back(State::State_Idle);
+						continue;
+					}
+					if (strcmp(transition.c_str(), "walk") == 0) {
+						transitionStates.push_back(State::State_Walking);
+						continue;
+					}
+					if (strcmp(transition.c_str(), "jump") == 0) {
+						transitionStates.push_back(State::State_Jumping);
+						continue;
+					}
+					if (strcmp(transition.c_str(), "fall") == 0) {
+						transitionStates.push_back(State::State_Falling);
+						continue;
+					}
+					if (strcmp(transition.c_str(), "land") == 0) {
+						transitionStates.push_back(State::State_Landing);
+						continue;
+					}
+				}
+			}						
+			continue;	
+		}
+
+		if (strcmp(line.c_str(), "~") == 0)
+			break;
+	}
+			
+	std::cout << "Animation " << name << " loaded!" << std::endl;
+
+	anim = new Animation(name, 
+		filepath, 
+		length, 
+		width, 
+		height, 
+		color, 
+		fr, 
+		0, 
+		at,
+		graphics, 
+		stripDir, 
+		stt, 
+		finishFlag,
+		transitionStates);
+			
+			
 	in.close();
 
 	return anim;
@@ -193,6 +264,13 @@ Animation* Actor::GetAnimationByType(State s)
 	return nullptr;
 }
 
+void Actor::InitState(State s)
+{
+	animState = s;
+	currentAnimation = GetAnimationByType(s);
+	currentAnimation->ResetFrame();
+}
+
 void Actor::SetAnimation(Animation* anim)
 {
 	currentAnimation = anim;
@@ -200,11 +278,15 @@ void Actor::SetAnimation(Animation* anim)
 }
 
 void Actor::SetAnimationState(State s){
-	if (s == animState)
+	std::vector<State> states;
+	if (s == animState || !currentAnimation->IsPossibleState(s))
 		return;
-	
+	if (currentAnimation->MustComplete() 
+	&& artStatus == AnimationReturnType::ART_INPROGRESS)
+   		return;
+
 	SetAnimation(GetAnimationByType(s));
-  	animState = s;
+ 	animState = s;
 }
 
 AnimationReturnType Actor::AnimationProceed() {
@@ -323,6 +405,7 @@ Actor* LoadActor(const char* filename, const std::shared_ptr<Graphics>& graphics
 
 	std::cout << "Loaded actor " << name << std::endl;
 
+	animActor->InitState(State::State_Idle);
+
 	return animActor;
 }
-

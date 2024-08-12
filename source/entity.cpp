@@ -91,8 +91,9 @@ void Entity::Draw(Vector2 cameraPosition)
 
 void Entity::Update()
 {
-	artStatus = animActor->AnimationProceed();
-	
+	State cState = animActor ? animActor->GetAnimationState() : State::State_Invalid;
+	AnimationType cType = animActor ? animActor->GetCurrentLoopingType() : AnimationType::AT_ONCE;
+
 	b2Vec2 bodyVelocity = body->GetLinearVelocity();
 
 	if (dead)
@@ -112,20 +113,27 @@ void Entity::Update()
 		}
 	}	
 	
-	if (animActor && abs(bodyVelocity.y) < 0.1f && animActor->GetAnimationState() == State::State_Falling) {
-		SetLogicalState(State::State_Landing);
+	if (animActor 
+	&& abs(bodyVelocity.y) < 0.1f
+	&& cState == State::State_Falling) {
+ 		SetLogicalState(State::State_Landing);
 		animActor->SetAnimationState(State::State_Landing);
 	}
-	if (animActor && artStatus != AnimationReturnType::ART_INPROGRESS && abs(bodyVelocity.x) < 0.01f && abs(bodyVelocity.y) < 0.01f) {
- 		SetLogicalState(State::State_Idle);
-		animActor->SetAnimationState(State::State_Idle);
-	}
-	if (animActor && bodyVelocity.y > 0.1f) {
+	if (animActor 
+	&& bodyVelocity.y > 0.1f) {
 		SetLogicalState(State::State_Falling);
 		animActor->SetAnimationState(State::State_Falling);
 	}
+	if (animActor 
+	&& cType != AnimationType::AT_HOLD 
+	&& grounded
+	&& bodyVelocity.x == 0) {
+  		SetLogicalState(State::State_Idle);
+		animActor->SetAnimationState(State::State_Idle);
+	}
 
-
+	artStatus = animActor ? animActor->AnimationProceed() : AnimationReturnType::ART_ERROR;
+	
 }
 
 void Entity::SetAnimationByName(const char* name)
@@ -163,8 +171,10 @@ void Entity::SetVelocity(InputEvent* e)
 	b2Vec2 v = b2Vec2(velocity.x, velocity.y);
 	body->SetLinearVelocity(v);
 
-	if (animActor && v.x != 0 && animActor->GetAnimationState() != State::State_Walking)
+	if (animActor && v.x != 0 && animActor->GetAnimationState() != State::State_Walking) {
+		SetLogicalState(State::State_Walking);
 		animActor->SetAnimationState(State::State_Walking);
+	}
 }
 
 void Entity::SetPreviousPhysicsState()
@@ -182,7 +192,7 @@ void Entity::RotateTranslate(b2Vec2& vector, const b2Vec2& center, float angle)
 }
 
 void Entity::SetLogicalState(State state)
-{
+{ 
 	logicalState = state;
 }
 
@@ -219,8 +229,10 @@ void Entity::Jump(InputEvent* e)
  	body->ApplyLinearImpulse(b2Vec2(0, -body->GetMass() * jumpForce), body->GetWorldCenter(), true);
 	this->ToggleGrounded(false);
 
-	if (animActor)
-		animActor->SetAnimationState(State::State_Jumping);
+	if (animActor) {
+		SetLogicalState(State::State_Jumping);
+ 		animActor->SetAnimationState(State::State_Jumping);
+	}
 }
 
 void Entity::ToggleGrounded(int flag)

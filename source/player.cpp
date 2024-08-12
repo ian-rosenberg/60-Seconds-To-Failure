@@ -21,7 +21,7 @@ Player::Player(const std::shared_ptr<Graphics>& graphics) : Entity{ -1 }
 	health = maxHealth;
 	maxEnergy = 50;
 	energy = maxEnergy;
-	jumpForce = 10.f;
+	jumpForce = 27.5f;
 	scale = { 1,1 };
 	prevDrawPosition = newDrawPosition = resultPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
@@ -68,60 +68,64 @@ void Player::Think() {
 		t = currentEvent->inputType;
 		currentEvent->repeat = currentEvent->e->key.repeat;
 
-		if (currentEvent->repeat > 0) {
-			if (t == WALK_UP) {
-				velocity.y = -maxSpeed;
-				currentEvent->data = &velocity;
-				currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
+		if (IsGrounded() && animActor->GetAnimationState() != State::State_Landing) {
+
+			if (currentEvent->repeat > 0) {
+				if (t == WALK_UP) {
+					velocity.y = -maxSpeed;
+					currentEvent->data = &velocity;
+					currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
+				}
+				else if (t == WALK_DOWN) {
+					velocity.y = maxSpeed;
+					currentEvent->data = &velocity;
+					currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
+				}
+				else if (t == WALK_LEFT) {
+					velocity.x = -maxSpeed;
+					currentEvent->data = &velocity;
+					currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
+				}
+				else if (t == WALK_RIGHT) {
+					velocity.x = maxSpeed;
+					currentEvent->data = &velocity;
+					currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
+				}
 			}
-			else if (t == WALK_DOWN) {
-				velocity.y = maxSpeed;
-				currentEvent->data = &velocity;
-				currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
-			}
-			else if (t == WALK_LEFT) {
-				velocity.x = -maxSpeed;
-				currentEvent->data = &velocity;
-				currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
-			}
-			else if (t == WALK_RIGHT) {
-				velocity.x = maxSpeed;
-				currentEvent->data = &velocity;
-				currentEvent->onHold = std::bind(&Entity::SetVelocity, this, currentEvent);
-			}
-		}
-		else {
-			if (t == WALK_UP) {
-				velocity.x = velocity.x;
-				velocity.y = -maxSpeed;
-				currentEvent->data = &velocity;
-				currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
-			}
-			else if (t == WALK_DOWN) {
-				velocity.x = velocity.x;
-				velocity.y = maxSpeed;
-				currentEvent->data = &velocity;
-				currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
-			}
-			else if (t == WALK_LEFT) {
-				velocity.x = -maxSpeed;
-				velocity.y = velocity.y;
-				currentEvent->data = &velocity;
-				currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
-			}
-			else if (t == WALK_RIGHT) {
-				velocity.x = maxSpeed;
-				velocity.y = velocity.y;
-				currentEvent->data = &velocity;
-				currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
+			else {
+				if (t == WALK_UP) {
+					velocity.x = velocity.x;
+					velocity.y = -maxSpeed;
+					currentEvent->data = &velocity;
+					currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
+				}
+				else if (t == WALK_DOWN) {
+					velocity.x = velocity.x;
+					velocity.y = maxSpeed;
+					currentEvent->data = &velocity;
+					currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
+				}
+				else if (t == WALK_LEFT) {
+					velocity.x = -maxSpeed;
+					velocity.y = velocity.y;
+					currentEvent->data = &velocity;
+					currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
+				}
+				else if (t == WALK_RIGHT) {
+					velocity.x = maxSpeed;
+					velocity.y = velocity.y;
+					currentEvent->data = &velocity;
+					currentEvent->onPress = std::bind(&Entity::SetVelocity, this, currentEvent);
+				}
 			}
 		}
 
-		if (t == JUMP && (IsGrounded() || (jumpTimer <= 0 && jumpCount < jumpMax))) {
-			//ResetJumpTimer();
-			jumpCount++;
+
+ 		if (t == JUMP && jumpTimer <= 0 && jumpCount < jumpMax) {
+			ResetJumpTimer();
+  			jumpCount++;
 			currentEvent->onPress = std::bind(&Entity::Jump, this, currentEvent);
-			jumpTimer = jumpCooldown;
+  			jumpTimer = jumpCooldown;
 		}
 
 		eventsToFire->push(currentEvent);
@@ -144,6 +148,12 @@ void Player::Update()
 {
 	this->Entity::Update();
 
+	if (IsGrounded()) {
+		ResetJumpTimer();
+		jumpCount = 0;
+	}
+
+	jumpTimer -= SDL_GetTicks64();
 
 	//If anim in progress
 	//if (currentAnimation->InProgress()) {

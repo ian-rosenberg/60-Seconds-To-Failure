@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include "sprite.h"
 #include "animation.h"
+#include <unordered_map>
 
 class Actor {
 private:
@@ -71,6 +72,14 @@ public:
 	Animation* GetAnimationByType(State s);
 
 	AnimationReturnType GetAnimationStatus() { return artStatus; }
+
+	AnimationType GetCurrentLoopingType() { return currentAnimation->GetLoopType(); }
+
+	void InitState(State s);
+
+	bool MustCurrentAnimationFinish() { return currentAnimation->MustComplete(); }
+
+	Graphics* GetGraphicsReference() { return graphics.get(); }
 };
 
 	/**
@@ -86,3 +95,4 @@ Animation* ParseAnimation(const char* filename, const std::shared_ptr<Graphics> 
 	* @returns The actor loaded with animation data
 	*/
 Actor* LoadActor(const char* file, const std::shared_ptr<Graphics>& graphics);
+

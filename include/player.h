@@ -30,7 +30,7 @@ private:
 
 	InputEvent*				currentEvent;
 
-	float					jumpTimer;
+	float					jumpTimer = 100;//milliseconds
 	short					jumpCount;
 	short					jumpMax = 2;
 

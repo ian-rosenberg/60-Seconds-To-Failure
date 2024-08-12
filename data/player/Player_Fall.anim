@@ -7,4 +7,6 @@ frameWidth:128
 frameHeight:128
 frameRate:0.42
 type:hold
+forcedCompletion:0
+transitions:land;
 ~
