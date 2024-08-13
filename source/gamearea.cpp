@@ -176,7 +176,7 @@ void GameArea::AreaDraw(float accum) {
 	//interpolate all ze positions
 	tileManager->DrawMap(Vector2(camRect.x, camRect.y), camRect);
 	entityManager->EntityDrawAll(camRect, accum);
-	//debugDraw->DrawAll(accum, camRect);
+	debugDraw->DrawAll(accum, camRect);
 }
 
 

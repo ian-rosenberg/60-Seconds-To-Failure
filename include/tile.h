@@ -120,6 +120,7 @@ private:
 
 
 
+
 	//Rotation in degrees for SDL2
 	float													zRot;
 
@@ -187,6 +188,7 @@ public:
 	Coord													GetGridPosition() { return Coord(gridX,gridY); }
 
 	const int												GetTextureID() { return textureID; }
+	Uint32													GetPixelFormat();
 };
 
 typedef struct TileNode {

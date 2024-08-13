@@ -141,24 +141,63 @@ void DebugDraw::AddShapeRef(Tile* tile)
 	SDL_Renderer* ren = graphicsRef->GetRenderer();
 	b2Body* body = tile->GetBodyReference();
 	int texID = tile->GetTextureID();
+	Vector2 floatDimensions(mapRef->GetTileDimensions());
+	Coord tileDimensions(floatDimensions.x, floatDimensions.y);
+	Uint32 fmt = tile->GetPixelFormat();
+	std::pair<int, SDL_Texture*> newPair;
+
 
 	if (shapeImages[texID] != nullptr)
 		return;
 
-	SDL_Texture* shapeTex = Sprite::CreateRenderTexture(mapRef->GetTileDimensions().x, mapRef->GetTileDimensions().y, graphicsRef, SDL_PIXELFORMAT_RGBA8888);
+	SDL_Texture* shapeTex = Sprite::CreateRenderTexture(tileDimensions.X, tileDimensions.Y, graphicsRef, fmt);
 	SDL_SetTextureBlendMode(shapeTex, SDL_BLENDMODE_BLEND);
 
 	SDL_RenderClear(ren);
 	SDL_SetRenderTarget(ren, shapeTex);
+	SDL_SetRenderDrawColor(ren, 0, 255, 0, 255);
 	for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
 		b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
-		
-		DrawPolygon(body, poly->m_vertices, poly->m_count, SDL_Color(0, 255, 0, 255));
+	
+		b2Vec2 p1 = {}, 
+			p2 = {};
+		Vector2 a = {},
+			b = {};
+
+		for (int i = 0, j = 1; j < poly->m_count; i++, j++) {
+			p1 = poly->m_vertices[i];
+			p2 = poly->m_vertices[j];
+
+			a = Vector2(p1.x, p1.y);
+			graphicsRef->Vector2MetersToPixels(a);
+
+			b = Vector2(p2.x, p2.y);
+			graphicsRef->Vector2MetersToPixels(b);
+
+			SDL_RenderDrawLineF(graphicsRef->GetRenderer(), a.x, a.y, b.x, b.y);
+		}
+
+		p1 = poly->m_vertices[poly->m_count - 1];
+		p2 = poly->m_vertices[0];
+
+		a = Vector2(p1.x, p1.y);
+		graphicsRef->Vector2MetersToPixels(a);
+
+		b = Vector2(p2.x, p2.y);
+		graphicsRef->Vector2MetersToPixels(b);
+
+		SDL_RenderDrawLineF(graphicsRef->GetRenderer(), a.x, a.y, b.x, b.y);
 	}
 	SDL_SetRenderTarget(ren, nullptr);
+
+	SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	SDL_RenderClear(ren);
 
-	
+	SDL_Rect r{ 0,0,128,128 };
+
+	SDL_RenderCopy(ren, shapeTex, &r, &r);
+	SDL_RenderPresent(ren);
+
 	shapeImages.insert_or_assign(texID, shapeTex);
 }
 
@@ -218,8 +257,12 @@ void DebugDraw::DrawAll(float& accum, SDL_Rect camRect)
 				(int)pixelDimensions.x,
 				(int)pixelDimensions.y
 			};
+			SDL_Rect src{
+				0,0,(int)pixelDimensions.x,(int)pixelDimensions.y
+			};
 
-			SDL_RenderCopy(ren, shapeImages[texID], nullptr, &dest);
+
+			SDL_RenderCopy(ren, shapeImages[texID], &src, &dest);
 		}
 	}
 

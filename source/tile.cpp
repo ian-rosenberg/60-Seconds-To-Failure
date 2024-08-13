@@ -667,6 +667,15 @@ std::vector<std::vector<SDL_Color>> Tile::GetTilePixels()
 	return Sprite::GetPixelData(sprite->GetFilePath().c_str(), &sR, graphicsRef);	
 }
 
+Uint32 Tile::GetPixelFormat()
+{
+	Uint32 fmt = 0;
+
+	SDL_QueryTexture(sprite->GetTexture(), &fmt, nullptr, nullptr, nullptr);
+
+	return fmt;
+}
+
 void Tile::FlipChain(std::vector<b2Vec2> &chain)
 {
 	if (flipFlags == SDL_FLIP_NONE)
