@@ -4,6 +4,93 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
+                "wall"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 0,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "slopes": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "tileIndex": 1,
+            "xLocation": 143,
+            "yLocation": 5
+        },
+        {
+            "hillOrientation": "None",
+            "layers": [
+                "ground",
                 "wall",
                 "platform"
             ],
@@ -36,27 +123,15 @@
                     "y": -1
                 },
                 {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": -1,
                     "y": 1
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground"
                     ],
                     "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
                     "y": 1
                 },
                 {
@@ -81,84 +156,8 @@
             "slopes": [
                 0.0,
                 0.0,
-                0.0,
-                0.06666666666666667
-            ],
-            "tileIndex": 1,
-            "xLocation": 143,
-            "yLocation": 5
-        },
-        {
-            "hillOrientation": "None",
-            "layers": [
-                "platform"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 0,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "slopes": [
-                0.0,
-                -0.06666666666666667,
-                -0.06666666666666667,
-                0.0
+                -0.007874015748031496,
+                0.4251968503937008
             ],
             "tileIndex": 2,
             "xLocation": 281,
@@ -254,7 +253,8 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "platform"
+                "ground",
+                "wall"
             ],
             "possibleConnects": [
                 {
@@ -295,6 +295,7 @@
                 },
                 {
                     "allowedLayers": [
+                        "hill",
                         "ground"
                     ],
                     "x": 1,
@@ -319,7 +320,8 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill"
+                        "hill",
+                        "wall"
                     ],
                     "x": 1,
                     "y": 0
@@ -327,9 +329,9 @@
             ],
             "slopes": [
                 0.0,
-                -0.06666666666666667,
                 0.0,
-                0.06666666666666667
+                0.0,
+                0.0
             ],
             "tileIndex": 4,
             "xLocation": 557,
@@ -338,7 +340,8 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "platform"
+                "ground",
+                "wall"
             ],
             "possibleConnects": [
                 {
@@ -379,6 +382,7 @@
                 },
                 {
                     "allowedLayers": [
+                        "hill",
                         "ground"
                     ],
                     "x": 1,
@@ -403,7 +407,8 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill"
+                        "hill",
+                        "wall"
                     ],
                     "x": 1,
                     "y": 0
@@ -411,9 +416,9 @@
             ],
             "slopes": [
                 0.0,
-                -0.06666666666666667,
                 0.0,
-                0.06666666666666667
+                0.0,
+                0.0
             ],
             "tileIndex": 5,
             "xLocation": 695,
@@ -771,6 +776,93 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
+                "wall"
+            ],
+            "possibleConnects": [
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": 0,
+                    "y": -1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "hill",
+                        "ground"
+                    ],
+                    "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": -1,
+                    "y": 0
+                },
+                {
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
+                    "x": 1,
+                    "y": 0
+                }
+            ],
+            "slopes": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "tileIndex": 10,
+            "xLocation": 143,
+            "yLocation": 143
+        },
+        {
+            "hillOrientation": "None",
+            "layers": [
+                "ground",
                 "wall",
                 "platform"
             ],
@@ -803,27 +895,15 @@
                     "y": -1
                 },
                 {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
+                    "allowedLayers": [],
                     "x": -1,
                     "y": 1
                 },
                 {
                     "allowedLayers": [
-                        "hill",
                         "ground"
                     ],
                     "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 0,
                     "y": 1
                 },
                 {
@@ -848,84 +928,8 @@
             "slopes": [
                 0.0,
                 0.0,
-                0.0,
-                0.06666666666666667
-            ],
-            "tileIndex": 10,
-            "xLocation": 143,
-            "yLocation": 143
-        },
-        {
-            "hillOrientation": "None",
-            "layers": [
-                "platform"
-            ],
-            "possibleConnects": [
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 1,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground",
-                        "wall"
-                    ],
-                    "x": 0,
-                    "y": -1
-                },
-                {
-                    "allowedLayers": [
-                        "hill",
-                        "ground"
-                    ],
-                    "x": -1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground"
-                    ],
-                    "x": 1,
-                    "y": 1
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill",
-                        "wall"
-                    ],
-                    "x": -1,
-                    "y": 0
-                },
-                {
-                    "allowedLayers": [
-                        "ground",
-                        "hill"
-                    ],
-                    "x": 1,
-                    "y": 0
-                }
-            ],
-            "slopes": [
-                0.0,
-                -0.06666666666666667,
-                -0.06666666666666667,
-                0.0
+                -0.007874015748031496,
+                0.4251968503937008
             ],
             "tileIndex": 11,
             "xLocation": 281,
@@ -934,7 +938,8 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "platform"
+                "ground",
+                "wall"
             ],
             "possibleConnects": [
                 {
@@ -975,6 +980,7 @@
                 },
                 {
                     "allowedLayers": [
+                        "hill",
                         "ground"
                     ],
                     "x": 1,
@@ -999,7 +1005,8 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill"
+                        "hill",
+                        "wall"
                     ],
                     "x": 1,
                     "y": 0
@@ -1007,9 +1014,9 @@
             ],
             "slopes": [
                 0.0,
-                -0.06666666666666667,
                 0.0,
-                0.06666666666666667
+                0.0,
+                0.0
             ],
             "tileIndex": 12,
             "xLocation": 419,
@@ -1150,7 +1157,11 @@
                     "y": 1
                 },
                 {
-                    "allowedLayers": [],
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
                     "x": -1,
                     "y": 0
                 },
@@ -1167,8 +1178,8 @@
             "slopes": [
                 0.0,
                 0.0,
-                -7.4,
-                1.0666666666666667
+                -0.8740157480314961,
+                0.12598425196850394
             ],
             "tileIndex": 14,
             "xLocation": 695,
@@ -1209,6 +1220,7 @@
                 },
                 {
                     "allowedLayers": [
+                        "hill",
                         "ground",
                         "wall"
                     ],
@@ -1216,8 +1228,17 @@
                     "y": 1
                 },
                 {
-                    "allowedLayers": [],
+                    "allowedLayers": [
+                        "ground"
+                    ],
                     "x": 1,
+                    "y": 1
+                },
+                {
+                    "allowedLayers": [
+                        "ground"
+                    ],
+                    "x": 0,
                     "y": 1
                 },
                 {
@@ -1240,8 +1261,8 @@
             ],
             "slopes": [
                 0.0,
-                -1.0666666666666667,
-                6.8,
+                -0.12598425196850394,
+                0.8740157480314961,
                 0.0
             ],
             "tileIndex": 15,
@@ -1296,7 +1317,11 @@
                     "y": 1
                 },
                 {
-                    "allowedLayers": [],
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
                     "x": -1,
                     "y": 0
                 },
@@ -1313,8 +1338,8 @@
             "slopes": [
                 0.0,
                 0.0,
-                -8.5,
-                1.0666666666666667
+                -1.0,
+                0.12598425196850394
             ],
             "tileIndex": 16,
             "xLocation": 971,
@@ -1473,8 +1498,8 @@
             ],
             "slopes": [
                 0.0,
-                -1.0666666666666667,
-                8.0,
+                -0.12598425196850394,
+                1.0,
                 0.0
             ],
             "tileIndex": 18,
@@ -1711,10 +1736,10 @@
                 }
             ],
             "slopes": [
-                8.5,
+                1.0,
                 0.0,
                 0.0,
-                -0.6
+                -0.12598425196850394
             ],
             "tileIndex": 21,
             "xLocation": 419,
@@ -1783,8 +1808,8 @@
                 }
             ],
             "slopes": [
-                -8.0,
-                0.6,
+                -1.0,
+                0.12598425196850394,
                 0.0,
                 0.0
             ],
@@ -1848,10 +1873,10 @@
                 }
             ],
             "slopes": [
-                8.0,
+                1.0,
                 0.0,
                 0.0,
-                -8.0
+                -1.0
             ],
             "tileIndex": 23,
             "xLocation": 695,
@@ -1947,7 +1972,8 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "platform"
+                "ground",
+                "wall"
             ],
             "possibleConnects": [
                 {
@@ -1988,6 +2014,7 @@
                 },
                 {
                     "allowedLayers": [
+                        "hill",
                         "ground"
                     ],
                     "x": 1,
@@ -2012,7 +2039,8 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill"
+                        "hill",
+                        "wall"
                     ],
                     "x": 1,
                     "y": 0
@@ -2020,7 +2048,7 @@
             ],
             "slopes": [
                 0.0,
-                -0.06666666666666667,
+                0.0,
                 0.0,
                 0.0
             ],
@@ -2260,8 +2288,8 @@
                 }
             ],
             "slopes": [
-                -8.0,
-                8.0,
+                -1.0,
+                1.0,
                 0.0,
                 0.0
             ],
@@ -2436,7 +2464,7 @@
             "slopes": [
                 0.0,
                 0.0,
-                0.2,
+                0.0,
                 0.0
             ],
             "tileIndex": 30,
@@ -2586,10 +2614,10 @@
                 }
             ],
             "slopes": [
-                4.0,
+                0.496,
                 0.0,
                 0.0,
-                -16.0
+                -2.0
             ],
             "tileIndex": 32,
             "xLocation": 695,
@@ -2675,7 +2703,7 @@
             "slopes": [
                 0.0,
                 0.0,
-                0.2,
+                0.0,
                 0.0
             ],
             "tileIndex": 33,
@@ -2738,10 +2766,10 @@
                 }
             ],
             "slopes": [
-                4.0,
+                0.49606299212598426,
                 0.0,
                 0.0,
-                -8.4
+                -0.9921259842519685
             ],
             "tileIndex": 34,
             "xLocation": 971,
@@ -2979,8 +3007,8 @@
                 }
             ],
             "slopes": [
-                -4.0,
-                16.0,
+                -0.496,
+                2.0,
                 0.0,
                 0.0
             ],
@@ -2992,8 +3020,7 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall",
-                "platform"
+                "wall"
             ],
             "possibleConnects": [
                 {
@@ -3070,7 +3097,7 @@
                 0.0,
                 0.0,
                 0.0,
-                0.06666666666666667
+                0.0
             ],
             "tileIndex": 38,
             "xLocation": 281,
@@ -3193,7 +3220,8 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill"
+                        "hill",
+                        "ground"
                     ],
                     "x": 1,
                     "y": 1
@@ -3215,14 +3243,18 @@
                     "y": 0
                 },
                 {
-                    "allowedLayers": [],
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "slopes": [
-                -4.0,
-                8.4,
+                -0.49606299212598426,
+                0.9921259842519685,
                 0.0,
                 0.0
             ],
@@ -3310,7 +3342,7 @@
             "slopes": [
                 0.0,
                 0.0,
-                0.2,
+                0.0,
                 0.0
             ],
             "tileIndex": 41,
@@ -3460,10 +3492,10 @@
                 }
             ],
             "slopes": [
-                2.0,
+                0.2459016393442623,
                 0.0,
                 0.0,
-                -32.0
+                -4.0
             ],
             "tileIndex": 43,
             "xLocation": 971,
@@ -3527,8 +3559,8 @@
                 }
             ],
             "slopes": [
-                -1.0,
-                64.0,
+                -0.11965811965811966,
+                8.0,
                 0.0,
                 0.0
             ],
@@ -3592,10 +3624,10 @@
                 }
             ],
             "slopes": [
-                2.0,
+                0.25196850393700787,
                 0.0,
                 0.0,
-                -17.857142857142858
+                -1.9841269841269842
             ],
             "tileIndex": 45,
             "xLocation": 5,
@@ -3657,10 +3689,10 @@
                 }
             ],
             "slopes": [
-                2.0,
+                0.25196850393700787,
                 0.0,
                 0.0,
-                -11.363636363636363
+                -1.3157894736842106
             ],
             "tileIndex": 46,
             "xLocation": 143,
@@ -3722,10 +3754,10 @@
                 }
             ],
             "slopes": [
-                2.0,
+                0.25196850393700787,
                 0.0,
                 0.0,
-                -8.333333333333334
+                -0.984251968503937
             ],
             "tileIndex": 47,
             "xLocation": 281,
@@ -3876,8 +3908,8 @@
                 }
             ],
             "slopes": [
-                -2.0,
-                32.0,
+                -0.2459016393442623,
+                4.0,
                 0.0,
                 0.0
             ],
@@ -4117,8 +4149,8 @@
                 }
             ],
             "slopes": [
-                -2.0,
-                17.857142857142858,
+                -0.25196850393700787,
+                1.9841269841269842,
                 0.0,
                 0.0
             ],
@@ -4184,8 +4216,8 @@
                 }
             ],
             "slopes": [
-                -1.0,
-                40.666666666666664,
+                -0.12598425196850394,
+                3.935483870967742,
                 0.0,
                 0.0
             ],
@@ -4251,8 +4283,8 @@
                 }
             ],
             "slopes": [
-                -2.0,
-                11.363636363636363,
+                -0.25196850393700787,
+                1.3157894736842106,
                 0.0,
                 0.0
             ],
@@ -4290,7 +4322,8 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill"
+                        "hill",
+                        "ground"
                     ],
                     "x": 1,
                     "y": 1
@@ -4312,14 +4345,18 @@
                     "y": 0
                 },
                 {
-                    "allowedLayers": [],
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "slopes": [
-                -2.0,
-                8.333333333333334,
+                -0.25196850393700787,
+                0.984251968503937,
                 0.0,
                 0.0
             ],
@@ -4407,7 +4444,7 @@
             "slopes": [
                 0.0,
                 0.0,
-                0.2,
+                0.0,
                 0.0
             ],
             "tileIndex": 56,
@@ -4494,7 +4531,7 @@
             "slopes": [
                 0.0,
                 0.0,
-                0.2,
+                0.0,
                 0.0
             ],
             "tileIndex": 57,
@@ -4731,10 +4768,10 @@
                 }
             ],
             "slopes": [
-                1.0,
+                0.11965811965811966,
                 0.0,
                 0.0,
-                -64.0
+                -8.0
             ],
             "tileIndex": 60,
             "xLocation": 833,
@@ -4796,10 +4833,10 @@
                 }
             ],
             "slopes": [
-                1.0,
+                0.12598425196850394,
                 0.0,
                 0.0,
-                -40.666666666666664
+                -3.935483870967742
             ],
             "tileIndex": 61,
             "xLocation": 971,
@@ -4863,8 +4900,8 @@
                 }
             ],
             "slopes": [
-                -1.0,
-                24.4,
+                -0.12598425196850394,
+                2.595744680851064,
                 0.0,
                 0.0
             ],
@@ -4875,7 +4912,8 @@
         {
             "hillOrientation": "None",
             "layers": [
-                "platform"
+                "ground",
+                "wall"
             ],
             "possibleConnects": [
                 {
@@ -4916,6 +4954,7 @@
                 },
                 {
                     "allowedLayers": [
+                        "hill",
                         "ground"
                     ],
                     "x": 1,
@@ -4940,7 +4979,8 @@
                 {
                     "allowedLayers": [
                         "ground",
-                        "hill"
+                        "hill",
+                        "wall"
                     ],
                     "x": 1,
                     "y": 0
@@ -4948,7 +4988,7 @@
             ],
             "slopes": [
                 0.0,
-                -0.06666666666666667,
+                0.0,
                 0.0,
                 0.0
             ],
@@ -5012,10 +5052,10 @@
                 }
             ],
             "slopes": [
-                1.0,
+                0.12598425196850394,
                 0.0,
                 0.0,
-                -24.4
+                -2.595744680851064
             ],
             "tileIndex": 64,
             "xLocation": 143,
@@ -5077,10 +5117,10 @@
                 }
             ],
             "slopes": [
-                1.0,
+                0.12598425196850394,
                 0.0,
                 0.0,
-                -17.428571428571427
+                -1.9365079365079365
             ],
             "tileIndex": 65,
             "xLocation": 281,
@@ -5142,10 +5182,10 @@
                 }
             ],
             "slopes": [
-                1.0,
+                0.12598425196850394,
                 0.0,
                 0.0,
-                -13.555555555555555
+                -1.5443037974683544
             ],
             "tileIndex": 66,
             "xLocation": 419,
@@ -5207,10 +5247,10 @@
                 }
             ],
             "slopes": [
-                1.0,
+                0.12598425196850394,
                 0.0,
                 0.0,
-                -11.090909090909092
+                -1.2842105263157895
             ],
             "tileIndex": 67,
             "xLocation": 557,
@@ -5272,10 +5312,10 @@
                 }
             ],
             "slopes": [
-                1.0,
+                0.12598425196850394,
                 0.0,
                 0.0,
-                -9.384615384615385
+                -1.0990990990990992
             ],
             "tileIndex": 68,
             "xLocation": 695,
@@ -5337,10 +5377,10 @@
                 }
             ],
             "slopes": [
-                1.0,
+                0.12598425196850394,
                 0.0,
                 0.0,
-                -8.133333333333333
+                -0.9606299212598425
             ],
             "tileIndex": 69,
             "xLocation": 833,
@@ -5491,8 +5531,8 @@
                 }
             ],
             "slopes": [
-                -1.0,
-                17.428571428571427,
+                -0.12598425196850394,
+                1.9365079365079365,
                 0.0,
                 0.0
             ],
@@ -5558,8 +5598,8 @@
                 }
             ],
             "slopes": [
-                -1.0,
-                13.555555555555555,
+                -0.12598425196850394,
+                1.5443037974683544,
                 0.0,
                 0.0
             ],
@@ -5625,8 +5665,8 @@
                 }
             ],
             "slopes": [
-                -1.0,
-                11.090909090909092,
+                -0.12598425196850394,
+                1.2842105263157895,
                 0.0,
                 0.0
             ],
@@ -5692,8 +5732,8 @@
                 }
             ],
             "slopes": [
-                -1.0,
-                9.384615384615385,
+                -0.12598425196850394,
+                1.0990990990990992,
                 0.0,
                 0.0
             ],
@@ -5731,7 +5771,8 @@
                 },
                 {
                     "allowedLayers": [
-                        "hill"
+                        "hill",
+                        "ground"
                     ],
                     "x": 1,
                     "y": 1
@@ -5753,14 +5794,18 @@
                     "y": 0
                 },
                 {
-                    "allowedLayers": [],
+                    "allowedLayers": [
+                        "ground",
+                        "hill",
+                        "wall"
+                    ],
                     "x": 1,
                     "y": 0
                 }
             ],
             "slopes": [
-                -1.0,
-                8.133333333333333,
+                -0.12598425196850394,
+                0.9606299212598425,
                 0.0,
                 0.0
             ],
@@ -5772,8 +5817,7 @@
             "hillOrientation": "None",
             "layers": [
                 "ground",
-                "wall",
-                "platform"
+                "wall"
             ],
             "possibleConnects": [
                 {
@@ -5850,7 +5894,7 @@
                 0.0,
                 0.0,
                 0.0,
-                0.06666666666666667
+                0.0
             ],
             "tileIndex": 76,
             "xLocation": 557,
@@ -6009,8 +6053,8 @@
             ],
             "slopes": [
                 0.0,
-                -8.0,
-                8.0,
+                -1.0,
+                1.0,
                 0.0
             ],
             "tileIndex": 78,
@@ -6082,8 +6126,8 @@
             "slopes": [
                 0.0,
                 0.0,
-                -8.0,
-                8.0
+                -1.0,
+                1.0
             ],
             "tileIndex": 79,
             "xLocation": 971,

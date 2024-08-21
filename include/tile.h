@@ -80,7 +80,6 @@ class Tile {
 private:
 	int														id;
 	int														textureID;
-	Direction												direction;
 
 	SDL_Color												debugColor;
 
@@ -94,18 +93,12 @@ private:
 	Vector2													pixelPosition;
 	b2Vec2													worldPosition;
 
-	b2Vec2													worldCenter;
-	Vector2													pixelCenter;
-
 	b2Body*													physicsBody;
-	
-	Direction												capDirection;
 
 	std::shared_ptr<Graphics>								graphicsRef;
 
 	std::shared_ptr<Sprite>									sprite;
-	Coord													spritePos;
-
+	
 	SDL_Rect												sourceRect;
 
 	std::vector<b2Vec2>										topChain;
@@ -113,13 +106,8 @@ private:
 	std::vector<b2Vec2>										eastCap;
 	std::vector<b2Vec2>										westCap;
 
-
-	std::vector<TileConnection>								possibleConnections;
 	TileLayer												tileLayers;
 	Direction												hillOrientation;
-
-
-
 
 	//Rotation in degrees for SDL2
 	float													zRot;
@@ -127,24 +115,25 @@ private:
 
 public:
 	Tile();
-	Tile(int id, int texID, Sprite* srcSheet, Vector2 gridPosition, Vector2 pDim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect);
+	Tile(int id, int texID, Sprite* srcSheet, Vector2 gridPosition, Vector2 pDim, const std::shared_ptr<Graphics>& graphics, SDL_Rect srcRect);
 	Tile(const Tile& oldTile);
 	Tile& operator= (const Tile& other);
+	bool operator<(const Tile& b) const {
+		return topChain.front().y < b.topChain.front().y
+			&& topChain.back().y == b.topChain.front().y
+			&& topChain.back().y < b.topChain.back().y;
+	}
 
 	~Tile();
 
 	void													ClearExtras();
 
-	void													AddPossibleConnection(Vector2 v, TileLayer layer, Direction hillDir);
 	void													RotateChain(std::vector<b2Vec2>& chain, float angle);
 	void													Draw(Vector2 cameraOffset);
 	void													CreatePhysicsEdges(Vector2 playerDim);
 	void													CreateTileBody(b2World* world);
-	void													SetCappingDirection(Direction capping);
-	void													DecideCapping();
 	void													TilePhysicsInit();
-	void													SetSpriteDirection(Direction dir) { direction = dir; }
-	void													SetSDL_RendererFlipFlags(SDL_RendererFlip flip);
+	void													SetSDL_RendererFlipFlags(SDL_RendererFlip flip, Vector2 playerDim);
 	void													SetTileLayer(TileLayer layers) { tileLayers = layers; }
 	void													SetGridPosition(int col, int row);
 
@@ -154,17 +143,11 @@ public:
 
 	SDL_Color												GetDebugColor() { return debugColor; }
 
-	b2Vec2													GetTopChainFirstVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? topChain.front() : topChain.back(); }
-	b2Vec2													GetTopChainLastVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? topChain.back() : topChain.front(); }
-	b2Vec2													GetBottomChainFirstVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.front() : bottomChain.back(); }
-	b2Vec2													GetBottomChainLastVertex() { return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.back() : bottomChain.front(); }
-
-		
-	//b2Vec2													GetTopChainFirstVertex() { return topChain.front(); }
-	//b2Vec2													GetTopChainLastVertex() { return topChain.back(); }
-	//b2Vec2													GetBottomChainFirstVertex() { return bottomChain.front(); }
-	//b2Vec2													GetBottomChainLastVertex() { return bottomChain.back(); }
-																																					 
+	b2Vec2													GetTopChainFirstVertex()    { return topChain.back();}//{ return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? topChain.front() : topChain.back(); }
+	b2Vec2													GetTopChainLastVertex()		{ return topChain.front(); }//{ return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? topChain.back() : topChain.front(); }
+	b2Vec2													GetBottomChainFirstVertex() { return bottomChain.front(); }//{ return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.front() : bottomChain.back(); }
+	b2Vec2													GetBottomChainLastVertex()  { return bottomChain.back(); }//{ return (flipFlags == SDL_FLIP_NONE || flipFlags == (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL)) ? bottomChain.back() : bottomChain.front(); }
+	
 	b2Vec2													GetWorldPosition() { return worldPosition; }											 
 	Vector2													GetPixelPosition() { return pixelPosition; }
 
@@ -177,7 +160,6 @@ public:
 
 	SDL_Rect												GetSourceRect() { return sourceRect; }
 	Direction												GetHillDirection() { return hillOrientation; }
-	Direction												GetCappingDirection() { return capDirection; }
 	std::vector<std::vector<SDL_Color>>						GetTilePixels();
 
 	void													FlipChain(std::vector<b2Vec2>& chain);
@@ -192,14 +174,15 @@ public:
 };
 
 typedef struct TileNode {
-	Direction direction;
-	std::unordered_map<TileLayer, std::vector<Tile*>> tiles;
+	Direction orientation;
+	std::unordered_map<TileLayer, std::vector<Tile*>*> tiles;
 	TileNode* child;
 }TileNode_S;
 
 class TileCollection {
 private:
 	TileNode* root;
+	void SortNode(TileNode* current);
 
 public:
 	TileCollection();
@@ -207,8 +190,9 @@ public:
 
 	//Creates an entry for the capping direction of the tilewhen it returns false, 
 	void AddTile(Tile* newTile);
-	std::vector<Tile*>* FindTilesOfDirection(TileLayer layer, Direction dir);
-	Tile* FindNthTileOfDirection(TileLayer layer, Direction dir, uint16_t index);
+	std::vector<Tile*>* FindTilesOfDirection(TileLayer layer, Direction o);
+	Tile* FindNthTileOfDirection(TileLayer layer, Direction o, uint16_t index);
+
 };
 
 class TileManager {

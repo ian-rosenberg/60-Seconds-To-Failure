@@ -14,6 +14,7 @@ extern "C" {
 #include "simple_json.h"
 }
 
+#define QUAD_VERTS 4
 #define EDGE_COUNT 2
 #define MAX_CAPS 2
 #define GAUSSIAN_FILTER_SIZE 3
@@ -31,202 +32,107 @@ extern "C" {
 				  
 void Tile::CreatePhysicsEdges(Vector2 playerDimensions)
 {
-	std::vector<std::vector<SDL_Color>> pixels;
 	SDL_Rect boundingRect = { INT_MAX, INT_MAX, -1, -1 };
 	b2Vec2 vert;
 	const int quarterPlayerWidth = playerDimensions.x / PLATFORM_TOP_EDGE_MIN;
+	const int quarterPlayerHeight = playerDimensions.y / 4;
 	int col = 0,
 		row = 0;
 
-	if (topChain.size() > 0 && bottomChain.size() > 0) {
-		return;
-	}
+	std::vector<std::vector<SDL_Color>> pixels = GetTilePixels();
 
-	pixels = Sprite::GetPixelData(graphicsRef, sprite.get());
+	std::cout << "Scanning north to south" << std::endl;
+	for (; col < pixels[row].size(); col++) {
+		for (; row < pixels.size(); row++) {
 
-
-	if (direction == Direction::North) {
-		//scan north -> south
-		std::cout << "Scanning north to south" << std::endl;
-		for (col = 0; col < pixels[row].size(); col++) {
-			for (; row < pixels.size(); row++)
-			{
-				if (pixels[row][col].a > 0) {
-					vert = b2Vec2((col)*MET_IN_PIX, (row)*MET_IN_PIX);
-					topChain.push_back(vert);
-					col += quarterPlayerWidth;
-					break;
-				}
-			}
-			row = 0;
-		}
-
-		for (col = pixels[row].size() - 1, row = 0; row < pixels.size(); row++) {
 			if (pixels[row][col].a > 0) {
 				vert = b2Vec2((col)*MET_IN_PIX, (row)*MET_IN_PIX);
 				topChain.push_back(vert);
+				col += quarterPlayerWidth;
 				break;
 			}
 		}
+		row = 0;
+	}
 
-		std::cout << "Scanning south to north" << std::endl;
+	for (col = pixels[row].size() - 1, row = 0; col >= 0; row++) {
+		if (row > pixels.size()-1){
+			col--;
+			row = 0;
+		}
+	
+		if (pixels[row][col].a > 0) {
+			vert = b2Vec2((col)*MET_IN_PIX, (row)*MET_IN_PIX);
+			topChain.push_back(vert);
+			break;
+		}
+	}
 
-		row = pixels.size() - 1;
+	std::cout << "Scanning south to north" << std::endl;
 
-		//scan from south -> north
-		for (col = 0; col < pixels[row].size(); col++) {
-			for (; row >= 0; row--)
-			{
-				if (pixels[row][col].a != 0) {
-					vert = b2Vec2((col)*MET_IN_PIX, (row)*MET_IN_PIX);
-					bottomChain.push_back(vert);
-					col += quarterPlayerWidth;
-					break;
-				}
+	row = pixels.size() - 1;
+
+	//scan from south -> north
+	for (col = 0; col < pixels[row].size(); col++) {
+		for (; row >= 0; row--) {
+
+			if (pixels[row][col].a > 0) {
+				vert = b2Vec2((col)*MET_IN_PIX, (row)*MET_IN_PIX);
+				bottomChain.push_back(vert);
+				col += quarterPlayerWidth;
+				break;
 			}
+		}
+		row = pixels.size() - 1;
+	}
+
+	for (col = pixels[row].size() - 1, row = pixels.size() - 1; col >= 0; row--) {
+		if (row < 0) {
+			col--;
 			row = pixels.size() - 1;
 		}
 
+		if (pixels[row][col].a > 0) {
+			vert = b2Vec2((col)*MET_IN_PIX, (row)*MET_IN_PIX);
+			bottomChain.push_back(vert);
+			break;
+		}
+	}
 
-		for (row = pixels.size()-1, col = pixels[row].size() - 1; row >= 0; row--) {
+	std::cout << "Scanning west to east" << std::endl;
+
+	for (row = quarterPlayerHeight - 1, col = 0; row < pixels.size() - quarterPlayerHeight; row++) {
+		for (col = 0; col < pixels[row].size(); col++)
+		{
 			if (pixels[row][col].a != 0) {
 				vert = b2Vec2((col)*MET_IN_PIX, (row)*MET_IN_PIX);
-				bottomChain.push_back(vert);
-				break;
-			}
-		}
-	}
-	else if (direction == Direction::East) {
-		//scan from west -> east
-		std::cout << "Scanning west to east" << std::endl;
-		row = 0;
-		for (; row < pixels.size(); row++) {
-			for (col = 0; col < pixels[row].size(); col++)
-			{
-				if (pixels[row][col].a != 0) {
-					vert = b2Vec2(col, (row));
-					topChain.push_back(vert);
-					row += quarterPlayerWidth;
-					break;
-				}
-			}
-		}
-
-		for (col = 0, row = pixels.size() - 1; col < pixels[row].size(); col++) {
-			if (pixels[row][col].a != 0) {
-				vert = b2Vec2(col, (row));
-				topChain.push_back(vert);
-				break;
-			}
-		}
-
-		std::cout << "Scanning east to west" << std::endl;
-
-		//scan from east -> west
-		for (row = 0; row < pixels.size() - 1; row++) {
-			col = pixels[row].size() - 1;
-			for (; col >= 0; col--)
-			{
-				if (pixels[row][col].a != 0) {
-					vert = b2Vec2(col, (row));
-					bottomChain.push_back(vert);
-					row += quarterPlayerWidth;
-					break;
-				}
-			}
-		}
-
-		for (col = pixels[row].size() - 1, row = pixels.size() - 1; col >= 0; col--) {
-			if (pixels[row][col].a != 0) {
-				vert = b2Vec2(col, (row));
-				bottomChain.push_back(vert);
-				break;
-			}
-		}
-	}
-	/*else if (direction == Direction::South) {
-		while (col < pixels[row].size()) {
-			for (int row = pixels.size() - 1; row >= 0; row--)
-			{
-				if (pixels[row][col].a == 0) {
-					pixel = { col * 1.0f, row * 1.0f };
-					std::cout << "column: " << pixel.x << " row: " << pixel.y << std::endl;
-					graphicsRef->Vector2PixelsToMeters(pixel);
-					vert = b2Vec2(pixel.x, pixel.y);
-					chain.push_back(vert);
-					col += (playerDimensions.x / 2);
-					break;
-				}
-			}
-		}
-	}*/
-	else if (direction == Direction::West) {
-		//scan from east -> west
-		std::cout << "Scanning west to east" << std::endl;
-
-		for (row = 0; row < pixels.size() - 1; row++) {
-			for (col = 0; col < pixels[row].size(); col++)
-			{
-				if (pixels[row][col].a != 0) {
-					vert = b2Vec2(col, (row));
-					topChain.push_back(vert);
-					row += (playerDimensions.x / 2);
-					break;
-				}
-			}
-		}
-
-		for (col = 0, row = pixels.size() - 1; col < pixels[row].size(); col++) {
-			if (pixels[row][col].a != 0) {
-				vert = b2Vec2(col, (row));
-				topChain.push_back(vert);
-				break;
-			}
-		}
-
-		std::cout << "Scanning east to west" << std::endl;
-
-		//scan from west -> east
-		for (row = 0; row < pixels.size() - 1; row++) {
-			for (col = pixels[row].size() - 1; col >= 0; col--)
-			{
-				if (pixels[row][col].a != 0) {
-					vert = b2Vec2(col, (row));
-					bottomChain.push_back(vert);
-					row += (playerDimensions.x / 2);
-					break;
-				}
-			}
-		}
-
-		for (col = pixels[row].size() - 1, row = pixels.size() - 1; col >= 0; col--) {
-			if (pixels[row][col].a != 0) {
-				vert = b2Vec2(col, (row));
-				bottomChain.push_back(vert);
+				westCap.push_back(vert);
+				row += quarterPlayerHeight;
 				break;
 			}
 		}
 	}
 
-	pixels.clear();
-}
+	std::cout << "Scanning east to west" << std::endl;
 
-void Tile::DecideCapping()
-{
-	SDL_Rect r = sourceRect;
-
-	//Decide to cap cardinal direction(s)
-	if (capDirection != Direction::None) {
-		if ((capDirection & Direction::East) == Direction::East && topChain.back() != bottomChain.back()){
-			eastCap.push_back(topChain.back());
-			eastCap.push_back(bottomChain.front());
-		}
-
-		if ((capDirection & Direction::West) == Direction::West && bottomChain.front() != topChain.front()) {
-			westCap.push_back(bottomChain.back());
-			westCap.push_back(topChain.front());
+	for (row = quarterPlayerHeight - 1, col = 0; row < pixels.size() - quarterPlayerHeight; row++) {
+		for (col = pixels[row].size() - 1; col >= 0; col--)
+		{
+			if (pixels[row][col].a != 0) {
+				vert = b2Vec2((col)*MET_IN_PIX, (row)*MET_IN_PIX);
+				eastCap.push_back(vert);
+				row += quarterPlayerHeight;
+				break;
+			}
 		}
 	}
+
+	if (topChain.front().y < topChain.back().y)
+		hillOrientation = South | East;
+	else if(topChain.front().y > topChain.back().y)
+		hillOrientation = North | East;
+	else
+		hillOrientation = None;
 }
 
 void Tile::TilePhysicsInit()
@@ -241,23 +147,24 @@ void Tile::TilePhysicsInit()
 		(float)tmp.y
 	};
 
-	DecideCapping();
 }
 
-void Tile::SetSDL_RendererFlipFlags(SDL_RendererFlip flip)
+void Tile::SetSDL_RendererFlipFlags(SDL_RendererFlip flip, Vector2 playerDim)
 {
-	if (flipFlags == flip)
-		return;
+	if (flip != flipFlags)
+	{
+		flipFlags = flip;
 
-	flipFlags = flip;
+		std::shared_ptr<Sprite> og = sprite;
 
-	std::shared_ptr<Sprite> og = sprite;
+		sprite = std::shared_ptr<Sprite>(sprite->MakeFlippedTexture(flipFlags));
 
-	sprite = std::shared_ptr<Sprite>(sprite->MakeFlippedTexture(flipFlags));
+		textureID *= -1;
 
-	textureID *= -1;
-	
-	og.reset();
+		og.reset();
+	}
+
+	CreatePhysicsEdges(playerDim);
 }
 
 void Tile::SetGridPosition(int col, int row)
@@ -291,36 +198,34 @@ void Tile::CreateTileBody(b2World* world)
 	std::vector<b2PolygonShape> polyShapes;
 	SDL_Renderer* r = graphicsRef->GetRenderer();
 
+
 	bd.type = b2_staticBody;
 
 	bd.position.Set(pixelPosition.x * MET_IN_PIX, pixelPosition.y * MET_IN_PIX);
 
 	worldPosition = bd.position;
 
-	switch (direction) {
-	case North:
-		bd.angle = 0.f;
-		break;
-
-	case East:
-		bd.angle = M_PI * 1.5f;
-		break;
-
-	case South:
-		bd.angle = M_PI;
-		break;
-
-	case West:
-		bd.angle = M_PI * 0.5f;
-		break;
-
-	default:
-		break;
-	}
-
 	physicsBody = world->CreateBody(&bd);
 
-	for (int i = 0; i + 1 < topChain.size() && i + 1 < bottomChain.size(); i++) {
+
+	b2FixtureDef leftFix;
+	b2PolygonShape leftPoly;
+	std::vector<b2Vec2> leftPolyVerts = {
+		topChain[1],
+		topChain[0],
+		westCap[0],
+		westCap[1],
+		bottomChain[0],
+		bottomChain[1]
+	}; 
+	
+	leftPoly.m_count = leftPolyVerts.size();
+	leftPoly.Set(leftPolyVerts.data(), leftPoly.m_count);
+	leftFix.shape = &leftPoly;
+	leftFix.friction = 0.7f;
+	physicsBody->CreateFixture(&leftFix);
+
+	for (int i = 1; i + 1 < topChain.size()-1 && i + 1 < bottomChain.size()-1; i++) {
 		b2FixtureDef fix;
 		b2PolygonShape poly;
 		b2Vec2 verts[4]{
@@ -335,22 +240,30 @@ void Tile::CreateTileBody(b2World* world)
 		fix.shape = &poly;
 		fix.friction = 0.7f;
 		physicsBody->CreateFixture(&fix);
-
 	}
-}
 
-void Tile::SetCappingDirection(Direction capping)
-{
-	if (capping == capDirection)
-		return;
+	b2FixtureDef rightFix;
+	b2PolygonShape rightPoly;
+	std::vector<b2Vec2> rightPolyVerts = {
+		topChain[topChain.size()-1], 
+		topChain[topChain.size()-2],
+		bottomChain[bottomChain.size()-2],
+		bottomChain[bottomChain.size()-1],
+		eastCap[1],
+		eastCap[0],
+	};
 
-	this->capDirection = capping;
+	rightPoly.m_count = rightPolyVerts.size();
+	rightPoly.Set(rightPolyVerts.data(), rightPoly.m_count);
+	rightFix.shape = &rightPoly;
+	rightFix.friction = 0.7f;
+	physicsBody->CreateFixture(&rightFix);
+
 }
 
 Tile::Tile()
 {
 	id = 0;
-	direction = Direction::North;
 	pixelDimensions = { 0,0 };
 	worldDimensions = { 0,0 };
 
@@ -365,8 +278,6 @@ Tile::Tile()
 
 	flipFlags = SDL_FLIP_NONE;
 
-	capDirection = Direction::None;
-
 	tileLayers = TileLayer::Ground;
 
 	zRot = 0.f;
@@ -378,7 +289,7 @@ Tile::Tile()
 	SetGridPosition(INT_MIN, INT_MIN);
 }
 
-Tile::Tile(int id, int texID, Sprite* srcSheet, Vector2 gridPosition, Vector2 dim, Direction dir, const std::shared_ptr<Graphics>& graphics, float zRotation, SDL_Rect srcRect)
+Tile::Tile(int id, int texID, Sprite* srcSheet, Vector2 gridPosition, Vector2 dim, const std::shared_ptr<Graphics>& graphics, SDL_Rect srcRect)
 {
 	this->id = id;
 	textureID = texID;
@@ -391,28 +302,26 @@ Tile::Tile(int id, int texID, Sprite* srcSheet, Vector2 gridPosition, Vector2 di
 
 	flipFlags = SDL_FLIP_NONE;
 
-	capDirection = Direction::None;
-
 	pixelDimensions = dim;
 
 	worldDimensions.Set(dim.x * MET_IN_PIX, dim.y * MET_IN_PIX);
 
 	pixelPosition = { gridPosition.x * pixelDimensions.x, gridPosition.y * pixelDimensions.y };
-	direction = dir;
-	zRot = zRotation;
+	hillOrientation = None;
+	zRot = 0.0f;
 
 	debugColor = SDL_Color(0, 255, 0, 255);
 
 	SetGridPosition(INT_MIN, INT_MIN);
 
-	tileLayers = TileLayer::Ground;
+	tileLayers = TileLayer::Empty;
 }
 
 Tile::Tile(const Tile &oldTile)
 {
 	this->id = oldTile.id;
 	this->textureID = oldTile.textureID;
-	this->direction = oldTile.direction;
+	this->hillOrientation = oldTile.hillOrientation;
 	this->pixelDimensions = oldTile.pixelDimensions;
 	this->worldDimensions = oldTile.worldDimensions;
 	this->flipFlags = oldTile.flipFlags;
@@ -426,10 +335,6 @@ Tile::Tile(const Tile &oldTile)
     this->graphicsRef = oldTile.graphicsRef;
 	this->sprite = oldTile.sprite;
 
-	this->possibleConnections = oldTile.possibleConnections;
-
-	this->capDirection = oldTile.capDirection;
-
 	this->zRot = oldTile.zRot;
 
 	this->debugColor = oldTile.debugColor;
@@ -441,7 +346,6 @@ Tile::Tile(const Tile &oldTile)
 	std::copy(oldTile.eastCap.begin(), oldTile.eastCap.end(), std::back_inserter(this->eastCap));
 	std::copy(oldTile.westCap.begin(), oldTile.westCap.end(), std::back_inserter(this->westCap));
 
-
 	SetGridPosition(INT_MIN, INT_MIN);
 	tileLayers = oldTile.tileLayers;
 }
@@ -449,7 +353,7 @@ Tile::Tile(const Tile &oldTile)
 Tile& Tile::operator=(const Tile& rhs)
 {
 	this->id = rhs.id;
-	this->direction = rhs.direction;
+	this->hillOrientation = rhs.hillOrientation;
 	this->pixelDimensions = rhs.pixelDimensions;
 	this->worldDimensions = rhs.worldDimensions;
 
@@ -461,10 +365,6 @@ Tile& Tile::operator=(const Tile& rhs)
 
 	this->graphicsRef = rhs.graphicsRef;
 	this->sprite = std::make_shared<Sprite>(*rhs.sprite);
-
-	this->possibleConnections = rhs.possibleConnections;
-
-	this->capDirection = rhs.capDirection;
 
 	this->zRot = rhs.zRot;
 
@@ -488,18 +388,10 @@ Tile& Tile::operator=(const Tile& rhs)
 }
 
 Tile::~Tile()
-{
-	possibleConnections.clear();
-
-	sprite.reset();
+{	sprite.reset();
 	graphicsRef.reset();
 	
 	physicsBody = nullptr;
-
-	topChain.clear();
-	bottomChain.clear();
-	eastCap.clear();
-	westCap.clear();
 }
 
 void Tile::ClearExtras()
@@ -509,20 +401,8 @@ void Tile::ClearExtras()
 	eastCap.clear();
 	westCap.clear();
 
-	spritePos = Coord(sprite->GetXOffset(), sprite->GetYOffset());
-
 	sprite.reset();
 	graphicsRef.reset();
-}
-
-void Tile::AddPossibleConnection(Vector2 v, TileLayer layer, Direction hillDir)
-{
-	possibleConnections.push_back(TileConnection{
-		(int)v.x,
-		(int)v.y,
-		layer,
-		hillDir
-		});
 }
 
 void Tile::RotateChain(std::vector<b2Vec2>& chain, float theta)
@@ -698,8 +578,7 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 {
 	const char* dirStr;
 	std::vector<Tile*>* tiles = new std::vector<Tile*>();
-	float zRot;
-	Direction direction;
+	float zRot = 0.0f;
 	SDL_Rect srcRect;
 	SDL_Rect imageRect;
 	SJson* genDesc = sj_array_new();
@@ -728,17 +607,6 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			sj_object_get_value(jsonResource, "generationDescription")
 		));
 	genDescList = sj_object_get_value(genDesc, sj_get_string_value(sj_object_get_value(jsonResource, "name")));
-
-	if (strcmp(dirStr, "north") == 0)
-		direction = Direction::North;
-	else if (strcmp(dirStr, "east") == 0)
-		direction = Direction::East;
-	else if (strcmp(dirStr, "west") == 0)
-		direction = Direction::South;
-	else if (strcmp(dirStr, "south") == 0)
-		direction = Direction::West;
-	else
-		direction = Direction::None;
 
 	spriteSheet = new Sprite(tss->filepath, 
 		tss->imageWidth, 
@@ -801,30 +669,6 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 		if (!spriteSheet->CheckIfViableTexture(sR))
 			continue;
 
-		switch (direction) {
-		case North:
-			zRot = 0.f;
-			break;
-
-		case East:
-			zRot = 270.f;
-			break;
-
-		case South:
-			zRot = 180.f;
-			break;
-
-		case West:
-			zRot = 90.f;
-			break;
-
-		default:
-			zRot = 0.f;
-			break;
-		}
-
-		zRot = (int)(-1 * zRot + 180) % 360;
-
 		//s->RotateTextureZ(zRot);
 
 		t = new Tile(tiles->size() + 1,
@@ -832,35 +676,13 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			spriteSheet,
 			{ INT32_MIN,INT32_MIN },
 			Vector2(tss->tileWidth, tss->tileHeight),
-			direction,
 			graphicsRef,
-			zRot,
 			sR);
-		t->SetSDL_RendererFlipFlags(SDL_FLIP_NONE);
-		
-		t->CreatePhysicsEdges(playerDimensions);
-
-		tE = new Tile(*t);
-		tE->SetCappingDirection(Direction::East);
-		
-		tW = new Tile(*t);
-		tW->SetCappingDirection(Direction::West);
-
-		tF = new Tile(*t);
-		tF->SetCappingDirection((Direction)(Direction::East | Direction::West));
-
 		xMirrorHillTile = new Tile(*t);
-		xMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL);
 
-		xMirrorHillTileE = new Tile(*xMirrorHillTile);
-		xMirrorHillTileE->SetCappingDirection(Direction::East);
+		t->SetSDL_RendererFlipFlags(SDL_FLIP_NONE, playerDimensions);
 
-		xMirrorHillTileW = new Tile(*xMirrorHillTile);
-		xMirrorHillTileW->SetCappingDirection(Direction::West);
-
-		xMirrorHillTileF = new Tile(*xMirrorHillTile);
-		xMirrorHillTileF->SetCappingDirection((Direction)(Direction::East | Direction::West));
-
+		xMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_HORIZONTAL, playerDimensions);
 		
 		/*yMirrorHillTile = new Tile(*t);
 		yMirrorHillTile->SetSDL_RendererFlipFlags(SDL_FLIP_VERTICAL);
@@ -874,130 +696,21 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			const char* layerName = sj_get_string_value(sj_array_get_nth(sj_object_get_value(sj_array_get_nth(genDescList, i), "layers"), l));
 			if (strcmp(layerName, "ground") == 0) {
 				t->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Ground));
-				tE->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Ground));
-				tW->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Ground));
-				tF->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Ground));
 				xMirrorHillTile->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Ground));
-				xMirrorHillTileE->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Ground));
-				xMirrorHillTileW->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Ground));
-				xMirrorHillTileF->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Ground));
 			}
 			if (strcmp(layerName, "wall") == 0) {
 				t->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Wall));
-				tE->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Wall));
-				tW->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Wall));
-				tF->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Wall));
 				xMirrorHillTile->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Wall));
-				xMirrorHillTileE->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Wall));
-				xMirrorHillTileW->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Wall));
-				xMirrorHillTileF->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Wall));
 			}
 			if (strcmp(layerName, "platform") == 0) {
 				t->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Platform));
-				tE->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Platform));
-				tW->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Platform));
-				tF->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Platform));
 				xMirrorHillTile->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Platform));
-				xMirrorHillTileE->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Platform));
-				xMirrorHillTileW->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Platform));
-				xMirrorHillTileF->SetTileLayer((TileLayer)(t->GetTileLayer() | TileLayer::Platform));
 			}
 			if (strcmp(layerName, "hill") == 0) {
 				t->SetTileLayer(TileLayer::Hill);
-				tE->SetTileLayer(TileLayer::Hill);
-				tW->SetTileLayer(TileLayer::Hill);
-				tF->SetTileLayer(TileLayer::Hill);
 				xMirrorHillTile->SetTileLayer(TileLayer::Hill);
-				xMirrorHillTileE->SetTileLayer(TileLayer::Hill);
-				xMirrorHillTileW->SetTileLayer(TileLayer::Hill);
-				xMirrorHillTileF->SetTileLayer(TileLayer::Hill);
 							
 				break;
-			}
-		}
-		for (int j = 0; j < possibleConnects; j++) {
-			TileLayer layers = TileLayer::Empty;
-			Direction hillOrient;
-			SJson* pConnect = sj_array_get_nth(tileIndex, j);
-			int allowedLayerCount = sj_array_get_count(sj_object_get_value(pConnect, "allowedLayers"));
-			int x, y;
-
-			sj_get_integer_value(sj_object_get_value(pConnect, "x"), &x);
-			sj_get_integer_value(sj_object_get_value(pConnect, "y"), &y);
-
-			for (int l = 0; l < allowedLayerCount; l++) {
-				const char* layerName(sj_get_string_value(sj_array_get_nth(sj_object_get_value(pConnect, "allowedLayers"), l)));
-				if (strcmp(layerName, "ground") == 0) {
-					if (layers & TileLayer::Empty)
-						layers = TileLayer::Ground;
-					else
-						layers = (TileLayer)(layers | TileLayer::Ground);
-				}
-				if (strcmp(layerName, "wall") == 0) {
-					if (layers & TileLayer::Empty)
-						layers = TileLayer::Wall;
-					else
-						layers = (TileLayer)(layers | TileLayer::Wall);
-				}
-				if (strcmp(layerName, "hill") == 0) {
-					layers = TileLayer::Hill;
-				}
-				if (strcmp(layerName, "platform") == 0) {
-					if (layers & TileLayer::Empty)
-						layers = TileLayer::Platform;
-					else
-						layers = (TileLayer)(layers | TileLayer::Platform);
-				}
-			}
-			if (strcmp(o, "Northeast") == 0) {
-				xMirrorHillTile->AddPossibleConnection(
-					Vector2(x * -1, y),
-					layers,
-					(Direction)(Direction::South | Direction::East));
-
-				xMirrorHillTile->SetHillOrientation((Direction)(Direction::South | Direction::East));
-
-				/*yMirrorHillTile->AddPossibleConnection(
-					Vector2(x, y * -1),
-					layers,
-					(Direction)(Direction::South | Direction::East));
-
-				yMirrorHillTile->SetHillOrientation((Direction)(Direction::South | Direction::East));*/
-
-				t->AddPossibleConnection(
-					Vector2(x, y),
-					layers,
-					(Direction)(Direction::North | Direction::East));
-
-				t->SetHillOrientation((Direction)(Direction::North | Direction::East));
-			}
-			else if (strcmp(o, "Southeast") == 0) {
-				xMirrorHillTile->AddPossibleConnection(
-					Vector2(x * -1, y),
-					layers,
-					(Direction)(Direction::North | Direction::East));
-
-				xMirrorHillTile->SetHillOrientation((Direction)(Direction::North | Direction::East));
-
-				/*yMirrorHillTile->AddPossibleConnection(
-					Vector2(x, y * -1),
-					layers,
-					(Direction)(Direction::North | Direction::East));
-
-				yMirrorHillTile->SetHillOrientation((Direction)(Direction::North | Direction::East));*/
-
-				t->AddPossibleConnection(
-					Vector2(x * -1, y),
-					layers,
-					(Direction)(Direction::South | Direction::East));
-
-				t->SetHillOrientation((Direction)(Direction::South | Direction::East));
-			}
-			else {
-				t->AddPossibleConnection(
-					Vector2(x, y),
-					layers,
-					Direction::None);
 			}
 		}
 
@@ -1007,15 +720,7 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			//yMirrorHillTileE->TilePhysicsInit(physics, playerDimensions, tilePixels);
 			//yMirrorHillTileW->TilePhysicsInit(physics, playerDimensions, tilePixels);
 			//yMirrorHillTileF->TilePhysicsInit(physics, playerDimensions, tilePixels);
-			xMirrorHillTileE->DecideCapping();
-			xMirrorHillTileW->DecideCapping();
-			xMirrorHillTileF->DecideCapping();
-			xMirrorHillTile->DecideCapping();
 
-
-			this->tiles->AddTile(xMirrorHillTileE);
-			this->tiles->AddTile(xMirrorHillTileW);
-			this->tiles->AddTile(xMirrorHillTileF);
 			this->tiles->AddTile(xMirrorHillTile);
 
 			/*
@@ -1024,24 +729,12 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			northEastHillTiles->at(Direction::East).push_back(yMirrorHillTileE);
 			northEastHillTiles->at(Direction::West).push_back(yMirrorHillTileW);
 			northEastHillTiles->at((Direction)(Direction::East | Direction::West)).push_back(yMirrorHillTileF);
-			northEastHillTiles->at(Direction::None).push_back(yMirrorHillTile);
-			*/
+			northEastHillTiles->at(Direction::None).push_back(yMirrorHillTile);*/
 
-			t->DecideCapping();
-			tE->DecideCapping();
-			tW->DecideCapping();
-			tF->DecideCapping();
-				
-			this->tiles->AddTile(tE);
-			this->tiles->AddTile(tW);
-			this->tiles->AddTile(tF);
 			this->tiles->AddTile(t);
 			
 		}
 		else {
-			delete xMirrorHillTileE;
-			delete xMirrorHillTileW;
-			delete xMirrorHillTileF;
 			delete xMirrorHillTile;
 
 			//delete yMirrorHillTileE;
@@ -1049,15 +742,6 @@ void TileManager::TileParseTypesFromJSON(std::string json)
 			//delete yMirrorHillTileF;
 			//delete yMirrorHillTile;
 
-			t->DecideCapping();
-			tE->DecideCapping();
-			tW->DecideCapping();
-			tF->DecideCapping();
-
-
-			this->tiles->AddTile(tE);
-			this->tiles->AddTile(tW);
-			this->tiles->AddTile(tF);
 			this->tiles->AddTile(t);
 		}
 	}
@@ -1772,9 +1456,9 @@ void TileManager::PrunePseudoMap(std::vector<std::vector<TileLayer>>& map)
 
 void TileManager::CreateTileMapBodies(std::vector<std::vector<TileLayer>>& pseudoMap)
 {
-	std::vector<Tile*> groundTiles = *tiles->FindTilesOfDirection(TileLayer::Ground, (Direction)(East | West));
-	std::vector<Tile*> wallTiles = *tiles->FindTilesOfDirection(TileLayer::Wall, (Direction)(East | West));
-	std::vector<Tile*> platformTiles = *tiles->FindTilesOfDirection(TileLayer::Platform, (Direction)(East | West));
+	std::vector<Tile*> groundTiles = *tiles->FindTilesOfDirection(TileLayer::Ground, Direction::None);
+	std::vector<Tile*> wallTiles = *tiles->FindTilesOfDirection(TileLayer::Wall, Direction::None);
+	std::vector<Tile*> platformTiles = *tiles->FindTilesOfDirection(TileLayer::Platform, Direction::None);
 
 	for (int y = 0; y < pseudoMap.size(); y++) {
 		for (int x = 0; x < pseudoMap[y].size(); x++) {
@@ -1793,13 +1477,13 @@ void TileManager::CreateTileMapBodies(std::vector<std::vector<TileLayer>>& pseud
 
 				continue;
 			}
-			else if ((pseudoMap[y][x] & TileLayer::Ground) == TileLayer::Ground) {
+			else if ((pseudoMap[y][x] & TileLayer::Ground) != 0) {
 				tileMap->at(y)[x] = new Tile(*groundTiles[rand() % groundTiles.size()]);
 			}
-			else if ((pseudoMap[y][x] & TileLayer::Platform) == TileLayer::Platform) {
+			else if ((pseudoMap[y][x] & TileLayer::Platform) != 0) {
 				tileMap->at(y)[x] = new Tile(*platformTiles[rand() % platformTiles.size()]);
 			}
-			else if ((pseudoMap[y][x] & TileLayer::Wall) == TileLayer::Wall) {
+			else if ((pseudoMap[y][x] & TileLayer::Wall) != 0) {
 				tileMap->at(y)[x] = new Tile(*wallTiles[rand() % wallTiles.size()]);
 			}
 
@@ -1814,7 +1498,6 @@ TileManager::TileManager(const char* filepath, const std::shared_ptr<Graphics>& 
 	std::vector<Tile*> tileRow;
 	Tile* newTile;
 	int x = 0, y = 0;
-
 	playerDimensions = playerDim;
 
 	graphicsRef = graphics;
@@ -1911,7 +1594,7 @@ std::vector<std::vector<Tile*>>* TileManager::GenerateTileMap(b2World* physicsWo
 {
 	SDL_Renderer* ren = graphicsRef->GetRenderer();
 	Uint32 fmt;
-	std::vector<Tile*>* groundTilesFullCapped = this->tiles->FindTilesOfDirection(TileLayer::Ground, (Direction)(Direction::East | Direction::West));
+	std::vector<Tile*>* groundTilesFullCapped = this->tiles->FindTilesOfDirection(TileLayer::Ground, (Direction)(Direction::None));
 	std::vector<std::vector<TileLayer>> pseudoMap;
 	std::vector<std::vector<int>> localMap(worldRows,
 		std::vector<int>(worldCols, 1));
@@ -2066,7 +1749,7 @@ std::vector<std::vector<SDL_Color>> TileManager::CopyRectOfTilePixelsFromTexture
 TileCollection::TileCollection()
 { 
 	root = new TileNode();
-	root->direction = Direction::None;
+	root->orientation = Direction::None;
 	root->child = nullptr;
 }
 
@@ -2083,11 +1766,11 @@ TileCollection::~TileCollection()
 
 
 		for (int i = (unsigned int)TileLayer::Ground, j = 7; i < TileLayer::Empty; i = i << (++j)) {
-			while (!cur->tiles[(TileLayer)i].empty()) {
-				Tile* t = cur->tiles[(TileLayer)i].back();
+			while (!cur->tiles[(TileLayer)i]->empty()) {
+				Tile* t = cur->tiles[(TileLayer)i]->back();
 				delete t;
 
-				cur->tiles[(TileLayer)i].pop_back();
+				cur->tiles[(TileLayer)i]->pop_back();
 			}
 		}
 
@@ -2097,11 +1780,11 @@ TileCollection::~TileCollection()
 	}
 	
 	for (int i = (unsigned int)TileLayer::Ground, j = 7; i < TileLayer::Empty; i = i << (++j)) {
-		while (!root->tiles[(TileLayer)i].empty()) {
-			Tile* t = root->tiles[(TileLayer)i].back();
+		while (!root->tiles[(TileLayer)i]->empty()) {
+			Tile* t = root->tiles[(TileLayer)i]->back();
 			delete t;
 
-			root->tiles[(TileLayer)i].pop_back();
+			root->tiles[(TileLayer)i]->pop_back();
 		}
 	}
 
@@ -2111,65 +1794,26 @@ TileCollection::~TileCollection()
 void TileCollection::AddTile(Tile* newTile)
 {
 	TileNode* cur = root;
-	Direction newTileDir = newTile->GetCappingDirection();
+	Direction newTileDir = newTile->GetHillDirection();
 	TileLayer newTileLayer = newTile->GetTileLayer();
-	Tile* currentTile = nullptr;
 
-	if (!root->child) {
-		root->child = new TileNode();
-		root->child->direction = newTileDir;
-		root->child->tiles[newTile->GetTileLayer()].push_back(newTile);
-
-		return;
-	}
-
-
-	while (cur->child) {
-		if ((cur->direction & newTileDir) == newTileDir) {
-			for (int i = (unsigned int)TileLayer::Ground, j = 7; i < TileLayer::Empty; i = 1 << (++j)) {
-				if ((i & (int)newTileLayer) == i) {
-					if (cur->tiles[(TileLayer)i].empty()) {
-						cur->tiles[(TileLayer)i].push_back(newTile);
-					
-						return;
-					}
-					else {
-						currentTile = cur->tiles[(TileLayer)i].front();
-						if (currentTile->GetTopChainFirstVertex().y >= newTile->GetTopChainLastVertex().y
-							&& currentTile->GetTopChainFirstVertex().y >= newTile->GetTopChainLastVertex().y)
-						{
-							cur->tiles[(TileLayer)i].emplace(cur->tiles[(TileLayer)i].begin(), newTile);
-						}
-						else {
-
-							for (int k = 0, l = 1; l < cur->tiles[(TileLayer)i].size(); l++, k++) {
-								Tile* a = cur->tiles[(TileLayer)i][k];
-								Tile* b = cur->tiles[(TileLayer)i][l];
-
-								if (a->GetTopChainLastVertex().y == newTile->GetTopChainFirstVertex().y
-									|| b->GetTopChainFirstVertex().y >= newTile->GetTopChainLastVertex().y)
-								{
-									cur->tiles[(TileLayer)i].emplace(cur->tiles[(TileLayer)i].begin() + k, newTile);
-
-									return;
-								}
-
-							}
-							cur->tiles[(TileLayer)i].push_back(newTile);
-
-							return;
-						}
-					}
-				}
-			}
-		}
-		
+	while (cur->child && (cur->orientation & newTileDir) != cur->orientation) {
 		cur = cur->child;
 	}
 
-	cur->child = new TileNode();
-	cur->child->direction = newTileDir;
-	cur->child->tiles[newTile->GetTileLayer()].push_back(newTile);
+	if (!cur->child && (cur->orientation & newTileDir) != cur->orientation)
+	{
+		cur->child = new TileNode();
+		cur->child->orientation = newTileDir;
+		cur->child->tiles.insert_or_assign(newTileLayer, new std::vector<Tile*>());
+		cur->child->tiles[newTileLayer]->push_back(newTile);
+	}
+	else{
+		if(!cur->tiles.contains(newTileLayer))
+			cur->tiles.insert_or_assign(newTileLayer, new std::vector<Tile*>());
+
+		cur->tiles[newTileLayer]->push_back(newTile);
+	}
 }
 
 std::vector<Tile*>* TileCollection::FindTilesOfDirection(TileLayer layer, Direction dir)
@@ -2177,8 +1821,12 @@ std::vector<Tile*>* TileCollection::FindTilesOfDirection(TileLayer layer, Direct
 	TileNode* cur = root;
 
 	while (cur) {
-		if ((cur->direction & dir) == dir)
-			return &cur->tiles[layer];
+		if ((cur->orientation & dir) == cur->orientation) {
+			for (auto layerListPair : cur->tiles) {
+				if ((layerListPair.first & layer) != 0)
+					return layerListPair.second;
+			}
+		}
 
 		cur = cur->child;
 	}
@@ -2194,4 +1842,16 @@ Tile* TileCollection::FindNthTileOfDirection(TileLayer layer, Direction dir, uin
 		return (*tiles)[index];
 
 	return nullptr;
+}
+
+void TileCollection::SortNode(TileNode* current)
+{
+	for (auto pair : current->tiles) {
+		if ((pair.first & Hill) != 0 && (current->orientation & North) == North) {
+			
+		}
+		else {
+
+		}
+	}
 }

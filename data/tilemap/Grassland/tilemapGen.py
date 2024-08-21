@@ -29,8 +29,6 @@ outFileName = str(ssInfo["generationDescriptionOut"])
 name = str(ssInfo["name"])
 infoFile.close()
 
-SAMPLES = tileWidth // 8
-
 jsonList = []
 
 tileIndex = 1
@@ -76,13 +74,15 @@ while tileIndex in range(1, tileCount+1):
 
     while x in range(xStart, xStart+tileWidth) and y in range(yStart, yStart+tileHeight):
         if img[y,x][3] >  0.0:
+            if y == img.shape[1]-1 and img[y,x][3] == 0:
+                break
             xyDictionary["y"] = np.append(xyDictionary["y"], img.shape[0] - y - 1)
-            x += tileWidth // SAMPLES
+            x = x+1
             y = yStart
         else:
             y += 1
         if y >= yStart+tileHeight-1:
-            x += tileWidth // SAMPLES
+            x = x+1
             y = yStart
 
     i = 0
@@ -112,10 +112,10 @@ while tileIndex in range(1, tileCount+1):
     while y in range(yStart, yStart+tileHeight) and x in range(xStart, xStart+tileWidth):
         if img[y,x][3] >  0.0:
             xyDictionary["x"] = np.append(xyDictionary["x"], x)
-            y += tileHeight // SAMPLES
+            y = y + 1
             x = xStart + tileWidth - 1
         elif x <= xStart:
-            y += tileHeight // SAMPLES
+            y = y + 1
             x = xStart + tileWidth - 1
         else:
             x -= 1
@@ -146,12 +146,12 @@ while tileIndex in range(1, tileCount+1):
     while x in range(xStart, xStart+tileWidth) and y in range(yStart, yStart+tileHeight):
         if img[y,x][3] >  0.0:
             xyDictionary["y"] = np.append(xyDictionary["y"], img.shape[0] - y - 1)
-            x += tileWidth // SAMPLES
+            x += 1
             y = yStart + tileHeight - 1
         else:
             y -= 1
         if y <= yStart:
-            x += tileWidth // SAMPLES
+            x += 1
             y = yStart + tileHeight - 1
 
     i = 0
@@ -180,10 +180,10 @@ while tileIndex in range(1, tileCount+1):
     while y in range(yStart, yStart+tileHeight) and x in range(xStart, xStart+tileWidth):
         if img[y,x][3] >  0.0:
             xyDictionary["x"] = np.append(xyDictionary["x"], x)
-            y += tileHeight // SAMPLES
+            y = y + 1
             x = xStart
         elif x >= xStart+tileWidth-1:
-            y += tileHeight // SAMPLES
+            y = y + 1
             x = xStart
         else:
             x += 1

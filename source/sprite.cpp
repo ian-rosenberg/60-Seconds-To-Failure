@@ -149,10 +149,10 @@ std::vector<std::vector<SDL_Color>> Sprite::GetPixelData(const char* filepath, S
 	fmt = s->format;
 	bpp = s->format->BytesPerPixel;
 	//cols then rows
-	for (y = 0; y < s->h; y++)
+	for (y = r->y; y < r->y + r->h; y++)
 	{
 		resultLine.clear();
-		for (x = 0; x < s->w; x++)
+		for (x = r->x; x < r->x + r->w; x++)
 		{
 			Uint32 p = GetPixel(s, x, y);
 
@@ -230,7 +230,7 @@ void Sprite::ClipSourceRectPixels()
 	Uint32 fmt;
 
 	SDL_QueryTexture(texture.get(), &fmt, nullptr, nullptr, nullptr);
-	clipped = SDL_CreateTexture(graphics->GetRenderer(), fmt, SDL_TEXTUREACCESS_TARGET, frameWidth, frameHeight);
+	clipped = SDL_CreateTexture(graphics->GetRenderer(), fmt, SDL_TEXTUREACCESS_TARGET, srcRect.w, srcRect.h);
 	SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
 
 	SDL_RenderClear(ren);
@@ -319,7 +319,7 @@ Sprite* Sprite::MakeFlippedTexture(SDL_RendererFlip flip)
 	SDL_QueryTexture(texture.get(), &fmt, nullptr, nullptr, nullptr);
 
 	flippedCopy->texture = std::shared_ptr<SDL_Texture>(
-		SDL_CreateTexture(ren, fmt, SDL_TEXTUREACCESS_TARGET, frameWidth, frameHeight),
+		SDL_CreateTexture(ren, fmt, SDL_TEXTUREACCESS_TARGET, srcRect.w, srcRect.h),
 		[](SDL_Texture* ptr) {SDL_DestroyTexture(ptr); }
 	);
 

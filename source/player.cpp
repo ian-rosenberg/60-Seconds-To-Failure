@@ -21,7 +21,8 @@ Player::Player(const std::shared_ptr<Graphics>& graphics) : Entity{ -1 }
 	health = maxHealth;
 	maxEnergy = 50;
 	energy = maxEnergy;
-	jumpForce = 27.5f;
+	jumpForce = 29
+	;
 	scale = { 1,1 };
 	prevDrawPosition = newDrawPosition = resultPosition = { 0,0 };
 	prevBodyPosition = newBodyPosition = { 0,0 };
@@ -68,7 +69,7 @@ void Player::Think() {
 		t = currentEvent->inputType;
 		currentEvent->repeat = currentEvent->e->key.repeat;
 
-		if (IsGrounded() && animActor->GetAnimationState() != State::State_Landing) {
+		if (IsGrounded() || animActor->GetAnimationState() == State::State_Landing) {
 
 			if (currentEvent->repeat > 0) {
 				if (t == WALK_UP) {

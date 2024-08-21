@@ -118,6 +118,7 @@ void Entity::Update()
 	&& cState == State::State_Falling) {
  		SetLogicalState(State::State_Landing);
 		animActor->SetAnimationState(State::State_Landing);
+		body->ApplyLinearImpulse(b2Vec2(maxSpeed * .1f, 0), body->GetPosition(), true);
 	}
 	if (animActor 
 	&& bodyVelocity.y > 0.1f) {
@@ -127,7 +128,7 @@ void Entity::Update()
 	if (animActor 
 	&& cType != AnimationType::AT_HOLD 
 	&& grounded
-	&& bodyVelocity.x == 0) {
+	&& floor(bodyVelocity.x) == 0) {
   		SetLogicalState(State::State_Idle);
 		animActor->SetAnimationState(State::State_Idle);
 	}

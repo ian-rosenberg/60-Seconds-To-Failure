@@ -281,6 +281,8 @@ void Actor::SetAnimationState(State s){
 	std::vector<State> states;
 	if (s == animState || !currentAnimation->IsPossibleState(s))
 		return;
+	if (s == animState && artStatus == AnimationReturnType::ART_HOLD)
+		return;
 	if (currentAnimation->MustComplete() 
 	&& artStatus == AnimationReturnType::ART_INPROGRESS)
    		return;
